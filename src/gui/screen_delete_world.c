@@ -1,3 +1,4 @@
+#define _DEFAULT_SOURCE
 #include <gui/screen_delete_world.h>
 
 #include <gui/screen_select_world.h>

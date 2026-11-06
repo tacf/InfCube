@@ -1034,13 +1034,19 @@ uint8_t world_is_solid(world_t *world, int x, int y, int z) {
     return block_list[block_id].is_opaque;
 }
 
+static int world_lighting_active = 0;
+
 uint8_t world_update_lighting(world_t *world) {
     int iterations = 100000;
+    world_lighting_active = 1;
 
     while(array_list_length(world->lighting_update_list) > 0) {
         int length = array_list_length(world->lighting_update_list);
         iterations--;
-        if(iterations <= 0) return 1;
+        if(iterations <= 0) {
+            world_lighting_active = 0;
+            return 1;
+        }
 
         chunk_metadata_t *metadata = *(chunk_metadata_t **)array_list_get(world->lighting_update_list, length - 1);
         world->lighting_update_list = array_list_remove(world->lighting_update_list, length - 1);
@@ -1123,6 +1129,7 @@ uint8_t world_update_lighting(world_t *world) {
         free(metadata);
     }
 
+    world_lighting_active = 0;
     return 0;
 }
 
@@ -1140,14 +1147,27 @@ void world_schedule_light_update(world_t *world, uint8_t light_type, int x0, int
             if(x0 >= metadata->x && y0 >= metadata->y && z0 >= metadata->z && x1 <= metadata->max_x && y1 <= metadata->max_y && z1 <= metadata->max_z) {
                 is_merged = 1;
             }else if(x0 >= metadata->x - 1 && y0 >= metadata->y - 1 && z0 >= metadata->z - 1 && x1 <= metadata->max_x + 1 && y1 <= metadata->max_y + 1 && z1 <= metadata->max_z + 1) {
-                if(x0 < metadata->x) metadata->x = x0;
-                if(y0 < metadata->y) metadata->y = y0;
-                if(z0 < metadata->z) metadata->z = z0;
-                if(x1 > metadata->max_x) metadata->max_x = x1;
-                if(y1 > metadata->max_y) metadata->max_y = y1;
-                if(z1 > metadata->max_z) metadata->max_z = z1;
+                int old_volume = (metadata->max_x - metadata->x) * (metadata->max_y - metadata->y) * (metadata->max_z - metadata->z);
+                int new_x0 = x0 < metadata->x ? x0 : metadata->x;
+                int new_y0 = y0 < metadata->y ? y0 : metadata->y;
+                int new_z0 = z0 < metadata->z ? z0 : metadata->z;
+                int new_x1 = x1 > metadata->max_x ? x1 : metadata->max_x;
+                int new_y1 = y1 > metadata->max_y ? y1 : metadata->max_y;
+                int new_z1 = z1 > metadata->max_z ? z1 : metadata->max_z;
+                int new_volume = (new_x1 - new_x0) * (new_y1 - new_y0) * (new_z1 - new_z0);
 
-                is_merged = 1;
+                // Only grow the region if it adds at most 2 blocks of volume
+                if(new_volume - old_volume <= 2) {
+                    metadata->x = new_x0;
+                    metadata->y = new_y0;
+                    metadata->z = new_z0;
+                    metadata->max_x = new_x1;
+                    metadata->max_y = new_y1;
+                    metadata->max_z = new_z1;
+                    is_merged = 1;
+                }else {
+                    is_merged = 0;
+                }
             }else {
                 is_merged = 0;
             }
@@ -1160,7 +1180,8 @@ void world_schedule_light_update(world_t *world, uint8_t light_type, int x0, int
     *new_metadata = (chunk_metadata_t){ light_type, x0, y0, z0, x1, y1, z1 };
     world->lighting_update_list = array_list_push(world->lighting_update_list, &new_metadata);
 
-    if(array_list_length(world->lighting_update_list) > 1000000) {
+    // Drain the queue if it grows too large, but never from inside the updater
+    if(!world_lighting_active && array_list_length(world->lighting_update_list) > 1000000) {
         while(array_list_length(world->lighting_update_list) > 500000) {
             world_update_lighting(world);
         }
@@ -1346,4 +1367,4 @@ void world_destroy(world_t *world) {
     array_list_free(world->next_tick_data_list);
     array_list_free(world->loaded_tile_entity_list);
     array_list_free(world->renderer_world_list);
-}
+}

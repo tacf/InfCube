@@ -5,7 +5,7 @@ CC = gcc
 WINDOWS_CC = x86_64-w64-mingw32-gcc
 
 # Common flags
-CFLAGS = -I./include -I./res -Wall -std=c11 -fms-extensions -g -O1 -flarge-source-files -DSURVIVAL_MODE
+CFLAGS = -I./include -I./res -Wall -std=c11 -fms-extensions -g -O2 -flarge-source-files -DSURVIVAL_MODE
 LDFLAGS = -lpthread -lSDL2 -lSDL2main -lGL -lGLU -lm -lopenal -lvorbisfile -lz
 
 # Linux-specific flags
@@ -20,8 +20,12 @@ LDFLAGS = -lpthread -lSDL2 -lSDL2main -lGL -lGLU -lm -lopenal -lvorbisfile -lz
 	-lpulse -lpulse-simple \
 	-ldrm -lgbm \
 	-lpthread -lm -ldl -lrt -lasound
-LINUX_CFLAGS = $(CFLAGS) -fsanitize=address
-LINUX_LDFLAGS = $(LDFLAGS) -fsanitize=address -lGLEW
+# Use 'make ASAN=1' for the slower AddressSanitizer build
+ifeq ($(ASAN),1)
+SANFLAGS = -fsanitize=address
+endif
+LINUX_CFLAGS = $(CFLAGS) $(SANFLAGS)
+LINUX_LDFLAGS = $(LDFLAGS) $(SANFLAGS) -lGLEW
 
 # Windows-specific flags
 WINDOWS_CFLAGS = -I./include -I./res -I./lib/zlib -Wall -std=c11 -fms-extensions -Dmain=main \
