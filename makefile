@@ -6,7 +6,7 @@ WINDOWS_CC = x86_64-w64-mingw32-gcc
 
 # Common flags
 CFLAGS = -I./include -I./res -Wall -std=c11 -fms-extensions -g -O2 -flarge-source-files -DSURVIVAL_MODE
-LDFLAGS = -lpthread -lSDL2 -lSDL2main -lGL -lGLU -lm -lopenal -lvorbisfile -lz
+LDFLAGS = -lpthread -lSDL2 -lSDL2main -lGL -lGLU -lm -lopenal -lvorbisfile -lz -lfreetype
 
 # Linux-specific flags
 #LINUX_CFLAGS = $(CFLAGS)
@@ -90,7 +90,7 @@ icon:
 	x86_64-w64-mingw32-windres -i ./res/assets/app/icon.rc -O coff -o ./res/assets/app/icon.res
 
 # Find all .png and .ogg files
-ASSET_FILES := $(shell find $(ASSETSDIR) -type f \( -name "*.png" -o -name "*.ogg" \))
+ASSET_FILES := $(shell find $(ASSETSDIR) -type f \( -name "*.png" -o -name "*.ogg" -o -name "*.ttf" \))
 
 # Convert asset files into header files
 ASSETS := $(patsubst $(ASSETSDIR)/%, $(HEADERSDIR)/%.h, $(basename $(ASSET_FILES)))
@@ -115,6 +115,16 @@ $(HEADERSDIR)/%.h: $(ASSETSDIR)/%.ogg
 	sed "1s/^/static const unsigned char $${PREFIXED_NAME}ogg[] = {\n/" | \
 	sed "\$$s/,\$$/\n};/" > $@ && \
 	echo "static const unsigned int $${PREFIXED_NAME}size = $(shell stat -c%s $<);" >> $@
+
+$(HEADERSDIR)/%.h: $(ASSETSDIR)/%.ttf
+	@echo !==== CONVERTING $< TO C HEADER ====!
+	@mkdir -p $(@D)
+	@FILENAME=$(shell basename $< .ttf | tr -c 'a-zA-Z0-9' '_') && \
+	PREFIXED_NAME="asset_$${FILENAME}" && \
+	xxd -p -c 16 $< | sed 's/\(..\)/0x\1,/g' | \
+	sed "1s/^/static const unsigned char $${PREFIXED_NAME}ttf[] = {\n/" | \
+	sed "\$$s/,\$$/\n};/" > $@ && \
+	echo "static const unsigned int $${PREFIXED_NAME}ttf_size = $(shell stat -c%s $<);" >> $@
 
 assets: $(ASSETS)
 	@echo !==== ALL ASSETS CONVERTED ====!

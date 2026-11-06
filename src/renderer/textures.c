@@ -3,7 +3,6 @@
 #include <util/array_list.h>
 
 #include <assets/clouds.h>
-#include <assets/default.h>
 #include <assets/dirt.h>
 #include <assets/particles.h>
 #include <assets/rain.h>
@@ -70,11 +69,6 @@ int textures_load(textures_t *textures, const char *resource) {
         p = (uint8_t *)asset_clouds_rgba;
         width = asset_clouds_width;
         height = asset_clouds_height;
-    }
-    if(strcmp(resource, "default.png") == 0) {
-        p = (uint8_t *)asset_default_rgba;
-        width = asset_default_width;
-        height = asset_default_height;
     }
     if(strcmp(resource, "dirt.png") == 0) {
         p = (uint8_t *)asset_dirt_rgba;

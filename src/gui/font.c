@@ -3,60 +3,145 @@
 #include <renderer/tesselator.h>
 
 #include <util/string.h>
-#include <assets/default.h>
+#include <assets/fonts/default.h>
+
+#include <ft2build.h>
+#include FT_FREETYPE_H
 
 #include <stdio.h>
 #include <stdint.h>
+#include <stdlib.h>
 
 #include <SDL2/SDL.h>
 #include <GL/glew.h>
 #include <SDL2/SDL_opengl.h>
 
-font_t font_create(game_settings_t *settings, char *name, textures_t *textures) {
+// Texels rasterized per game unit
+#define FONT_SCALE 4
+// Target metrics of the game text grid in game units, taken from the old 8x8 bitmap font
+#define FONT_CAP_UNITS 7
+#define FONT_BASELINE_UNITS 7
+
+typedef struct {
+    uint8_t *pixels;
+    int size;     // atlas width and height in texels
+    int cell_w;   // glyph cell size in texels
+    int cell_h;
+    int pad_left; // texels between cell edge and glyph origin
+    int pad_top;  // texels between cell top and the line top
+} font_atlas_t;
+
+static int font_next_pow2(int v) {
+    int p = 1;
+    while(p < v) p <<= 1;
+    return p;
+}
+
+// Rasterizes the embedded TTF into a 16x16 glyph atlas, with all sizes derived from the font itself
+static font_atlas_t font_build_atlas(int *width_map) {
+    font_atlas_t atlas = { 0 };
+    FT_Library lib;
+    FT_Face face;
+    if(FT_Init_FreeType(&lib)) return atlas;
+    if(FT_New_Memory_Face(lib, asset_default_ttf, asset_default_ttf_size, 0, &face)) {
+        FT_Done_FreeType(lib);
+        return atlas;
+    }
+
+    // Scale the em so the font's cap height matches the game grid
+    FT_Load_Char(face, 'H', FT_LOAD_NO_SCALE);
+    long cap_units = face->glyph->metrics.height;
+    long em_26_6 = (long)FONT_CAP_UNITS * FONT_SCALE * face->units_per_EM * 64 / cap_units;
+    FT_Set_Char_Size(face, 0, em_26_6, 72, 72);
+
+    int baseline = FONT_BASELINE_UNITS * FONT_SCALE;
+
+    // Pass 1: measure the extents of every glyph to size the cells
+    int max_top = 0, max_below = 0, max_right = 0, min_left = 0;
+    for(int i = 0; i < 256; i++) {
+        width_map[i] = 0;
+        if(i < 32 || (i >= 127 && i < 160)) continue;
+        if(FT_Load_Char(face, i, FT_LOAD_RENDER)) continue;
+
+        FT_GlyphSlot g = face->glyph;
+        int advance = (g->advance.x + 32) >> 6;
+        if(g->bitmap_top > max_top) max_top = g->bitmap_top;
+        if((int)g->bitmap.rows - g->bitmap_top > max_below) max_below = g->bitmap.rows - g->bitmap_top;
+        if(g->bitmap_left + (int)g->bitmap.width > max_right) max_right = g->bitmap_left + g->bitmap.width;
+        if(g->bitmap_left < min_left) min_left = g->bitmap_left;
+        if(advance > max_right) max_right = advance;
+
+        // Advance in game units
+        width_map[i] = (advance + FONT_SCALE / 2) / FONT_SCALE;
+    }
+    width_map[32] = 4;
+
+    atlas.pad_left = -min_left;
+    atlas.pad_top = max_top > baseline ? max_top - baseline : 0;
+    atlas.cell_w = atlas.pad_left + max_right;
+    atlas.cell_h = atlas.pad_top + baseline + max_below;
+    int largest = atlas.cell_w > atlas.cell_h ? atlas.cell_w : atlas.cell_h;
+    atlas.size = font_next_pow2(largest * 16);
+    atlas.pixels = calloc(atlas.size * atlas.size, 4);
+
+    // Pass 2: draw glyph coverage into the atlas as white with alpha
+    for(int i = 0; i < 256; i++) {
+        if(width_map[i] == 0 || FT_Load_Char(face, i, FT_LOAD_RENDER)) continue;
+
+        FT_GlyphSlot g = face->glyph;
+        int ox = (i % 16) * atlas.cell_w + atlas.pad_left;
+        int oy = (i / 16) * atlas.cell_h + atlas.pad_top + baseline - g->bitmap_top;
+        for(int y = 0; y < (int)g->bitmap.rows; y++) {
+            for(int x = 0; x < (int)g->bitmap.width; x++) {
+                uint8_t *dst = atlas.pixels + ((oy + y) * atlas.size + ox + g->bitmap_left + x) * 4;
+                dst[0] = dst[1] = dst[2] = 255;
+                dst[3] = g->bitmap.buffer[y * g->bitmap.pitch + x];
+            }
+        }
+    }
+
+    FT_Done_Face(face);
+    FT_Done_FreeType(lib);
+    return atlas;
+}
+
+font_t font_create(game_settings_t *settings) {
     font_t font;
     font = (font_t){ 0 };
 
     font.settings = settings;
-    font.texture_name = name;
 
-    int width = 0;
-    int *pixels = (int *)0;
-    if(strcmp(name, "default.png") == 0) {
-        pixels = (int *)asset_default_rgba;
-        width = asset_default_width;
-    }
-    if(pixels == NULL) printf("Failed to load image %s.\n", name);
+    font_atlas_t atlas = font_build_atlas(font.width_map);
+    if(atlas.pixels == NULL) printf("Failed to load embedded font.\n");
 
-    for(int i = 0; i < 128; i++) {
-        int xt = i % 16;
-        int yt = i / 16;
-        int x = 0;
-        for(uint8_t empty_column = 0; x < 8 && !empty_column; x++) {
-            int xPixel = xt * 8 + x;
-            empty_column = 1;
-            for(int y = 0; y < 8 && empty_column; y++) {
-                int yPixel = (yt * 8 + y) * width;
-                int pixel = pixels[xPixel + yPixel] & 0xff;
-                if(pixel > 128) empty_column = 0;
-            }
-        }
+    glGenTextures(1, (GLuint *)&font.texture);
+    glBindTexture(GL_TEXTURE_2D, font.texture);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, atlas.size, atlas.size, 0, GL_RGBA, GL_UNSIGNED_BYTE, atlas.pixels);
+    free(atlas.pixels);
 
-        if(i == 32) x = 4;
-        font.width_map[i] = x;
-    }
-    font.texture = textures_load(textures, name);
     font.render_list = glGenLists(288);
 
     for(int i = 0; i < 256; i++) {
         glNewList(font.render_list + i, GL_COMPILE);
-        int u = i % 16 << 3;
-        int v = i / 16 << 3;
-        float s = 7.99;
+        float u = (i % 16) * atlas.cell_w;
+        float v = (i / 16) * atlas.cell_h;
+        float x0 = -(float)atlas.pad_left / FONT_SCALE;
+        float y0 = -(float)atlas.pad_top / FONT_SCALE;
+        float x1 = x0 + (float)atlas.cell_w / FONT_SCALE;
+        float y1 = y0 + (float)atlas.cell_h / FONT_SCALE;
+        float u0 = u / atlas.size;
+        float v0 = v / atlas.size;
+        float u1 = (u + atlas.cell_w) / atlas.size;
+        float v1 = (v + atlas.cell_h) / atlas.size;
         tesselator_begin_quads();
-        tesselator_vertex_uv(0.0, s, 0.0, u / 128.0, (v + s) / 128.0);
-        tesselator_vertex_uv(s, s, 0.0, (u + s) / 128.0, (v + s) / 128.0);
-        tesselator_vertex_uv(s, 0.0, 0.0, (u + s) / 128.0, v / 128.0);
-        tesselator_vertex_uv(0.0, 0.0, 0.0, u / 128.0, v / 128.0);
+        tesselator_vertex_uv(x0, y1, 0.0, u0, v1);
+        tesselator_vertex_uv(x1, y1, 0.0, u1, v1);
+        tesselator_vertex_uv(x1, y0, 0.0, u1, v0);
+        tesselator_vertex_uv(x0, y0, 0.0, u0, v0);
         tesselator_end();
         glTranslatef(font.width_map[i], 0.0, 0.0);
         glEndList();

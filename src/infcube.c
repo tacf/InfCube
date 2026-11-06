@@ -164,7 +164,7 @@ void infcube_create(infcube_t *infcube, uint16_t width, uint16_t height, uint8_t
     *gears1_texture = texture_gears_create(1);
     textures_register_animation(&infcube->textures, gears1_texture);
 
-    infcube->font = font_create(&infcube->settings, "default.png", &infcube->textures);
+    infcube->font = font_create(&infcube->settings);
 
     glViewport(0, 0, infcube->frame_width, infcube->frame_height);
 

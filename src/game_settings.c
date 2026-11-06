@@ -91,7 +91,6 @@ void game_settings_toggle_setting(game_settings_t *settings, int setting) {
             settings->anaglyph = !settings->anaglyph;
             infcube_t *infcube = settings->infcube;
             textures_reload(&infcube->textures);
-            settings->infcube->font.texture = textures_load(&settings->infcube->textures, settings->infcube->font.texture_name);
             break;
         case 7:
             settings->limit_framerate = !settings->limit_framerate;
