@@ -1227,7 +1227,7 @@ static void light_process_region(world_t *world, chunk_metadata_t *region) {
 }
 
 uint8_t world_update_lighting(world_t *world) {
-    int regions_left = 20000;
+    int regions_left = 256;
     light_last_valid = 0;
 
     while(array_list_length(world->lighting_update_list) > 0) {

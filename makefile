@@ -54,6 +54,11 @@ SRC = $(call rwildcard,$(SRCDIR),*.c)
 LINUX_OBJS = $(patsubst $(SRCDIR)/%.c, $(OBJDIR)/%.o, $(SRC))
 WINDOWS_OBJS = $(patsubst $(SRCDIR)/%.c, $(OBJDIR)/%.win.o, $(SRC)) $(OBJDIR)/glew.win.o
 
+.DEFAULT_GOAL := infcube
+
+# Rebuild objects when headers change
+-include $(LINUX_OBJS:.o=.d) $(WINDOWS_OBJS:.o=.d)
+
 # Linux build
 infcube: $(LINUX_OBJS)
 	@echo !==== LINKING FOR LINUX ====!
@@ -62,7 +67,7 @@ infcube: $(LINUX_OBJS)
 $(OBJDIR)/%.o: $(SRCDIR)/%.c
 	@echo !==== COMPILING FOR LINUX $< ====!
 	@mkdir -p $(@D)
-	$(CC) $(LINUX_CFLAGS) -c $< -o $@
+	$(CC) $(LINUX_CFLAGS) -MMD -MP -c $< -o $@
 
 # Windows build
 windows: $(WINDOWS_OBJS)
@@ -72,7 +77,7 @@ windows: $(WINDOWS_OBJS)
 $(OBJDIR)/%.win.o: $(SRCDIR)/%.c
 	@echo !==== COMPILING FOR WINDOWS $< ====!
 	@mkdir -p $(@D)
-	$(WINDOWS_CC) $(WINDOWS_CFLAGS) -c $< -o $@
+	$(WINDOWS_CC) $(WINDOWS_CFLAGS) -MMD -MP -c $< -o $@
 
 $(OBJDIR)/glew.win.o: $(LIBSRCDIR)/glew.c
 	@echo !==== COMPILING GLEW FOR WINDOWS $< ====!

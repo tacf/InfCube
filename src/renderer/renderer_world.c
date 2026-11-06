@@ -605,6 +605,9 @@ void renderer_world_update_renderers(renderer_world_t *renderer, entity_t *playe
     if(len == 0) return;
     qsort(array_list_get(renderer->renderer_chunks_to_update, 0), len, sizeof(renderer_chunk_t *), renderer_chunk_player_compare);
 
+    // Rebuild only as many chunk meshes as fit in the frame budget
+    uint64_t start = SDL_GetPerformanceCounter();
+    double frequency = (double)SDL_GetPerformanceFrequency();
     int processed = 0;
     while(len > 0) {
         int idx = (int)len - 1;
@@ -619,6 +622,8 @@ void renderer_world_update_renderers(renderer_world_t *renderer, entity_t *playe
         chunk_renderer->needs_update = 0;
         processed++;
         len--;
+
+        if((SDL_GetPerformanceCounter() - start) * 1000.0 / frequency > 6.0) return;
     }
 }
  

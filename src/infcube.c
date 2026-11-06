@@ -701,7 +701,11 @@ void infcube_run(infcube_t *infcube) {
                 }
                 glEnable(GL_TEXTURE);
                 if(infcube->world != NULL) {
-                    while(world_update_lighting(infcube->world));
+                    // Spread lighting over several frames to avoid stutter
+                    uint64_t light_start = SDL_GetPerformanceCounter();
+                    while(world_update_lighting(infcube->world)) {
+                        if((SDL_GetPerformanceCounter() - light_start) * 1000.0 / SDL_GetPerformanceFrequency() > 4.0) break;
+                    }
                 }
                 gamemode_set_partial_time(&infcube->gamemode, delta);
                 renderer_camera_update_mouse(&infcube->renderer, delta);
@@ -767,6 +771,7 @@ void infcube_run(infcube_t *infcube) {
         while(time_millis() >= start + 1000) {
             char *chunks = string_create_from_int(chunk_updates);
             string_concat(&chunks, " chunk updates");
+            infcube->fps = frame;
             string_set_from_int(&infcube->debug, frame);
             string_concat(&infcube->debug, " fps, ");
             string_concat(&infcube->debug, chunks);

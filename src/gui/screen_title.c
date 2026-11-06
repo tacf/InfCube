@@ -73,8 +73,6 @@ void screen_title_render(screen_t *screen, int mouse_x, int mouse_y, float parti
     glScalef(splash_scale, splash_scale, splash_scale);
     gui_draw_centered_string(screen->font, splashes[screen->id], 0, -8, 0xFFFF00);
     glPopMatrix();
-    char *copyright = "Copyright Mojang Specifications. Do not distribute.";
-    gui_draw_string(screen->font, copyright, screen->width - font_get_width(screen->font, copyright) - 2, screen->height - 10, 0xFFFFFF);
 
     uint64_t max_mem = stats_get_max_memory();
     uint64_t total_mem = stats_get_total_memory();
