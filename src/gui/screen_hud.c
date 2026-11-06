@@ -170,8 +170,8 @@ void screen_hud_render(screen_hud_t *hud, float mx, float my, float partial_tick
         memset(stats_string, 0, sizeof(stats_string));
         snprintf(stats_string, sizeof(stats_string),
             "Allocated memory: %lld%% (%lld MB)",
-            total_mem * 100L / max_mem,
-            total_mem / 1024L / 1024L
+            total_mem * 100LL / max_mem,
+            total_mem / 1024LL / 1024LL
         );
         font_render(&hud->infcube->font, stats_string, hud->width - font_get_width(&hud->infcube->font, stats_string) - 2, 22, 0xffffffff);
     }else {

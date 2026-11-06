@@ -88,8 +88,8 @@ void screen_title_render(screen_t *screen, int mouse_x, int mouse_y, float parti
     memset(string, 0, sizeof(string));
     snprintf(string, sizeof(string),
         "Allocated memory: %lld%% (%lld MB)",
-        total_mem * 100L / max_mem,
-        total_mem / 1024L / 1024L
+        total_mem * 100LL / max_mem,
+        total_mem / 1024LL / 1024LL
     );
     gui_draw_string(screen->font, string, screen->width - font_get_width(screen->font, string) - 2, 12, 0x808080);
 
