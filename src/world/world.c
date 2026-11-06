@@ -1034,103 +1034,230 @@ uint8_t world_is_solid(world_t *world, int x, int y, int z) {
     return block_list[block_id].is_opaque;
 }
 
-static int world_lighting_active = 0;
+typedef struct {
+    int x;
+    int y;
+    int z;
+    uint8_t value;
+} light_node_t;
 
-uint8_t world_update_lighting(world_t *world) {
-    int iterations = 100000;
-    world_lighting_active = 1;
+typedef struct {
+    light_node_t *nodes;
+    size_t count;
+    size_t capacity;
+    size_t head;
+} light_queue_t;
 
-    while(array_list_length(world->lighting_update_list) > 0) {
-        int length = array_list_length(world->lighting_update_list);
-        iterations--;
-        if(iterations <= 0) {
-            world_lighting_active = 0;
-            return 1;
+static light_queue_t light_add_queue;
+static light_queue_t light_remove_queue;
+
+static const int light_directions[6][3] = {
+    { -1, 0, 0 }, { 1, 0, 0 }, { 0, -1, 0 }, { 0, 1, 0 }, { 0, 0, -1 }, { 0, 0, 1 }
+};
+
+static void light_queue_push(light_queue_t *queue, int x, int y, int z, uint8_t value) {
+    if(queue->count == queue->capacity) {
+        size_t capacity = queue->capacity == 0 ? 4096 : queue->capacity * 2;
+        light_node_t *nodes = realloc(queue->nodes, capacity * sizeof(light_node_t));
+        if(nodes == NULL) {
+            fprintf(stderr, "Out of memory in light queue\n");
+            exit(1);
         }
+        queue->nodes = nodes;
+        queue->capacity = capacity;
+    }
+    queue->nodes[queue->count++] = (light_node_t){ x, y, z, value };
+}
 
-        chunk_metadata_t *metadata = *(chunk_metadata_t **)array_list_get(world->lighting_update_list, length - 1);
-        world->lighting_update_list = array_list_remove(world->lighting_update_list, length - 1);
+static uint8_t light_queue_pop(light_queue_t *queue, light_node_t *node) {
+    if(queue->head >= queue->count) {
+        queue->head = 0;
+        queue->count = 0;
+        return 0;
+    }
+    *node = queue->nodes[queue->head++];
+    return 1;
+}
 
-        for(int x = metadata->x; x <= metadata->max_x; x++) {
-            for(int z = metadata->z; z <= metadata->max_z; z++) {
-                if(world_block_exists(world, x, 0, z)) {
-                    for(int y = metadata->y; y <= metadata->max_y; y++) {
-                        if(y >= 0 && y < CHUNK_SIZE_HEIGHT) {
-                            int current_light_value = world_get_saved_light_value(world, metadata->light_type, x, y, z);
-                            uint8_t block_id = world_get_block(world, x, y, z);
-                            uint8_t opacity = block_list[block_id].light_opacity;
-                            if(opacity == 0) opacity = 1;
+// Returns the loaded chunk holding the position or NULL
+static chunk_t *light_get_chunk(world_t *world, int x, int y, int z) {
+    if(x < -WORLD_MAX_SIZE || x >= WORLD_MAX_SIZE
+        || y < 0 || y >= CHUNK_SIZE_HEIGHT
+        || z < -WORLD_MAX_SIZE || z > WORLD_MAX_SIZE) {
+        return NULL;
+    }
+    if(!world_chunk_exists(world, x >> 4, z >> 4)) return NULL;
+    return world_get_chunk(world, x >> 4, z >> 4);
+}
 
-                            int new_light_value = 0;
-                            if(metadata->light_type == LIGHT_TYPE_SKY) {
-                                if(world_can_existing_block_see_sky(world, x, y, z)) {
-                                    new_light_value = 15;
-                                }
-                            }else if(metadata->light_type == LIGHT_TYPE_BLOCK) {
-                                new_light_value = block_list[block_id].light_value;
-                            }
+static int light_get(chunk_t *chunk, uint8_t light_type, int x, int y, int z) {
+    return chunk_get_saved_light_value(chunk, light_type, x & (CHUNK_SIZE_WIDTH - 1), y, z & (CHUNK_SIZE_WIDTH - 1));
+}
 
-                            int max_light = 0;
+// Section range last sent to the renderers, repeats are no-ops so skip them
+static int light_last_sections[6];
+static uint8_t light_last_valid = 0;
 
-                            if(opacity >= 15 && new_light_value == 0) {
-                                max_light = 0;
-                            }else {
-                                int light_west = world_get_saved_light_value(world, metadata->light_type, x - 1, y, z);
-                                int light_east = world_get_saved_light_value(world, metadata->light_type, x + 1, y, z);
-                                int light_north = world_get_saved_light_value(world, metadata->light_type, x, y, z - 1);
-                                int light_south = world_get_saved_light_value(world, metadata->light_type, x, y, z + 1);
-                                int light_up = world_get_saved_light_value(world, metadata->light_type, x, y + 1, z);
-                                int light_down = world_get_saved_light_value(world, metadata->light_type, x, y - 1, z);
-                                
-                                max_light = light_west;
-                                if(light_east > max_light) max_light = light_east;
-                                if(light_north > max_light) max_light = light_north;
-                                if(light_south > max_light) max_light = light_south;
-                                if(light_up > max_light) max_light = light_up;
-                                if(light_down > max_light) max_light = light_down;
+static void light_set(world_t *world, chunk_t *chunk, uint8_t light_type, int x, int y, int z, int value) {
+    chunk_set_light_value(chunk, light_type, x & (CHUNK_SIZE_WIDTH - 1), y, z & (CHUNK_SIZE_WIDTH - 1), value);
 
-                                max_light -= opacity;
-                                if(max_light < 0) max_light = 0;
+    int sections[6] = { (x - 1) >> 4, (y - 1) >> 4, (z - 1) >> 4, (x + 1) >> 4, (y + 1) >> 4, (z + 1) >> 4 };
+    if(light_last_valid && memcmp(sections, light_last_sections, sizeof(sections)) == 0) return;
+    memcpy(light_last_sections, sections, sizeof(sections));
+    light_last_valid = 1;
 
-                                if(new_light_value > max_light) {
-                                    max_light = new_light_value;
-                                }
-                            }
+    for(int i = 0; i < array_list_length(world->renderer_world_list); i++) {
+        renderer_world_t *renderer = *(renderer_world_t **)array_list_get(world->renderer_world_list, i);
+        renderer_world_update_block(renderer, x, y, z);
+    }
+}
 
-                            if(current_light_value != max_light) {
-                                if(x >= -WORLD_MAX_SIZE && x < WORLD_MAX_SIZE
-                                && y >= 0 && y < CHUNK_SIZE_HEIGHT
-                                && z >= -WORLD_MAX_SIZE && z <= WORLD_MAX_SIZE
-                                && world_chunk_exists(world, x >> 4, z >> 4)) {
-                                    chunk_t *chunk = world_get_chunk(world, x >> 4, z >> 4);
-                                    chunk_set_light_value(chunk, metadata->light_type, x & (CHUNK_SIZE_WIDTH - 1), y, z & (CHUNK_SIZE_WIDTH - 1), max_light);
+// Light a position produces by itself
+static int light_emission(chunk_t *chunk, uint8_t light_type, int x, int y, int z) {
+    int lx = x & (CHUNK_SIZE_WIDTH - 1);
+    int lz = z & (CHUNK_SIZE_WIDTH - 1);
+    if(light_type == LIGHT_TYPE_SKY) {
+        return chunk_can_block_see_sky(chunk, lx, y, lz) ? 15 : 0;
+    }
+    return block_list[chunk_get_block_id(chunk, lx, y, lz)].light_value;
+}
 
-                                    for(int i = 0; i < array_list_length(world->renderer_world_list); i++) {
-                                        renderer_world_t *renderer = *(renderer_world_t **)array_list_get(world->renderer_world_list, i);
-                                        renderer_world_update_block(renderer, x, y, z);
-                                    }
-                                }
+static int light_opacity(chunk_t *chunk, int x, int y, int z) {
+    int opacity = block_list[chunk_get_block_id(chunk, x & (CHUNK_SIZE_WIDTH - 1), y, z & (CHUNK_SIZE_WIDTH - 1))].light_opacity;
+    return opacity == 0 ? 1 : opacity;
+}
 
-                                max_light--;
-                                if(max_light < 0) max_light = 0;
-                                
-                                world_light_changed(world, metadata->light_type, x - 1, y, z, max_light);
-                                world_light_changed(world, metadata->light_type, x, y - 1, z, max_light);
-                                world_light_changed(world, metadata->light_type, x, y, z - 1, max_light);
-                                if(x + 1 >= metadata->max_x) world_light_changed(world, metadata->light_type, x + 1, y, z, max_light);
-                                if(y + 1 >= metadata->max_y) world_light_changed(world, metadata->light_type, x, y + 1, z, max_light);
-                                if(z + 1 >= metadata->max_z) world_light_changed(world, metadata->light_type, x, y, z + 1, max_light);
-                            }
-                        }
+// Two pass flood fill, first removes light that lost its source then spreads light from every source
+static void light_process_region(world_t *world, chunk_metadata_t *region) {
+    uint8_t sync_only = (region->light_type & LIGHT_SYNC_FLAG) != 0;
+    uint8_t light_type = region->light_type & ~LIGHT_SYNC_FLAG;
+    light_node_t node;
+
+    // Seed from the dirty region
+    for(int x = region->x; x <= region->max_x; x++) {
+        for(int z = region->z; z <= region->max_z; z++) {
+            for(int y = region->y; y <= region->max_y; y++) {
+                chunk_t *chunk = light_get_chunk(world, x, y, z);
+                if(chunk == NULL) continue;
+
+                // Border sync only spreads the light already stored
+                if(sync_only) {
+                    if(light_get(chunk, light_type, x, y, z) > 0) {
+                        light_queue_push(&light_add_queue, x, y, z, 0);
+                    }
+                    continue;
+                }
+
+                int old_value = light_get(chunk, light_type, x, y, z);
+                int emission = light_emission(chunk, light_type, x, y, z);
+                // Column relighting overwrites sky values in place, so assume the worst for shadowed cells
+                int removed_value = old_value;
+                if(light_type == LIGHT_TYPE_SKY && emission < 15) removed_value = 15;
+                if(removed_value > emission) {
+                    light_queue_push(&light_remove_queue, x, y, z, removed_value);
+                }
+                if(old_value != emission) {
+                    light_set(world, chunk, light_type, x, y, z, emission);
+                }
+                if(emission > 0) {
+                    light_queue_push(&light_add_queue, x, y, z, emission);
+                }
+
+                // Lit neighbors may flow into this position
+                for(int d = 0; d < 6; d++) {
+                    int nx = x + light_directions[d][0];
+                    int ny = y + light_directions[d][1];
+                    int nz = z + light_directions[d][2];
+                    chunk_t *neighbor = light_get_chunk(world, nx, ny, nz);
+                    if(neighbor != NULL && light_get(neighbor, light_type, nx, ny, nz) > 0) {
+                        light_queue_push(&light_add_queue, nx, ny, nz, 0);
                     }
                 }
             }
         }
-        free(metadata);
     }
 
-    world_lighting_active = 0;
+    // Remove light that is no longer supported
+    while(light_queue_pop(&light_remove_queue, &node)) {
+        for(int d = 0; d < 6; d++) {
+            int nx = node.x + light_directions[d][0];
+            int ny = node.y + light_directions[d][1];
+            int nz = node.z + light_directions[d][2];
+            chunk_t *neighbor = light_get_chunk(world, nx, ny, nz);
+            if(neighbor == NULL) continue;
+
+            int neighbor_value = light_get(neighbor, light_type, nx, ny, nz);
+            if(neighbor_value == 0) continue;
+
+            int emission = light_emission(neighbor, light_type, nx, ny, nz);
+            if(neighbor_value < node.value && emission < neighbor_value) {
+                light_set(world, neighbor, light_type, nx, ny, nz, emission);
+                light_queue_push(&light_remove_queue, nx, ny, nz, neighbor_value);
+                if(emission > 0) {
+                    light_queue_push(&light_add_queue, nx, ny, nz, emission);
+                }
+            }else {
+                light_queue_push(&light_add_queue, nx, ny, nz, neighbor_value);
+            }
+        }
+    }
+
+    // Spread light from all sources
+    while(light_queue_pop(&light_add_queue, &node)) {
+        chunk_t *chunk = light_get_chunk(world, node.x, node.y, node.z);
+        if(chunk == NULL) continue;
+
+        int value = light_get(chunk, light_type, node.x, node.y, node.z);
+        if(value <= 1) continue;
+
+        for(int d = 0; d < 6; d++) {
+            int nx = node.x + light_directions[d][0];
+            int ny = node.y + light_directions[d][1];
+            int nz = node.z + light_directions[d][2];
+            chunk_t *neighbor = light_get_chunk(world, nx, ny, nz);
+            if(neighbor == NULL) continue;
+
+            int new_value = value - light_opacity(neighbor, nx, ny, nz);
+            if(new_value > light_get(neighbor, light_type, nx, ny, nz)) {
+                light_set(world, neighbor, light_type, nx, ny, nz, new_value);
+                light_queue_push(&light_add_queue, nx, ny, nz, new_value);
+            }
+        }
+    }
+}
+
+uint8_t world_update_lighting(world_t *world) {
+    int regions_left = 20000;
+    light_last_valid = 0;
+
+    while(array_list_length(world->lighting_update_list) > 0) {
+        if(regions_left-- <= 0) return 1;
+
+        int length = array_list_length(world->lighting_update_list);
+        chunk_metadata_t *region = *(chunk_metadata_t **)array_list_get(world->lighting_update_list, length - 1);
+        world->lighting_update_list = array_list_remove(world->lighting_update_list, length - 1);
+
+        light_process_region(world, region);
+        free(region);
+    }
+
     return 0;
+}
+
+// Lets light flow across the borders of a newly loaded chunk and its loaded neighbors
+void world_schedule_chunk_border_light(world_t *world, int chunk_x, int chunk_z) {
+    int x0 = chunk_x * CHUNK_SIZE_WIDTH;
+    int z0 = chunk_z * CHUNK_SIZE_WIDTH;
+    int x1 = x0 + CHUNK_SIZE_WIDTH - 1;
+    int z1 = z0 + CHUNK_SIZE_WIDTH - 1;
+    uint8_t types[2] = { LIGHT_TYPE_SKY | LIGHT_SYNC_FLAG, LIGHT_TYPE_BLOCK | LIGHT_SYNC_FLAG };
+
+    for(int i = 0; i < 2; i++) {
+        world_schedule_light_update(world, types[i], x0 - 1, 0, z0, x0, CHUNK_SIZE_HEIGHT - 1, z1);
+        world_schedule_light_update(world, types[i], x1, 0, z0, x1 + 1, CHUNK_SIZE_HEIGHT - 1, z1);
+        world_schedule_light_update(world, types[i], x0, 0, z0 - 1, x1, CHUNK_SIZE_HEIGHT - 1, z0);
+        world_schedule_light_update(world, types[i], x0, 0, z1, x1, CHUNK_SIZE_HEIGHT - 1, z1 + 1);
+    }
 }
 
 void world_schedule_light_update(world_t *world, uint8_t light_type, int x0, int y0, int z0, int x1, int y1, int z1) {
@@ -1139,53 +1266,19 @@ void world_schedule_light_update(world_t *world, uint8_t light_type, int x0, int
 
     if(max_checks > update_count) max_checks = update_count;
 
+    // Skip if a recent update already covers the area
     for(int i = 0; i < max_checks; i++) {
-        chunk_metadata_t *metadata = *(chunk_metadata_t **)array_list_get(world->lighting_update_list, array_list_length(world->lighting_update_list) - i - 1);
-
-        if(metadata->light_type == light_type) {
-            uint8_t is_merged;
-            if(x0 >= metadata->x && y0 >= metadata->y && z0 >= metadata->z && x1 <= metadata->max_x && y1 <= metadata->max_y && z1 <= metadata->max_z) {
-                is_merged = 1;
-            }else if(x0 >= metadata->x - 1 && y0 >= metadata->y - 1 && z0 >= metadata->z - 1 && x1 <= metadata->max_x + 1 && y1 <= metadata->max_y + 1 && z1 <= metadata->max_z + 1) {
-                int old_volume = (metadata->max_x - metadata->x) * (metadata->max_y - metadata->y) * (metadata->max_z - metadata->z);
-                int new_x0 = x0 < metadata->x ? x0 : metadata->x;
-                int new_y0 = y0 < metadata->y ? y0 : metadata->y;
-                int new_z0 = z0 < metadata->z ? z0 : metadata->z;
-                int new_x1 = x1 > metadata->max_x ? x1 : metadata->max_x;
-                int new_y1 = y1 > metadata->max_y ? y1 : metadata->max_y;
-                int new_z1 = z1 > metadata->max_z ? z1 : metadata->max_z;
-                int new_volume = (new_x1 - new_x0) * (new_y1 - new_y0) * (new_z1 - new_z0);
-
-                // Only grow the region if it adds at most 2 blocks of volume
-                if(new_volume - old_volume <= 2) {
-                    metadata->x = new_x0;
-                    metadata->y = new_y0;
-                    metadata->z = new_z0;
-                    metadata->max_x = new_x1;
-                    metadata->max_y = new_y1;
-                    metadata->max_z = new_z1;
-                    is_merged = 1;
-                }else {
-                    is_merged = 0;
-                }
-            }else {
-                is_merged = 0;
-            }
-
-            if(is_merged) return;
+        chunk_metadata_t *region = *(chunk_metadata_t **)array_list_get(world->lighting_update_list, update_count - i - 1);
+        if(region->light_type == light_type
+            && x0 >= region->x && y0 >= region->y && z0 >= region->z
+            && x1 <= region->max_x && y1 <= region->max_y && z1 <= region->max_z) {
+            return;
         }
     }
 
-    chunk_metadata_t *new_metadata = malloc(sizeof(chunk_metadata_t));
-    *new_metadata = (chunk_metadata_t){ light_type, x0, y0, z0, x1, y1, z1 };
-    world->lighting_update_list = array_list_push(world->lighting_update_list, &new_metadata);
-
-    // Drain the queue if it grows too large, but never from inside the updater
-    if(!world_lighting_active && array_list_length(world->lighting_update_list) > 1000000) {
-        while(array_list_length(world->lighting_update_list) > 500000) {
-            world_update_lighting(world);
-        }
-    }
+    chunk_metadata_t *new_region = malloc(sizeof(chunk_metadata_t));
+    *new_region = (chunk_metadata_t){ light_type, x0, y0, z0, x1, y1, z1 };
+    world->lighting_update_list = array_list_push(world->lighting_update_list, &new_region);
 }
 
 void world_restart_time_of_day(world_t *world) {
@@ -1367,4 +1460,4 @@ void world_destroy(world_t *world) {
     array_list_free(world->next_tick_data_list);
     array_list_free(world->loaded_tile_entity_list);
     array_list_free(world->renderer_world_list);
-}
+}

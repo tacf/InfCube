@@ -25,7 +25,8 @@ struct chunk_s;
 
 enum {
     LIGHT_TYPE_SKY = 15,
-    LIGHT_TYPE_BLOCK = 0
+    LIGHT_TYPE_BLOCK = 0,
+    LIGHT_SYNC_FLAG = 0x80
 };
 
 typedef struct chunk_metadata_s {
@@ -130,6 +131,7 @@ uint8_t world_is_solid(world_t *world, int x, int y, int z);
 // world_save_indirectly
 uint8_t world_update_lighting(world_t *world);
 void world_schedule_light_update(world_t *world, uint8_t light_type, int x0, int y0, int z0, int x1, int y1, int z1);
+void world_schedule_chunk_border_light(world_t *world, int chunk_x, int chunk_z);
 void world_restart_time_of_day(world_t *world);
 void world_visual_update(world_t *world, int x, int y, int z);
 entity_t **world_get_entities_excluding(world_t *world, entity_t *entity, AABB_t box);

@@ -124,8 +124,8 @@ void chunk_check_skylight_neighbor_height(chunk_t *chunk, int x, int z, int heig
 }
 
 void chunk_relight_block(chunk_t *chunk, int x, int y, int z) {
-    int8_t height = chunk->height_map[z * CHUNK_SIZE_WIDTH | x] & 0xFF;
-    int8_t height_index = height;
+    int height = chunk->height_map[z * CHUNK_SIZE_WIDTH | x] & 0xFF;
+    int height_index = height;
     if(y > height) height_index = y;
 
     while(height_index > 0 && block_list[chunk_get_block_id(chunk, x, height_index - 1, z)].light_opacity == 0) {

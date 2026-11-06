@@ -61,6 +61,7 @@ chunk_t *chunk_provider_load_provide_chunk(chunk_provider_t *chunk_provider, int
     chunk_provider->chunks[index] = chunk;
     if(chunk_provider->chunks[index] != NULL) {
         chunk_load_entities(chunk_provider->chunks[index]);
+        world_schedule_chunk_border_light(chunk_provider->chunks[index]->world, x, z);
     }
 
     if(!chunk_provider->chunks[index]->is_terrain_populated && chunk_provider_load_chunk_exists(chunk_provider, x + 1, z + 1) 
