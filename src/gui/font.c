@@ -76,10 +76,11 @@ static font_atlas_t font_build_atlas(int *width_map) {
     }
     width_map[32] = 4;
 
-    atlas.pad_left = -min_left;
-    atlas.pad_top = max_top > baseline ? max_top - baseline : 0;
-    atlas.cell_w = atlas.pad_left + max_right;
-    atlas.cell_h = atlas.pad_top + baseline + max_below;
+    // One texel of empty margin per side stops linear filtering bleeding in neighbour glyphs
+    atlas.pad_left = -min_left + 1;
+    atlas.pad_top = (max_top > baseline ? max_top - baseline : 0) + 1;
+    atlas.cell_w = atlas.pad_left + max_right + 1;
+    atlas.cell_h = atlas.pad_top + baseline + max_below + 1;
     int largest = atlas.cell_w > atlas.cell_h ? atlas.cell_w : atlas.cell_h;
     atlas.size = font_next_pow2(largest * 16);
     atlas.pixels = calloc(atlas.size * atlas.size, 4);
