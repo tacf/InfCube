@@ -828,3 +828,21 @@ void renderer_block_render_in_inventory(renderer_block_t *renderer, block_t *blo
         tesselator_end();
     }
 }
+
+// Unit cube centered on the origin with baked face shading, used by the title logo
+void renderer_block_render_logo_cube(renderer_block_t *renderer, block_t *block, float brightness, float alpha) {
+    glTranslatef(-0.5, -0.5, -0.5);
+    tesselator_begin_quads();
+    tesselator_color_float(brightness * 0.5, brightness * 0.5, brightness * 0.5, alpha);
+    renderer_block_render_bottom(renderer, block, 0, 0, 0, block->get_texture_side(block, 0));
+    tesselator_color_float(brightness, brightness, brightness, alpha);
+    renderer_block_render_top(renderer, block, 0, 0, 0, block->get_texture_side(block, 1));
+    tesselator_color_float(brightness * 0.8, brightness * 0.8, brightness * 0.8, alpha);
+    renderer_block_render_north(renderer, block, 0, 0, 0, block->get_texture_side(block, 2));
+    renderer_block_render_south(renderer, block, 0, 0, 0, block->get_texture_side(block, 3));
+    tesselator_color_float(brightness * 0.6, brightness * 0.6, brightness * 0.6, alpha);
+    renderer_block_render_west(renderer, block, 0, 0, 0, block->get_texture_side(block, 4));
+    renderer_block_render_east(renderer, block, 0, 0, 0, block->get_texture_side(block, 5));
+    tesselator_end();
+    glTranslatef(0.5, 0.5, 0.5);
+}

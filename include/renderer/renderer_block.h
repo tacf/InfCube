@@ -22,3 +22,4 @@ void renderer_block_render_south(renderer_block_t *renderer, struct block_s *blo
 void renderer_block_render_west(renderer_block_t *renderer, struct block_s *block, double x, double y, double z, int texture_id);
 void renderer_block_render_east(renderer_block_t *renderer, struct block_s *block, double x, double y, double z, int texture_id);
 void renderer_block_render_in_inventory(renderer_block_t *renderer, struct block_s *block);
+void renderer_block_render_logo_cube(renderer_block_t *renderer, struct block_s *block, float brightness, float alpha);
