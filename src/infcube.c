@@ -275,7 +275,8 @@ void infcube_start_world(infcube_t *infcube, char *world_name) {
 }
 
 void infcube_grab_mouse(infcube_t *infcube) {
-    if(!infcube->has_mouse) {
+    // Never grab while unfocused, relative motion would spin the camera
+    if(!infcube->has_mouse && (SDL_GetWindowFlags(infcube->window) & SDL_WINDOW_INPUT_FOCUS)) {
         infcube->has_mouse = 1;
         SDL_ShowCursor(0);
         SDL_SetRelativeMouseMode(SDL_TRUE);
@@ -322,6 +323,8 @@ void infcube_set_current_screen(infcube_t *infcube, screen_t *screen) {
         infcube->current_screen = NULL;
         infcube->pending_mouse_button_up = 0;
         infcube_grab_mouse(infcube);
+        // Finished while unfocused, so show the pause menu instead
+        if(!infcube->has_mouse && infcube->world != NULL) infcube_pause(infcube);
     }
 }
 
@@ -700,6 +703,8 @@ void infcube_run(infcube_t *infcube) {
             if(ticks >= infcube->timer.elapsed_ticks) {
                 if(infcube->is_paused) {
                     infcube->timer.delta = 1;
+                    // Freeze world interpolation only, menus still animate with delta
+                    if(infcube->world != NULL) delta = 1;
                 }
                 glEnable(GL_TEXTURE);
                 if(infcube->world != NULL) {
@@ -727,7 +732,7 @@ void infcube_run(infcube_t *infcube) {
             infcube_pause(infcube);
         }
         renderer->display_active = (SDL_GetWindowFlags(infcube->window) & SDL_WINDOW_INPUT_FOCUS) > 0;
-        if(infcube->has_mouse) {
+        if(infcube->has_mouse && (SDL_GetWindowFlags(infcube->window) & SDL_WINDOW_INPUT_FOCUS)) {
             int dx = 0;
             int dy = 0;
             SDL_GetRelativeMouseState(&dx, &dy);
@@ -793,11 +798,14 @@ int main(int argc, char *argv[]) {
         screen_destroy((struct screen_s *)infcube.current_screen);
         free(infcube.current_screen);
     }
-    world_destroy(infcube.world);
-    free(infcube.world);
+    // No world is loaded when closing from the menus
+    if(infcube.world != NULL) {
+        world_destroy(infcube.world);
+        free(infcube.world);
+    }
     textures_destroy(&infcube.textures);
     renderer_world_destroy(&infcube.renderer_world);
-    particles_destroy(&infcube.particles);
+    if(infcube.particles.textures != NULL) particles_destroy(&infcube.particles);
     array_list_free(infcube.settings.bindings);
     array_list_free(session_allowed_blocks);
     sounds_destroy(&infcube.sounds);

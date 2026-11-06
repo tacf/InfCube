@@ -16,7 +16,7 @@
 void mob_create(entity_t *entity, struct world_s *world) {
     //mob_t mob = { 0 };
     entity_create(entity, world);
-    entity->mob = malloc(sizeof(mob_t));
+    entity->mob = calloc(1, sizeof(mob_t)); // zeroed, many fields are never set explicitly
     mob_t *mob = entity->mob;
     mob->entity = entity;
 

@@ -19,7 +19,7 @@
 // Extends mob/mob.h
 void player_create(entity_t *entity, struct world_s *world) {
     mob_humanoid_create(entity, world, world->spawn_x, world->spawn_y, world->spawn_z);
-    entity->mob->player = malloc(sizeof(player_t));
+    entity->mob->player = calloc(1, sizeof(player_t)); // zeroed, many fields are never set explicitly
     player_t *player = entity->mob->player;
     player->mob = entity->mob;
     player->entity = entity;
