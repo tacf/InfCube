@@ -27,7 +27,7 @@ void screen_select_world_on_open(screen_t *screen) {
         if(world_nbt.null == 1) {
             button_t button = button_create(i, screen->width / 2 - 100, screen->height / 6 + i * 24, "- empty -");
             screen->buttons = array_list_push(screen->buttons, &button);
-        }else {
+        } else {
             int64_t size = nbt_tag_compound_get_long(&world_nbt, "SizeOnDisk");
             snprintf(buffer, sizeof(buffer), "World %d (%0.2f MB)", i + 1, (size / 1024.0 * 100.0 / 1024.0) / 100.0);
             button_t button = button_create(i, screen->width / 2 - 100, screen->height / 6 + i * 24, buffer);

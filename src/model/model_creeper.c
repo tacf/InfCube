@@ -9,7 +9,7 @@ model_t model_creeper_create() {
     model.type = MODEL_CREEPER;
     model.render = model_creeper_render;
     model.setup_anim = model_creeper_setup_anim;
-    
+
     model.head = cube_create(0, 0);
     cube_add_box(&model.head, -4.0F, -8.0F, -4.0F, 8, 8, 8, 0.0F);
     model.hair = cube_create(32, 0);

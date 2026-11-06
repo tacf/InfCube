@@ -17,7 +17,7 @@ texture_animated_t texture_gears_create(int rotation) {
     memcpy(&texture.gear_color, asset_gear_rgba, 4096);
     memcpy(&texture.gear_middle_color, asset_gearmiddle_rgba, 1024);
 
-    texture.tick = texture_gears_tick;  
+    texture.tick = texture_gears_tick;
 
     return texture;
 }

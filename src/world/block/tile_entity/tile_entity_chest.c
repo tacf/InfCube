@@ -84,11 +84,11 @@ void tile_entity_chest_set_slot_contents(inventory_t *inventory, int slot, item_
 
 void tile_entity_chest_read_nbt(tile_entity_t *tile_entity, nbt_base_t *nbt) {
     tile_entity_read_nbt(tile_entity, nbt);
-    
+
     nbt_base_t items = nbt_tag_compound_get_tag_list(nbt, "Items");
     memset(&tile_entity->inventory, 0, sizeof(inventory_t));
     tile_entity->inventory_size = 27;
-    
+
     for(int i = 0; i < array_list_length(items.tag_array); i++) {
         nbt_base_t *item = nbt_tag_list_get_tag(&items, i);
         uint8_t slot = nbt_tag_compound_get_byte(item, "Slot") & 0xFF;

@@ -37,7 +37,7 @@ typedef struct nbt_base_s {
         char *string_value;
         struct {
             struct nbt_base_s *tag_array; // arraylist, nbt_tag_compound
-            uint8_t array_list_type; // tag_list
+            uint8_t array_list_type;      // tag_list
         };
     };
 

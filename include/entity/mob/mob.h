@@ -21,27 +21,27 @@ typedef struct mob_s {
     float time_offs;
     float speed;
     float rot_a;
-    float y_body_rot; // = 0.0F;
+    float y_body_rot;  // = 0.0F;
     float y_body_roto; // = 0.0F;
     float o_run;
     float run;
     float anim_step;
     float anim_stepo;
-    uint8_t has_hair; // = true;
-    char *texture_name; // "char.png"
+    uint8_t has_hair;    // = true;
+    char *texture_name;  // "char.png"
     uint8_t allow_alpha; // = true;
-    float rot_offs; // = 0.0F;
+    float rot_offs;      // = 0.0F;
     model_type_t model_type;
-    float bob_strength; // = 1.0F;
-    int death_score; // = 0;
+    float bob_strength;  // = 1.0F;
+    int death_score;     // = 0;
     float render_offset; // = 0.0F;
     int health;
     int last_health;
     int invulnerable_time; // = 0;
     int hurt_time;
     int hurt_duration;
-    float hurt_dir; // = 0.0F;
-    int death_time; // = 0;
+    float hurt_dir;  // = 0.0F;
+    int death_time;  // = 0;
     int attack_time; // = 0;
     float o_tilt;
     float tilt;
@@ -53,11 +53,11 @@ typedef struct mob_s {
 
     uint8_t has_armor;
     uint8_t has_helmet;
-    uint8_t has_fur; //sheep
+    uint8_t has_fur;    //sheep
     uint8_t is_grazing; //sheep
-    int grazing_time; //sheep
-    float graze; //sheep
-    float graze_o; //sheep
+    int grazing_time;   //sheep
+    float graze;        //sheep
+    float graze_o;      //sheep
 
     void (*render_model)(struct mob_s *mob, float time, float r, float bob, float y_rot, float x_rot, float scale);
     void (*die)(struct mob_s *mob, struct mob_s *causer);

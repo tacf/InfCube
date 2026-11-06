@@ -5,11 +5,11 @@
 
 item_t item_block_create(int16_t block_id) {
     item_t item = item_create(block_id, block_list[block_id + 256].get_texture_side(&block_list[block_id + 256], 2));
-    
+
     item.block_id = block_id + 256;
 
     item.on_use = item_block_on_use;
-    
+
     // item_list is done in blocks.c
 
     return item;

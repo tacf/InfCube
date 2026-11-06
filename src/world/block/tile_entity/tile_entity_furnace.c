@@ -90,7 +90,7 @@ void tile_entity_furnace_set_slot_contents(inventory_t *inventory, int slot, ite
 
 void tile_entity_furnace_read_nbt(tile_entity_t *tile_entity, nbt_base_t *nbt) {
     tile_entity_read_nbt(tile_entity, nbt);
-    
+
     nbt_base_t items = nbt_tag_compound_get_tag_list(nbt, "Items");
     memset(&tile_entity->inventory, 0, sizeof(inventory_t));
     tile_entity->inventory_size = 3;
@@ -188,7 +188,7 @@ void tile_entity_furnace_update(tile_entity_t *tile_entity) {
                 uint8_t block_id = tile_entity_furnace_smelt_item(tile_entity->furnace_contents[0].item_id);
                 if(tile_entity->furnace_contents[2].item_id == 0) {
                     tile_entity->furnace_contents[2] = item_stack_create(block_id, 1, 0);
-                }else if(tile_entity->furnace_contents[2].item_id == block_id) {
+                } else if(tile_entity->furnace_contents[2].item_id == block_id) {
                     tile_entity->furnace_contents[2].stack_size++;
                 }
 
@@ -199,7 +199,7 @@ void tile_entity_furnace_update(tile_entity_t *tile_entity) {
                 }
             }
         }
-    }else {
+    } else {
         tile_entity->cook_time = 0;
     }
 
@@ -213,7 +213,7 @@ void tile_entity_furnace_update(tile_entity_t *tile_entity) {
         block_container_set_keep_inventory(1);
         if(is_burning) {
             world_set_block_with_update(tile_entity->world, x, y, z, BLOCK_FURNACE_LIT);
-        }else {
+        } else {
             world_set_block_with_update(tile_entity->world, x, y, z, BLOCK_FURNACE);
         }
         block_container_set_keep_inventory(0);

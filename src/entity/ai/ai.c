@@ -12,19 +12,15 @@ ai_t ai_create() {
 }
 
 void ai_tick(struct ai_s *ai) {
-
 }
 
 void ai_before_removal(struct ai_s *ai) {
-
 }
 
 void ai_hurt(struct ai_s *ai, struct entity_s *entity, int damage) {
-
 }
 
 void ai_jump(struct ai_s *ai) {
-
 }
 
 uint8_t ai_attack(struct ai_s *ai) {

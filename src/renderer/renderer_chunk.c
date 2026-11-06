@@ -112,7 +112,7 @@ void renderer_chunk_update(renderer_chunk_t *renderer) {
     int chunk_x = x0 >> 4;
     int chunk_z = z0 >> 4;
     chunk_t *chunk = world_get_chunk(renderer->world, chunk_x, chunk_z);
-    
+
     uint8_t use_cached_chunk = (chunk != NULL);
 
     for(int i = 0; i < 2; i++) {
@@ -131,8 +131,8 @@ void renderer_chunk_update(renderer_chunk_t *renderer) {
         glTranslatef(renderer->x_clip, renderer->y_clip, renderer->z_clip);
         tesselator_begin_quads();
         tesselator_set_translation(-renderer->x, -renderer->y, -renderer->z);
-        
-        if(use_cached_chunk) {     
+
+        if(use_cached_chunk) {
             for(int y = y0; y < y1; y++) {
                 for(int z = z0; z < z1; z++) {
                     int local_z = z & (CHUNK_SIZE_WIDTH - 1);
@@ -146,14 +146,14 @@ void renderer_chunk_update(renderer_chunk_t *renderer) {
                             block_t *block = &block_list[block_id];
                             if(block->render_pass != i) {
                                 b0 = 1;
-                            }else {
+                            } else {
                                 b1 |= renderer_block_render(&renderer->renderer_block, block, x, y, z);
                             }
                         }
                     }
                 }
             }
-        }else {
+        } else {
             for(int y = y0; y < y1; y++) {
                 for(int z = z0; z < z1; z++) {
                     for(int x = x0; x < x1; x++) {
@@ -162,7 +162,7 @@ void renderer_chunk_update(renderer_chunk_t *renderer) {
                             block_t *block = &block_list[block_id];
                             if(block->render_pass != i) {
                                 b0 = 1;
-                            }else {
+                            } else {
                                 b1 |= renderer_block_render(&renderer->renderer_block, block, x, y, z);
                             }
                         }
@@ -226,7 +226,8 @@ int renderer_chunk_entity_compare(const void *a, const void *b) {
     renderer_chunk_t *chunk_b = *(renderer_chunk_t **)b;
     float dist_a = renderer_chunk_distance_to_entity_squared(chunk_a, chunk_a->world->player);
     float dist_b = renderer_chunk_distance_to_entity_squared(chunk_b, chunk_b->world->player);
-    return dist_a < dist_b ? 1 : dist_a == dist_b ? 0 : -1;
+    return dist_a < dist_b ? 1 : dist_a == dist_b ? 0
+                                                  : -1;
 }
 
 int renderer_chunk_player_compare(const void *a, const void *b) {
@@ -236,5 +237,6 @@ int renderer_chunk_player_compare(const void *a, const void *b) {
     uint8_t b2 = chunk_b->is_in_frustum;
     float dist_a = renderer_chunk_distance_to_entity_squared(chunk_a, chunk_a->world->player);
     float dist_b = renderer_chunk_distance_to_entity_squared(chunk_b, chunk_b->world->player);
-    return b1 && !b2 ? 0 : ((!b2 || b1) && dist_a < dist_b ? 1 : dist_a == dist_b ? 0 : -1);
+    return b1 && !b2 ? 0 : ((!b2 || b1) && dist_a < dist_b ? 1 : dist_a == dist_b ? 0
+                                                                                  : -1);
 }

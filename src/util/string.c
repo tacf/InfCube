@@ -36,8 +36,10 @@ void string_concat_front(const char *string0, char **string1) {
     string_insert(string1, 0, string0);
 }
 
-char* string_sub(char *string, int32_t index_start, int32_t index_end) {
-    if(index_start < 0) { index_start = 0; }
+char *string_sub(char *string, int32_t index_start, int32_t index_end) {
+    if(index_start < 0) {
+        index_start = 0;
+    }
     if(index_end > string_length(string) - 1) index_end = string_length(string) - 1;
     if(index_start > index_end) return string_create("");
     char orig = string[index_end + 1];
@@ -75,9 +77,13 @@ void string_insert(char **string0, int32_t index, const char *string1) {
 }
 
 void string_remove(char **string, int32_t index_start, int32_t index_end) {
-    if(index_start < 0) { index_start = 0; }
+    if(index_start < 0) {
+        index_start = 0;
+    }
     if(index_end > string_length(*string) - 1) index_end = string_length(*string) - 1;
-    if(index_start > index_end) { string_set(string, ""); }
+    if(index_start > index_end) {
+        string_set(string, "");
+    }
     for(int i = 0; i < string_length(*string) - index_end; i++) {
         (*string)[index_start + i] = (*string)[index_end + i + 1];
     }

@@ -56,7 +56,7 @@ void mob_sheep_ai_step(struct mob_s *mob) {
     mob->graze_o = mob->graze;
     if(mob->is_grazing) {
         mob->graze += 0.2;
-    }else {
+    } else {
         mob->graze -= 0.2;
     }
 
@@ -77,7 +77,7 @@ void mob_sheep_hurt(struct entity_s *mob, struct entity_s *causer, int damage) {
         for(int i = 0; i < drop_count; i++) {
             //drop items white wool
         }
-    }else {
+    } else {
         mob_hurt(mob, causer, damage);
     }
 }

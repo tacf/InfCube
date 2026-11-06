@@ -39,14 +39,14 @@ void renderer_entity_item_render_gui(infcube_t *infcube, item_stack_t *item, int
             renderer_block_t renderer_block = renderer_block_create(infcube->world);
             renderer_block_render_in_inventory(&renderer_block, block);
             glPopMatrix();
-        }else {
+        } else {
             if(item_list[item->item_id].texture_id >= 0) {
                 glDisable(GL_LIGHTING);
                 glEnable(GL_BLEND);
                 glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
                 if(item->item_id < 256) {
                     glBindTexture(GL_TEXTURE_2D, textures_load(&infcube->textures, "terrain.png"));
-                }else {
+                } else {
                     glBindTexture(GL_TEXTURE_2D, textures_load(&infcube->textures, "gui/items.png"));
                 }
 
@@ -145,14 +145,14 @@ void renderer_entity_item_render(renderer_entity_t *renderer, entity_t *entity, 
             renderer_block_render_in_inventory(&renderer_block, &block_list[item_stack.item_id]);
             glPopMatrix();
         }
-    }else {
+    } else {
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glScalef(0.5, 0.5, 0.5);
         int texture = item_list[item_stack.item_id].texture_id;
         if(item_stack.item_id < 256) {
             glBindTexture(GL_TEXTURE_2D, textures_load(&renderer->manager->world->infcube->textures, "terrain.png"));
-        }else {
+        } else {
             glBindTexture(GL_TEXTURE_2D, textures_load(&renderer->manager->world->infcube->textures, "gui/items.png"));
         }
 

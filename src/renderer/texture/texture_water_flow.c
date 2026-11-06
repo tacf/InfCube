@@ -14,7 +14,7 @@ texture_animated_t texture_water_flow_create() {
 
 void texture_water_flow_tick(texture_animated_t *texture) {
     texture->updates++;
-    
+
     for(int x = 0; x < 16; x++) {
         for(int y = 0; y < 16; y++) {
             float v = 0.0;
@@ -34,7 +34,7 @@ void texture_water_flow_tick(texture_animated_t *texture) {
             if(((float)rand() / RAND_MAX) < 0.2) texture->alpha[x + (y << 4)] = 0.5;
         }
     }
-    
+
     for(int i = 0; i < 256; i++) {
         float blue = texture->blue[i];
         texture->blue[i] = texture->red[i];

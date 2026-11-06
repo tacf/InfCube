@@ -30,7 +30,7 @@ uint8_t item_hoe_on_use(item_t *item, item_stack_t *item_stack, world_t *world, 
     world_play_sound(world, x + 0.5, y + 0.5, z + 0.5, block->sound->base_type, (block->sound->volume + 1.0) / 2.0, block->sound->pitch * 0.8);
     world_set_block_with_update(world, x, y, z, blocks.farmland.id);
     item_stack_damage(item_stack, 1);
-    
+
     if(random_next_int_range(&world->random, 8) == 0 && block_id == BLOCK_GRASS) {
         // There was a for loop here (that iterates once) presumably to change the amount of seeds to drop... fun fact
         float offset_x = random_next_double(&world->random) * 0.7 + 0.15;

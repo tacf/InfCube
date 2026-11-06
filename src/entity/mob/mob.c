@@ -94,7 +94,7 @@ void mob_tick(entity_t *entity) {
     if(entity_is_underwater(entity)) {
         if(mob->entity->air_supply > 0) {
             mob->entity->air_supply--;
-        }else {
+        } else {
             entity->hurt(entity, NULL, 2);
         }
     } else {
@@ -257,7 +257,7 @@ void mob_render(entity_t *entity, textures_t *textures, float delta) {
     if(hurt_time > 0 || mob->health <= 0) {
         if(hurt_time < 0) {
             hurt_time = 0;
-        }else {
+        } else {
             float hurt_dur = mob->hurt_time / mob->hurt_duration;
             hurt_time = tsin(hurt_dur * hurt_dur * hurt_dur * hurt_dur * M_PI) * 14;
         }
@@ -284,7 +284,7 @@ void mob_render(entity_t *entity, textures_t *textures, float delta) {
     glRotatef(180 - delta_y_body_rot + mob->rot_offs, 0, 1, 0);
     if(!mob->allow_alpha) {
         glDisable(GL_ALPHA_TEST);
-    }else {
+    } else {
         glDisable(GL_CULL_FACE);
     }
 
@@ -322,7 +322,7 @@ void mob_hurt(entity_t *entity, entity_t *entity_causer, int damage) {
     if(mob->invulnerable_time > mob->invulnerable_duration / 2) {
         if(mob->last_health - damage >= mob->health) return;
         mob->health = mob->last_health - damage;
-    }else {
+    } else {
         mob->last_health = mob->health;
         mob->invulnerable_time = mob->invulnerable_duration;
         mob->health -= damage;
@@ -335,14 +335,14 @@ void mob_hurt(entity_t *entity, entity_t *entity_causer, int damage) {
         float z_diff = entity_causer->z - entity->z;
         mob->hurt_dir = atan2(z_diff, x_diff) * 180 / M_PI - entity->y_rot;
         mob_knockback(mob, causer, damage, x_diff, z_diff);
-    }else {
+    } else {
         mob->hurt_dir = (rand() % 2) * 180;
     }
 
     if(mob->health <= 0) {
         world_play_sound_at_entity(entity->world, entity, entity->mob->death_sound, 1.0, (random_uniform() - random_uniform()) * 0.2 + 1.0);
         mob->die(mob, causer);
-    }else {
+    } else {
         world_play_sound_at_entity(entity->world, entity, entity->mob->hurt_sound, 1.0, (random_uniform() - random_uniform()) * 0.2 + 1.0);
     }
 }
@@ -413,7 +413,7 @@ void mob_travel(mob_t *mob, float x, float z) {
         if(mob->entity->horizontal_collision && entity_is_free(mob->entity, mob->entity->xd, mob->entity->yd + 0.6 - mob->entity->y + y, mob->entity->zd)) {
             mob->entity->yd = 0.3;
         }
-    }else if(entity_is_in_lava(mob->entity)) {
+    } else if(entity_is_in_lava(mob->entity)) {
         float y = mob->entity->y;
         entity_move_relative(mob->entity, x, z, 0.02);
         entity_move(mob->entity, mob->entity->xd, mob->entity->yd, mob->entity->zd);
@@ -424,7 +424,7 @@ void mob_travel(mob_t *mob, float x, float z) {
         if(mob->entity->horizontal_collision && entity_is_free(mob->entity, mob->entity->xd, mob->entity->yd + 0.6 - mob->entity->y + y, mob->entity->zd)) {
             mob->entity->yd = 0.3;
         }
-    }else {
+    } else {
         entity_move_relative(mob->entity, x, z, entity_on_ground(mob->entity) ? 0.1 : 0.02);
         entity_move(mob->entity, mob->entity->xd, mob->entity->yd, mob->entity->zd);
         mob->entity->xd *= 0.91;

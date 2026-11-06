@@ -50,18 +50,30 @@ void renderer_entity_manager_create(renderer_entity_manager_t *renderer_manager,
 
 renderer_entity_t *renderer_entity_manager_get_renderer(renderer_entity_manager_t *manager, entity_t *entity) {
     switch(entity->type) {
-        case ENTITY_ARROW: return &manager->list.arrow;
-        case ENTITY_MOB_CREEPER: return &manager->list.creeper;
-        case ENTITY_ENTITY: return &manager->list.entity;
-        case ENTITY_MOB_GIANT: return &manager->list.giant;
-        case ENTITY_ITEM: return &manager->list.item;
-        case ENTITY_MOB: return &manager->list.mob;
-        case ENTITY_PAINTING: return &manager->list.painting;
-        case ENTITY_MOB_PLAYER: return &manager->list.player;
-        case ENTITY_MOB_SHEEP: return &manager->list.sheep;
-        case ENTITY_MOB_SPIDER: return &manager->list.spider;
-        case ENTITY_PRIMED_TNT: return &manager->list.tnt;
-        default: return &manager->list.entity;
+        case ENTITY_ARROW:
+            return &manager->list.arrow;
+        case ENTITY_MOB_CREEPER:
+            return &manager->list.creeper;
+        case ENTITY_ENTITY:
+            return &manager->list.entity;
+        case ENTITY_MOB_GIANT:
+            return &manager->list.giant;
+        case ENTITY_ITEM:
+            return &manager->list.item;
+        case ENTITY_MOB:
+            return &manager->list.mob;
+        case ENTITY_PAINTING:
+            return &manager->list.painting;
+        case ENTITY_MOB_PLAYER:
+            return &manager->list.player;
+        case ENTITY_MOB_SHEEP:
+            return &manager->list.sheep;
+        case ENTITY_MOB_SPIDER:
+            return &manager->list.spider;
+        case ENTITY_PRIMED_TNT:
+            return &manager->list.tnt;
+        default:
+            return &manager->list.entity;
     }
 }
 

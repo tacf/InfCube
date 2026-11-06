@@ -64,7 +64,7 @@ chunk_t *chunk_provider_load_provide_chunk(chunk_provider_t *chunk_provider, int
         world_schedule_chunk_border_light(chunk_provider->chunks[index]->world, x, z);
     }
 
-    if(!chunk_provider->chunks[index]->is_terrain_populated && chunk_provider_load_chunk_exists(chunk_provider, x + 1, z + 1) 
+    if(!chunk_provider->chunks[index]->is_terrain_populated && chunk_provider_load_chunk_exists(chunk_provider, x + 1, z + 1)
        && chunk_provider_load_chunk_exists(chunk_provider, x, z + 1) && chunk_provider_load_chunk_exists(chunk_provider, x + 1, z)) {
         chunk_provider_load_populate(chunk_provider, chunk_provider, x, z);
     }
@@ -246,7 +246,7 @@ void chunk_provider_load_save_chunk(chunk_provider_t *chunk_provider, chunk_t *c
     if(!chunk_file) {
         return;
     }
-    
+
 #ifdef _WIN32
     WIN32_FILE_ATTRIBUTE_DATA file_info;
     if(GetFileAttributesEx(chunk_file, GetFileExInfoStandard, &file_info)) {
@@ -261,7 +261,7 @@ void chunk_provider_load_save_chunk(chunk_provider_t *chunk_provider, chunk_t *c
         chunk_provider->world->size_on_disk -= sb.st_size;
     }
 #endif
-    
+
     //printf("Saving chunk: %s\n", chunk_file);
     FILE *file = fopen(chunk_file, "wb");
     if(!file) {
@@ -320,6 +320,6 @@ uint8_t chunk_provider_load_unload_oldest_chunks(chunk_provider_t *chunk_provide
     //chunk_provider->chunk_provider_gen->unload_oldest_chunks(chunk_provider->chunk_provider_gen);
     // This does nothing
     // The original code has a list but it is never used
-    
+
     return 1;
 }

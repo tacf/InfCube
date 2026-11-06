@@ -21,8 +21,8 @@ typedef struct entity_index_pair_s {
 typedef struct chunk_s {
     uint8_t blocks[CHUNK_SIZE_WIDTH * CHUNK_SIZE_HEIGHT * CHUNK_SIZE_WIDTH];
     struct world_s *world;
-    int8_t *data; // nibblearray  block metadata
-    int8_t *sky_light_map; // nibblearray
+    int8_t *data;            // nibblearray  block metadata
+    int8_t *sky_light_map;   // nibblearray
     int8_t *block_light_map; // nibblearray
     int8_t height_map[CHUNK_SIZE_WIDTH * CHUNK_SIZE_WIDTH];
     uint8_t lowest_block_height;
@@ -32,7 +32,7 @@ typedef struct chunk_s {
     entity_index_pair_t **tile_entity_map; // array_list of tile_entity_index_pair_t
     uint8_t is_terrain_populated;
     uint8_t is_modified;
-    uint8_t has_entities; 
+    uint8_t has_entities;
 } chunk_t;
 
 void chunk_create(chunk_t *chunk, struct world_s *world, int x, int z);

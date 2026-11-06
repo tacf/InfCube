@@ -138,7 +138,7 @@ void sounds_set_sound_volume(sounds_t *sounds, float volume) {
 }
 
 sounds_t sounds_create() {
-    sounds_t sounds = {0};
+    sounds_t sounds = { 0 };
 
     sounds.random = random_create(time(NULL));
     sounds_init(&sounds);
@@ -204,7 +204,6 @@ sounds_t sounds_create() {
 }
 
 void sounds_play_music(sounds_t *sounds, char *music) {
-
 }
 
 sound_t *sounds_get_sound_source(sounds_t *sounds, uint8_t sound) {

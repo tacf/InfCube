@@ -11,7 +11,7 @@ struct world_s;
 typedef struct chunk_provider_s {
     struct world_s *world;
 
-    union{
+    union {
         // chunk_provider_load
         struct {
             chunk_t *chunks[CHUNK_PROVIDER_ARRAY_SIZE];

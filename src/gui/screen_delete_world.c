@@ -25,53 +25,53 @@ void delete_files_recursive(const char *path) {
     WIN32_FIND_DATA find_data;
     char search_path[512];
     snprintf(search_path, sizeof(search_path), "%s/*", path);
-    
+
     HANDLE handle = FindFirstFile(search_path, &find_data);
-    if (handle == INVALID_HANDLE_VALUE) {
+    if(handle == INVALID_HANDLE_VALUE) {
         return;
     }
-    
+
     do {
-        if (strcmp(find_data.cFileName, ".") == 0 || strcmp(find_data.cFileName, "..") == 0) {
+        if(strcmp(find_data.cFileName, ".") == 0 || strcmp(find_data.cFileName, "..") == 0) {
             continue;
         }
-        
+
         char file_path[512];
         snprintf(file_path, sizeof(file_path), "%s/%s", path, find_data.cFileName);
-        
-        if (find_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+
+        if(find_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
             delete_files_recursive(file_path);
             RemoveDirectory(file_path);
         } else {
             DeleteFile(file_path);
         }
-    } while (FindNextFile(handle, &find_data));
-    
+    } while(FindNextFile(handle, &find_data));
+
     FindClose(handle);
 #else
     DIR *dir = opendir(path);
-    if (!dir) {
+    if(!dir) {
         return;
     }
-    
+
     struct dirent *entry;
-    while ((entry = readdir(dir)) != NULL) {
-        if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0) {
+    while((entry = readdir(dir)) != NULL) {
+        if(strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0) {
             continue;
         }
-        
+
         char file_path[512];
         snprintf(file_path, sizeof(file_path), "%s/%s", path, entry->d_name);
-        
+
         struct stat st;
-        if (lstat(file_path, &st) == 0) {
-            if (S_ISDIR(st.st_mode)) {
+        if(lstat(file_path, &st) == 0) {
+            if(S_ISDIR(st.st_mode)) {
                 delete_files_recursive(file_path);
             }
             remove(file_path);
         }
     }
-    
+
     closedir(dir);
 #endif
 }
@@ -79,9 +79,9 @@ void delete_files_recursive(const char *path) {
 void world_delete(const char *game_dir, const char *world_name) {
     char world_path[512];
     snprintf(world_path, sizeof(world_path), "%s/saves/%s", game_dir, world_name);
-    
+
     delete_files_recursive(world_path);
-    
+
 #ifdef _WIN32
     RemoveDirectory(world_path);
 #else
@@ -110,7 +110,7 @@ void screen_delete_world_on_open(screen_t *screen) {
         if(world_nbt.null == 1) {
             button_t button = button_create(i, screen->width / 2 - 100, screen->height / 6 + i * 24, "- empty -");
             screen->buttons = array_list_push(screen->buttons, &button);
-        }else {
+        } else {
             int64_t size = nbt_tag_compound_get_long(&world_nbt, "SizeOnDisk");
             snprintf(buffer, sizeof(buffer), "World %d (%0.2f MB)", i + 1, (size / 1024.0 * 100.0 / 1024.0) / 100.0);
             button_t button = button_create(i, screen->width / 2 - 100, screen->height / 6 + i * 24, buffer);

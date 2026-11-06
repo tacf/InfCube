@@ -4,13 +4,13 @@
 
 static uint8_t axe_effective_blocks[] = { BLOCK_PLANKS, BLOCK_BOOKSHELF, BLOCK_LOG, BLOCK_CHEST };
 static uint8_t pickaxe_effective_blocks[] = { BLOCK_COBBLESTONE, BLOCK_DOUBLE_SLAB, BLOCK_SLAB, BLOCK_STONE,
-    BLOCK_MOSSY_COBBLESTONE, BLOCK_IRON_ORE, BLOCK_IRON, BLOCK_COAL_ORE, BLOCK_GOLD, BLOCK_GOLD_ORE, 
-    BLOCK_DIAMOND_ORE, BLOCK_DIAMOND };
+                                              BLOCK_MOSSY_COBBLESTONE, BLOCK_IRON_ORE, BLOCK_IRON, BLOCK_COAL_ORE, BLOCK_GOLD, BLOCK_GOLD_ORE,
+                                              BLOCK_DIAMOND_ORE, BLOCK_DIAMOND };
 static uint8_t shovel_effective_blocks[] = { BLOCK_GRASS, BLOCK_DIRT, BLOCK_SAND, BLOCK_GRAVEL };
 
 item_t item_tool_create(uint8_t id, uint8_t texture_id, uint8_t tool_piece, uint8_t tool_type) {
     item_t item = item_create(id, texture_id);
-    
+
     item.tool_type = tool_type;
     item.tool_piece = tool_piece;
     item.proper_tool_efficiency = (tool_type + 1) << 1;

@@ -142,7 +142,7 @@ item_stack_t inventory_player_remove_item(inventory_t *inventory, int slot, int 
         item_stack_t taken = *current;
         arr[slot] = item_stack_create(0, 0, 0);
         return taken;
-    }else {
+    } else {
         item_stack_t taken = item_stack_split(current, amount);
         if(current->stack_size == 0) {
             arr[slot] = item_stack_create(0, 0, 0);
@@ -157,7 +157,7 @@ void inventory_player_set_slot(inventory_t *inventory, int slot, item_stack_t it
         arr = inventory->armor;
         slot -= 36;
     }
-    
+
     arr[slot] = item;
 }
 

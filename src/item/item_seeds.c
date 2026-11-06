@@ -6,7 +6,7 @@ item_t item_seeds_create(uint8_t id, uint8_t texture_id, uint8_t block_type) {
     item_t item = item_create(id, texture_id);
 
     item.block_id = block_type;
-    
+
     item.on_use = item_seeds_on_use;
 
     item_list[id + 256] = item;

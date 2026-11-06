@@ -60,12 +60,11 @@ uint8_t block_fire_can_catch_fire(world_t *world, int x, int y, int z) {
 }
 
 uint8_t private_can_neighbor_catch_fire(world_t *world, int x, int y, int z) {
-    return block_fire_can_catch_fire(world, x + 1, y, z) ? 1 :
-        block_fire_can_catch_fire(world, x - 1, y, z) ? 1 :
-        block_fire_can_catch_fire(world, x, y - 1, z) ? 1 :
-        block_fire_can_catch_fire(world, x, y + 1, z) ? 1 :
-        block_fire_can_catch_fire(world, x, y, z - 1) ? 1 :
-        block_fire_can_catch_fire(world, x, y, z + 1);
+    return block_fire_can_catch_fire(world, x + 1, y, z) ? 1 : block_fire_can_catch_fire(world, x - 1, y, z) ? 1
+                                                           : block_fire_can_catch_fire(world, x, y - 1, z)   ? 1
+                                                           : block_fire_can_catch_fire(world, x, y + 1, z)   ? 1
+                                                           : block_fire_can_catch_fire(world, x, y, z - 1)   ? 1
+                                                                                                             : block_fire_can_catch_fire(world, x, y, z + 1);
 }
 
 void private_try_spread_fire(world_t *world, int x, int y, int z, int chance, random_t *random) {
@@ -74,7 +73,7 @@ void private_try_spread_fire(world_t *world, int x, int y, int z, int chance, ra
         uint8_t is_tnt = world_get_block(world, x, y, z) == blocks.tnt.id;
         if(random_next_int_range(random, 2) == 0) {
             world_set_block_with_update(world, x, y, z, blocks.fire.id);
-        }else {
+        } else {
             world_set_block_with_update(world, x, y, z, blocks.air.id);
         }
 
@@ -100,9 +99,9 @@ void block_fire_update(block_t *block, world_t *world, int x, int y, int z, rand
         if(!world_is_solid(world, x, y - 1, z) || metadata > 3) {
             world_set_block_with_update(world, x, y, z, blocks.air.id);
         }
-    }else if(!block_fire_can_catch_fire(world, x, y - 1, z) && metadata == 15 && random_next_int_range(random, 4) == 0) {
+    } else if(!block_fire_can_catch_fire(world, x, y - 1, z) && metadata == 15 && random_next_int_range(random, 4) == 0) {
         world_set_block_with_update(world, x, y, z, blocks.air.id);
-    }else {
+    } else {
         if(metadata % 5 == 0 && metadata > 5) {
             private_try_spread_fire(world, x + 1, y, z, 300, random);
             private_try_spread_fire(world, x - 1, y, z, 300, random);
@@ -110,7 +109,7 @@ void block_fire_update(block_t *block, world_t *world, int x, int y, int z, rand
             private_try_spread_fire(world, x, y + 1, z, 200, random);
             private_try_spread_fire(world, x, y, z - 1, 300, random);
             private_try_spread_fire(world, x, y, z + 1, 300, random);
-            
+
             for(int rx = x - 1; rx <= x + 1; rx++) {
                 for(int rz = z - 1; rz <= z + 1; rz++) {
                     for(int ry = y - 1; ry <= y + 4; ry++) {
@@ -123,7 +122,7 @@ void block_fire_update(block_t *block, world_t *world, int x, int y, int z, rand
                             int spread_chance = 0;
                             if(world_get_block(world, rx, ry, rz) != 0) {
                                 spread_chance = 0;
-                            }else {
+                            } else {
                                 spread_chance = private_get_fire_spread_chance(world, rx + 1, ry, rz, spread_chance);
                                 spread_chance = private_get_fire_spread_chance(world, rx - 1, ry, rz, spread_chance);
                                 spread_chance = private_get_fire_spread_chance(world, rx, ry - 1, rz, spread_chance);
@@ -156,7 +155,7 @@ void block_fire_on_neighbor_changed(block_t *block, world_t *world, int x, int y
 void block_fire_on_added(block_t *block, world_t *world, int x, int y, int z) {
     if(!world_is_solid(world, x, y - 1, z) && !private_can_neighbor_catch_fire(world, x, y, z)) {
         world_set_block_with_update(world, x, y, z, blocks.air.id);
-    }else {
+    } else {
         world_schedule_block_update(world, x, y, z, block->id);
     }
 }
@@ -169,7 +168,7 @@ uint8_t private_fire_check(world_t *world, int x, int y, int z) {
     uint8_t block_id = world_get_block(world, x, y, z);
     if(block_id == blocks.fire.id) {
         return 1;
-    }else if(block_id == blocks.air.id) {
+    } else if(block_id == blocks.air.id) {
         world_set_block_with_update(world, x, y, z, blocks.fire.id);
     }
     return 0;

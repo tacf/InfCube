@@ -69,7 +69,7 @@ void renderer_camera_hurt_effect(renderer_camera_t *renderer, float delta) {
 
 void renderer_camera_apply_bobbing(renderer_camera_t *renderer, float delta) {
     if(renderer->infcube->settings.third_person) return;
-    entity_t* player = &renderer->infcube->player;
+    entity_t *player = &renderer->infcube->player;
     float walk = player->walk_dist - player->walk_disto;
     walk = player->walk_dist + walk * delta;
     float bob = player->mob->player->obob + (player->mob->player->bob - player->mob->player->obob) * delta;
@@ -110,7 +110,7 @@ void renderer_camera_update_mouse(renderer_camera_t *renderer, float delta) {
         glOrtho(0.0, w, h, 0.0, 0.0, 1);
         renderer_camera_setup_gui(renderer);
         screen_hud_render(&renderer->infcube->hud, mx, my, delta);
-    }else {
+    } else {
         glViewport(0, 0, renderer->infcube->frame_width, renderer->infcube->frame_height);
         glClearColor(0, 0, 0, 0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -152,7 +152,7 @@ void renderer_camera_update_camera(renderer_camera_t *renderer, float delta) {
 
     if(renderer->infcube->gamemode.gamemode_type == GAMEMODE_CREATIVE) {
         reach = 32.0;
-    }else {
+    } else {
         if(reach > 3.0) reach = 3.0;
     }
 
@@ -188,8 +188,10 @@ void renderer_camera_update_camera(renderer_camera_t *renderer, float delta) {
 
     for(int i = 0; i < 2; i++) {
         if(renderer->infcube->settings.anaglyph) {
-            if(i == 0) glColorMask(0, 1, 1, 0);
-            else glColorMask(1, 0, 0, 0);
+            if(i == 0)
+                glColorMask(0, 1, 1, 0);
+            else
+                glColorMask(1, 0, 0, 0);
         }
 
         glViewport(0, 0, renderer->infcube->frame_width, renderer->infcube->frame_height);
@@ -246,16 +248,16 @@ void renderer_camera_update_camera(renderer_camera_t *renderer, float delta) {
         if(renderer->infcube->settings.anaglyph) glTranslatef(-((i << 1) - 1) * 0.07, 0.0, 0.0);
 
         float fov = 70.0;
-        
+
         if(entity_is_underwater(player)) {
             fov = 60.0;
         }
-        
+
         if(player->mob->health <= 0) {
             float ddeath_time = player->mob->death_time + delta;
             fov /= (1.0 - 500.0 / (ddeath_time + 500.0)) * 2.0 + 1.0;
         }
-        
+
         gluPerspective(fov, (float)renderer->infcube->width / (float)renderer->infcube->height, 0.05, renderer->far_plane_distance);
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
@@ -266,7 +268,7 @@ void renderer_camera_update_camera(renderer_camera_t *renderer, float delta) {
 
         if(!renderer->infcube->settings.third_person) {
             glTranslatef(0.0, 0.0, -0.1);
-        }else {
+        } else {
             double reach = 4.0;
             double offset_x = -tsin(player->x_rot / 180.0 * M_PI) * tcos(player->y_rot / 180.0 * M_PI) * reach;
             double offset_z = tcos(player->x_rot / 180.0 * M_PI) * tcos(player->y_rot / 180.0 * M_PI) * reach;
@@ -279,10 +281,10 @@ void renderer_camera_update_camera(renderer_camera_t *renderer, float delta) {
                 step_x *= 0.1;
                 step_y *= 0.1;
                 step_z *= 0.1;
-                hit_result_t result = world_clip(world, (vec3_t){ dx + step_x, dy + step_y, dz + step_z }, 
-                    (vec3_t){dx - offset_x + step_x + step_z, dy - offset_y + step_y, dz - offset_z + step_z});
+                hit_result_t result = world_clip(world, (vec3_t){ dx + step_x, dy + step_y, dz + step_z },
+                                                 (vec3_t){ dx - offset_x + step_x + step_z, dy - offset_y + step_y, dz - offset_z + step_z });
                 if(!result.null) {
-                    double hit_distance = vec3_distance_to(result.location, (vec3_t){dx, dy, dz});
+                    double hit_distance = vec3_distance_to(result.location, (vec3_t){ dx, dy, dz });
                     if(hit_distance < reach) {
                         reach = hit_distance;
                     }
@@ -360,7 +362,7 @@ void renderer_camera_update_camera(renderer_camera_t *renderer, float delta) {
         if(renderer->infcube->settings.anaglyph) {
             if(i == 0) {
                 glColorMask(0, 1, 1, 0);
-            }else {
+            } else {
                 glColorMask(1, 0, 0, 0);
             }
         }
@@ -420,7 +422,7 @@ void renderer_camera_update_camera(renderer_camera_t *renderer, float delta) {
             glEnable(GL_CULL_FACE);
             glDisable(GL_BLEND);
         }
-        
+
         glClear(GL_DEPTH_BUFFER_BIT);
         glLoadIdentity();
 
@@ -478,7 +480,7 @@ void renderer_camera_setup_gui(renderer_camera_t *renderer_camera) {
 void renderer_camera_setup_fog(renderer_camera_t *renderer_camera) {
     world_t *world = renderer_camera->infcube->world;
     entity_t *player = &renderer_camera->infcube->player;
-    glFogfv(GL_FOG_COLOR, (float []){ renderer_camera->fog_r, renderer_camera->fog_g, renderer_camera->fog_b, 1.0 });
+    glFogfv(GL_FOG_COLOR, (float[]){ renderer_camera->fog_r, renderer_camera->fog_g, renderer_camera->fog_b, 1.0 });
     glNormal3f(0.0, -1.0, 0.0);
     glColor4f(1.0, 1.0, 1.0, 1.0);
     block_t *block = &block_list[world_get_block(world, floor_double(player->x), floor_double(player->y + 0.12), floor_double(player->z))];
@@ -487,13 +489,13 @@ void renderer_camera_setup_fog(renderer_camera_t *renderer_camera) {
     if(material == &materials.water) {
         glFogi(GL_FOG_MODE, GL_EXP);
         glFogf(GL_FOG_DENSITY, 0.1f);
-    }else if(material == &materials.lava) {
+    } else if(material == &materials.lava) {
         glFogi(GL_FOG_MODE, GL_EXP);
         glFogf(GL_FOG_DENSITY, 2.0f);
-    }else if(block->is_solid) {
+    } else if(block->is_solid) {
         glFogi(GL_FOG_MODE, GL_EXP);
         glFogf(GL_FOG_DENSITY, 0.2f);
-    }else {
+    } else {
         glFogi(GL_FOG_MODE, GL_LINEAR);
         glFogf(GL_FOG_START, renderer_camera->far_plane_distance * 0.25);
         glFogf(GL_FOG_END, renderer_camera->far_plane_distance);

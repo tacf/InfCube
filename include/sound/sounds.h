@@ -14,9 +14,9 @@ enum {
     SOUND_LIQUID_LAVA,
     SOUND_LIQUID_WATER,
 
-    SOUND_MOB_PIG,    // 3
+    SOUND_MOB_PIG, // 3
     SOUND_MOB_PIG_DEATH,
-    SOUND_MOB_SHEEP,  // 3
+    SOUND_MOB_SHEEP, // 3
 
     SOUND_RANDOM_BOW,
     SOUND_RANDOM_CLICK,
@@ -29,12 +29,12 @@ enum {
     SOUND_RANDOM_POP,
     SOUND_RANDOM_SPLASH,
 
-    SOUND_STEP_CLOTH, // 4
-    SOUND_STEP_GRASS, // 4
-    SOUND_STEP_GRAVEL,// 4
-    SOUND_STEP_SAND,  // 4
-    SOUND_STEP_STONE, // 4
-    SOUND_STEP_WOOD,  // 4
+    SOUND_STEP_CLOTH,  // 4
+    SOUND_STEP_GRASS,  // 4
+    SOUND_STEP_GRAVEL, // 4
+    SOUND_STEP_SAND,   // 4
+    SOUND_STEP_STONE,  // 4
+    SOUND_STEP_WOOD,   // 4
 };
 
 typedef struct sounds_s {

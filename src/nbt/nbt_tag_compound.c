@@ -43,14 +43,14 @@ void nbt_tag_list_free(nbt_base_t *list_tag) {
 
         if(child->type == NBT_TYPE_COMPOUND) {
             nbt_tag_compound_free(child);
-        }else if(child->type == NBT_TYPE_LIST) {
+        } else if(child->type == NBT_TYPE_LIST) {
             nbt_tag_list_free(child);
-        }else if(child->type == NBT_TYPE_STRING) {
+        } else if(child->type == NBT_TYPE_STRING) {
             if(child->string_value) {
                 free(child->string_value);
                 child->string_value = NULL;
             }
-        }else if(child->type == NBT_TYPE_BYTE_ARRAY) {
+        } else if(child->type == NBT_TYPE_BYTE_ARRAY) {
             if(child->byte_array) {
                 free(child->byte_array);
                 child->byte_array = NULL;
@@ -235,14 +235,14 @@ void nbt_tag_compound_free(nbt_base_t *base) {
 
         if(tag->type == NBT_TYPE_COMPOUND) {
             nbt_tag_compound_free(tag);
-        }else if(tag->type == NBT_TYPE_LIST) {
+        } else if(tag->type == NBT_TYPE_LIST) {
             nbt_tag_list_free(tag);
-        }else if(tag->type == NBT_TYPE_STRING) {
+        } else if(tag->type == NBT_TYPE_STRING) {
             if(tag->string_value) {
                 free(tag->string_value);
                 tag->string_value = NULL;
             }
-        }else if(tag->type == NBT_TYPE_BYTE_ARRAY) {
+        } else if(tag->type == NBT_TYPE_BYTE_ARRAY) {
             if(tag->byte_array) {
                 free(tag->byte_array);
                 tag->byte_array = NULL;

@@ -4,7 +4,7 @@
 
 slot_t slot_armor_create(screen_t *screen, inventory_t *inventory, int index, int x, int y, int armor_type) {
     slot_t slot = slot_create(screen, inventory, index, x, y);
-    
+
     slot.armor_type = armor_type;
 
     slot.can_put_item = slot_armor_can_put_item;

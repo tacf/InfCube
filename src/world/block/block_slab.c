@@ -26,7 +26,6 @@ int block_slab_get_texture_side(block_t *block, uint8_t face) {
 }
 
 void block_slab_on_neighbor_changed(block_t *block, struct world_s *world, int x, int y, int z, uint8_t block_id) {
-
 }
 
 void block_slab_on_added(block_t *block, struct world_s *world, int x, int y, int z) {
@@ -39,5 +38,6 @@ void block_slab_on_added(block_t *block, struct world_s *world, int x, int y, in
 
 uint8_t block_slab_can_render_side(block_t *block, struct world_s *world, int x, int y, int z, uint8_t side) {
     world_t *real_world = (world_t *)world;
-    return side == 1 ? 1 : world_is_solid(real_world, x, y, z) ? 0 : (side == 0 ? 1 : world_get_block(real_world, x, y, z) != block->id);
+    return side == 1 ? 1 : world_is_solid(real_world, x, y, z) ? 0
+                                                               : (side == 0 ? 1 : world_get_block(real_world, x, y, z) != block->id);
 }

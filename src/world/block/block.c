@@ -129,7 +129,7 @@ void block_render_side_with_texture(block_t *block, int x, int y, int z, uint8_t
         if(block->y0 >= 0 && block->y1 <= 1) {
             v1 = (v0 + block->y0 * 15.99) / 256.0;
             v2 = (v0 + block->y1 * 15.99) / 256.0;
-        }else {
+        } else {
             v1 = v0 / 256.0;
             v2 = (v0 + 15.99) / 256.0;
         }
@@ -350,9 +350,9 @@ void block_spawn_items_chance(block_t *block, world_t *world, int x, int y, int 
 float block_get_strength(block_t *block, entity_t *player) {
     if(block->hardness < 0) {
         return 0;
-    }else if(!player_can_harvest_block(player, block)) {
+    } else if(!player_can_harvest_block(player, block)) {
         return 1.0 / block->hardness / 100.0;
-    }else {
+    } else {
         inventory_t *inv = &player->mob->player->inventory;
         float multiplier = 1.0;
         if(inv->inv[inv->selected].item_id != 0) {

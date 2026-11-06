@@ -26,19 +26,27 @@ void texture_lava_tick(texture_animated_t *texture) {
             }
             texture->green[x + (y << 4)] = v / 10.0 + (texture->blue[(x & 15) + ((y & 15) << 4)] + texture->blue[((x + 1) & 15) + ((y & 15) << 4)] + texture->blue[((x + 1) & 15) + (((y + 1) & 15) << 4)] + texture->blue[(x & 15) + (((y + 1) & 15) << 4)]) / 4.0 * 0.8;
             texture->blue[x + (y << 4)] += texture->alpha[x + (y << 4)] * 0.01;
-            if(texture->blue[x + (y << 4)] < 0.0) { texture->blue[x + (y << 4)] = 0.0; }
+            if(texture->blue[x + (y << 4)] < 0.0) {
+                texture->blue[x + (y << 4)] = 0.0;
+            }
             texture->alpha[x + (y << 4)] -= 0.06;
-            if(((float)rand() / RAND_MAX) < 0.005) { texture->alpha[x + (y << 4)] = 1.5; }
+            if(((float)rand() / RAND_MAX) < 0.005) {
+                texture->alpha[x + (y << 4)] = 1.5;
+            }
         }
     }
-    
+
     for(int i = 0; i < 256; i++) {
         float red = texture->red[i];
         texture->red[i] = texture->green[i];
         texture->green[i] = red;
         float v = texture->red[i] * 2.0;
-        if(v > 1.0) { v = 1.0; }
-        if(v < 0.0) { v = 0.0; }
+        if(v > 1.0) {
+            v = 1.0;
+        }
+        if(v < 0.0) {
+            v = 0.0;
+        }
         int a = v * 100.0 + 155.0;
         int b = v * v * 255.0;
         int c = v * v * v * v * 128.0;

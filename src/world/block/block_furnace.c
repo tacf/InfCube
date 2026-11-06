@@ -110,7 +110,7 @@ uint8_t block_furnace_on_interacted(block_t *block, world_t *world, int x, int y
     return 1;
 }
 
-tile_entity_t *block_furnace_get_tile_entity(world_t *world)  {
+tile_entity_t *block_furnace_get_tile_entity(world_t *world) {
     tile_entity_t *tile_entity = malloc(sizeof(tile_entity_t));
     tile_entity_furnace_create(tile_entity, world, 0, 0, 0);
 

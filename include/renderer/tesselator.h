@@ -12,17 +12,17 @@ typedef struct {
     int vertex_count; // = 0
     double u, v;
     int raw_buffer_index; // = 0
-    int added_vertices; // = 0
+    int added_vertices;   // = 0
     uint8_t draw_mode;
     double x_offset, y_offset, z_offset;
-    int vbo_index; // = 0
+    int vbo_index;                      // = 0
     uint8_t convert_quads_to_triangles; // = 0
-    uint8_t try_vbo; // = 0
-    uint8_t is_drawing; // = 0
-    uint8_t use_vbo; // = 0
-    uint8_t has_color; // = 0
-    uint8_t has_texture; // = 0
-    uint8_t no_color; // = 0
+    uint8_t try_vbo;                    // = 0
+    uint8_t is_drawing;                 // = 0
+    uint8_t use_vbo;                    // = 0
+    uint8_t has_color;                  // = 0
+    uint8_t has_texture;                // = 0
+    uint8_t no_color;                   // = 0
 } tesselator_t;
 
 extern tesselator_t g_tesselator;

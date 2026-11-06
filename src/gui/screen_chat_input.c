@@ -40,7 +40,7 @@ void screen_chat_input_on_key_pressed(struct screen_s *proto_screen, char event_
     screen_t *screen = (screen_t *)proto_screen;
     if(event_key == SDL_SCANCODE_RETURN || event_key == SDL_SCANCODE_ESCAPE) {
         infcube_set_current_screen(screen->infcube, NULL);
-        return;   
+        return;
     }
     if(event_key == SDL_SCANCODE_BACKSPACE && string_length(screen->text) > 0) {
         screen->text = string_sub(screen->text, 0, string_length(screen->text) - 2);

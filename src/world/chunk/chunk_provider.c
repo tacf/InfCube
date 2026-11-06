@@ -4,7 +4,7 @@
 
 void chunk_provider_create(chunk_provider_t *chunk_provider) {
     *chunk_provider = (chunk_provider_t){ 0 };
-    
+
     chunk_provider->chunk_exists = chunk_provider_chunk_exists;
     chunk_provider->chunk_provide = chunk_provider_provide_chunk;
     chunk_provider->populate = chunk_provider_populate;

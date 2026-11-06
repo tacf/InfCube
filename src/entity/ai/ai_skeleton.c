@@ -4,7 +4,7 @@
 
 ai_t ai_skeleton_create(struct world_s *world, struct mob_s *mob) {
     ai_t ai = ai_basic_attack_create(world, mob);
-    
+
     ai.tick = ai_skeleton_tick;
 
     return ai;
@@ -14,6 +14,5 @@ void ai_skeleton_tick(ai_t *ai) {
     ai_basic_tick(ai);
     mob_t *mob = (mob_t *)ai->mob;
     if(mob->health > 0 && random_int_range(0, 30) == 0 && ai->attack_target != NULL) {
-
     }
 }

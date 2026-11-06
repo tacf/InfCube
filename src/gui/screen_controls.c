@@ -53,7 +53,7 @@ void screen_controls_on_key_pressed(struct screen_s *proto_screen, char event_ch
         string_set(&screen->buttons[screen->id].string, text);
         screen->id = -1;
         string_free(text);
-    }else {
+    } else {
         screen->type = SCREEN_TYPE_NONE;
         screen_on_key_pressed(proto_screen, event_char, event_key);
         screen->type = SCREEN_TYPE_CONTROLS;
@@ -70,7 +70,7 @@ void screen_controls_on_button_clicked(struct screen_s *proto_screen, button_t *
 
     if(button->id == 200) {
         infcube_set_current_screen(screen->infcube, (screen_t *)screen->parent);
-    }else {
+    } else {
         screen->id = button->id;
         char *text = game_settings_get_binding(screen->settings, button->id);
         string_concat_front("> ", &text);

@@ -9,7 +9,7 @@ model_t model_quadruped_create(int leg_size, float g) {
     model.type = MODEL_QUADRUPED;
     model.render = model_quadruped_render;
     model.setup_anim = model_quadruped_setup_anim;
-    
+
     model.head = cube_create(0, 0);
     cube_add_box(&model.head, -4.0, -4.0, -8.0, 8, 8, 8, 0.0);
     cube_set_pos(&model.head, 0.0, (float)(18 - leg_size), -6.0);

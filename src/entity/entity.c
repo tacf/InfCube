@@ -83,7 +83,7 @@ void entity_set_pos(entity_t *entity, float x, float y, float z) {
     entity->z = z;
     float width = entity->bb_width / 2.0;
     float height = entity->bb_height / 2.0;
-    entity->bb = (AABB_t){x - width, y - height, z - width, x + width, y + height, z + width};
+    entity->bb = (AABB_t){ x - width, y - height, z - width, x + width, y + height, z + width };
 }
 
 void entity_reset_pos(entity_t *entity) {
@@ -152,7 +152,7 @@ void entity_tick(entity_t *entity) {
             }
 
             world_play_sound_at_entity(entity->world, entity, SOUND_RANDOM_SPLASH, velocity, 1.0 + (random_next_double(&entity->world->random) - random_next_double(&entity->world->random)) * 0.4);
-            
+
             for(int i = 0; i < 1.0 + entity->bb_width * 20.0; i++) {
                 float particle_x = (random_next_double(&entity->world->random) * 2.0 - 1.0) * entity->bb_width;
                 float particle_z = (random_next_double(&entity->world->random) * 2.0 - 1.0) * entity->bb_width;
@@ -169,7 +169,7 @@ void entity_tick(entity_t *entity) {
         entity->fall_distance = 0;
         entity->in_water = 1;
         entity->fire = 0;
-    }else {
+    } else {
         entity->in_water = 0;
     }
 
@@ -292,7 +292,7 @@ void entity_move(entity_t *entity, float x, float y, float z) {
             y = by;
             z = bz;
             entity->bb = temp_bb;
-        }else {
+        } else {
             entity->y_slide_offset += 0.5;
         }
     }
@@ -305,7 +305,7 @@ void entity_move(entity_t *entity, float x, float y, float z) {
             entity->cause_fall_damage(entity, entity->fall_distance);
             entity->fall_distance = 0;
         }
-    }else if(y < 0) {
+    } else if(y < 0) {
         entity->fall_distance -= y;
     }
 
@@ -339,7 +339,7 @@ void entity_move(entity_t *entity, float x, float y, float z) {
                 entity->fire = 300;
             }
         }
-    }else if(entity->fire <= 0) {
+    } else if(entity->fire <= 0) {
         entity->fire = -entity->fire_resistance;
     }
 
@@ -396,7 +396,7 @@ void entity_push(entity_t *a, entity_t *b) {
     float z_diff = b->z - a->z;
     float distance = x_diff * x_diff + z_diff * z_diff;
     if(distance < 0.01) return;
-    
+
     distance = sqrt(distance);
     x_diff /= distance;
     z_diff /= distance;
@@ -479,20 +479,33 @@ void entity_player_touch(entity_t *entity, entity_t *player) {
 
 char *entity_get_name(entity_t *entity) {
     switch(entity->type) {
-        case ENTITY_ARROW: return "Arrow";
-        case ENTITY_ITEM: return "Item";
-        case ENTITY_PAINTING: return "Painting";
-        case ENTITY_MOB: return "Mob";
+        case ENTITY_ARROW:
+            return "Arrow";
+        case ENTITY_ITEM:
+            return "Item";
+        case ENTITY_PAINTING:
+            return "Painting";
+        case ENTITY_MOB:
+            return "Mob";
         // monster
-        case ENTITY_MOB_CREEPER: return "Creeper";
-        case ENTITY_MOB_SKELETON: return "Skeleton";
-        case ENTITY_MOB_SPIDER: return "Spider";
-        case ENTITY_MOB_GIANT: return "Giant";
-        case ENTITY_MOB_ZOMBIE: return "Zombie";
-        case ENTITY_MOB_PIG: return "Pig";
-        case ENTITY_MOB_SHEEP: return "Sheep";
-        case ENTITY_PRIMED_TNT: return "PrimedTnt";
-        default: return NULL;
+        case ENTITY_MOB_CREEPER:
+            return "Creeper";
+        case ENTITY_MOB_SKELETON:
+            return "Skeleton";
+        case ENTITY_MOB_SPIDER:
+            return "Spider";
+        case ENTITY_MOB_GIANT:
+            return "Giant";
+        case ENTITY_MOB_ZOMBIE:
+            return "Zombie";
+        case ENTITY_MOB_PIG:
+            return "Pig";
+        case ENTITY_MOB_SHEEP:
+            return "Sheep";
+        case ENTITY_PRIMED_TNT:
+            return "PrimedTnt";
+        default:
+            return NULL;
     }
 }
 
@@ -516,20 +529,45 @@ int entity_get_type(char *name) {
 
 void entity_get_constructor(entity_t *entity, world_t *world, uint8_t type) {
     switch(type) {
-        case ENTITY_ARROW: entity_arrow_create(entity, world, NULL, 0, 0, 0, 0, 0, 0); break;
-        case ENTITY_ITEM: entity_item_create(entity, world, 0, 0, 0, item_stack_create(0, 0, 0)); break;
-        case ENTITY_PAINTING: entity_painting_create(entity, world, 0, 0, 0, 0); break;
-        case ENTITY_MOB: mob_create(entity, world); break;
+        case ENTITY_ARROW:
+            entity_arrow_create(entity, world, NULL, 0, 0, 0, 0, 0, 0);
+            break;
+        case ENTITY_ITEM:
+            entity_item_create(entity, world, 0, 0, 0, item_stack_create(0, 0, 0));
+            break;
+        case ENTITY_PAINTING:
+            entity_painting_create(entity, world, 0, 0, 0, 0);
+            break;
+        case ENTITY_MOB:
+            mob_create(entity, world);
+            break;
         // monster
-        case ENTITY_MOB_CREEPER: mob_creeper_create(entity, world, 0, 0, 0); break;
-        case ENTITY_MOB_SKELETON: mob_skeleton_create(entity, world, 0, 0, 0); break;
-        case ENTITY_MOB_SPIDER: mob_spider_create(entity, world, 0, 0, 0); break;
-        case ENTITY_MOB_GIANT: mob_giant_create(entity, world, 0, 0, 0); break;
-        case ENTITY_MOB_ZOMBIE: mob_zombie_create(entity, world, 0, 0, 0); break;
-        case ENTITY_MOB_PIG: mob_pig_create(entity, world, 0, 0, 0); break;
-        case ENTITY_MOB_SHEEP: mob_sheep_create(entity, world, 0, 0, 0); break;
-        case ENTITY_PRIMED_TNT: entity_primed_tnt_create(entity, world, 0, 0, 0); break;
-        default: break;
+        case ENTITY_MOB_CREEPER:
+            mob_creeper_create(entity, world, 0, 0, 0);
+            break;
+        case ENTITY_MOB_SKELETON:
+            mob_skeleton_create(entity, world, 0, 0, 0);
+            break;
+        case ENTITY_MOB_SPIDER:
+            mob_spider_create(entity, world, 0, 0, 0);
+            break;
+        case ENTITY_MOB_GIANT:
+            mob_giant_create(entity, world, 0, 0, 0);
+            break;
+        case ENTITY_MOB_ZOMBIE:
+            mob_zombie_create(entity, world, 0, 0, 0);
+            break;
+        case ENTITY_MOB_PIG:
+            mob_pig_create(entity, world, 0, 0, 0);
+            break;
+        case ENTITY_MOB_SHEEP:
+            mob_sheep_create(entity, world, 0, 0, 0);
+            break;
+        case ENTITY_PRIMED_TNT:
+            entity_primed_tnt_create(entity, world, 0, 0, 0);
+            break;
+        default:
+            break;
     }
 }
 
@@ -549,7 +587,7 @@ void entity_create_from_nbt(entity_t *entity, nbt_base_t *nbt, world_t *world) {
     entity_get_constructor(entity, world, type);
     if(entity) {
         entity->read_nbt(entity, nbt);
-    }else {
+    } else {
         printf("Skipping Entity with id %s\n", name);
     }
 }

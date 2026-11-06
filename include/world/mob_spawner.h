@@ -10,4 +10,4 @@ typedef struct mob_spawner_s {
 } mob_spawner_t;
 
 mob_spawner_t mob_spawner_create(struct world_s *world);
-void mob_spawner_tick(mob_spawner_t *spawner, int world_size, entity_t *entity, progress_bar_t *progress_bar) ;
+void mob_spawner_tick(mob_spawner_t *spawner, int world_size, entity_t *entity, progress_bar_t *progress_bar);

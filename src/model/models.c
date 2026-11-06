@@ -28,15 +28,25 @@ models_t models_create() {
 
 model_t *models_get(models_t *models, model_type_t type) {
     switch(type) {
-        case MODEL_CREEPER: return &models->creeper;
-        case MODEL_PIG: return &models->pig;
-        case MODEL_SHEEP: return &models->sheep;
-        case MODEL_SHEEP_FUR: return &models->sheep_fur;
-        case MODEL_SKELETON: return &models->skeleton;
-        case MODEL_SPIDER: return &models->spider;
-        case MODEL_ZOMBIE: return &models->zombie;
-        case MODEL_QUADRUPED: return &models->quadruped;
-        case MODEL_HUMANOID: return &models->humanoid;
-        default: return &models->humanoid;
+        case MODEL_CREEPER:
+            return &models->creeper;
+        case MODEL_PIG:
+            return &models->pig;
+        case MODEL_SHEEP:
+            return &models->sheep;
+        case MODEL_SHEEP_FUR:
+            return &models->sheep_fur;
+        case MODEL_SKELETON:
+            return &models->skeleton;
+        case MODEL_SPIDER:
+            return &models->spider;
+        case MODEL_ZOMBIE:
+            return &models->zombie;
+        case MODEL_QUADRUPED:
+            return &models->quadruped;
+        case MODEL_HUMANOID:
+            return &models->humanoid;
+        default:
+            return &models->humanoid;
     }
 }

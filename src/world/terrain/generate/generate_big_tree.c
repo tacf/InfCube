@@ -41,8 +41,10 @@ int check_line(generate_big_tree_t *this, vec3_t start_vec, vec3_t end_vec) {
     uint8_t sec_2 = coord_pairs[prim_i + 3];
     int sign;
 
-    if(delta[prim_i] > 0) sign = 1;
-    else sign = -1;
+    if(delta[prim_i] > 0)
+        sign = 1;
+    else
+        sign = -1;
 
     double sec_fac_1 = (double)delta[sec_1] / (double)delta[prim_i];
     double sec_fac_2 = (double)delta[sec_2] / (double)delta[prim_i];
@@ -84,16 +86,16 @@ uint8_t check_position(generate_big_tree_t *this) {
 }
 
 float tree_shape(generate_big_tree_t *this, int y) {
-    if ((double)y < (double)this->height_limit * 0.3)
+    if((double)y < (double)this->height_limit * 0.3)
         return -1.618f;
 
     float half = (float)this->height_limit / 2.0f;
     float dy = half - (float)y;
     float result;
 
-    if (dy == 0.0f)
+    if(dy == 0.0f)
         result = half;
-    else if (fabsf(dy) >= half)
+    else if(fabsf(dy) >= half)
         result = 0.0f;
     else
         result = sqrtf(half * half - dy * dy);
@@ -127,7 +129,7 @@ void prepare(generate_big_tree_t *this) {
 
     while(rel_y >= 0) {
         float shapefac = tree_shape(this, rel_y);
-        if (shapefac < 0.0f) {
+        if(shapefac < 0.0f) {
             foliage_y--;
             rel_y--;
             continue;
@@ -148,7 +150,7 @@ void prepare(generate_big_tree_t *this) {
                 double branch_drop = dist * this->branch_slope;
 
                 vec3_t base = this->origin;
-                if ((double)foliage_y - branch_drop > trunk_top)
+                if((double)foliage_y - branch_drop > trunk_top)
                     base.y = trunk_top;
                 else
                     base.y = (int)((double)foliage_y - branch_drop);
@@ -175,32 +177,32 @@ void prepare(generate_big_tree_t *this) {
 
 void cross_section(generate_big_tree_t *this, int x, int y, int z, float radius, uint8_t direction, uint8_t block_id) {
     int rad = (int)(radius + 0.618);
-    for (int dx = -rad; dx <= rad; ++dx) {
-        for (int dz = -rad; dz <= rad; ++dz) {
+    for(int dx = -rad; dx <= rad; ++dx) {
+        for(int dz = -rad; dz <= rad; ++dz) {
             double dist = pow(fabs(dx) + 0.5, 2) + pow(fabs(dz) + 0.5, 2);
-            if (dist > radius * radius) continue;
+            if(dist > radius * radius) continue;
             int px = x + dx;
             int pz = z + dz;
             uint8_t existing = world_get_block(this->world, px, y, pz);
-            if (existing != blocks.air.id && existing != blocks.leaves.id) continue;
+            if(existing != blocks.air.id && existing != blocks.leaves.id) continue;
             world_set_block_no_update(this->world, px, y, pz, block_id);
         }
     }
 }
 void foliage_cluster(generate_big_tree_t *this, int x, int y, int z) {
     int top_y = y + this->foliage_height;
-    for (int cy = y; cy < top_y; ++cy) {
+    for(int cy = y; cy < top_y; ++cy) {
         int local_y = cy - y;
         float radius;
 
-        if (local_y < 0 || local_y >= this->foliage_height)
+        if(local_y < 0 || local_y >= this->foliage_height)
             radius = -1.0f;
-        else if (local_y == 0 || local_y == this->foliage_height - 1)
+        else if(local_y == 0 || local_y == this->foliage_height - 1)
             radius = 2.0f;
         else
             radius = 3.0f;
 
-        if (radius < 0.0f)
+        if(radius < 0.0f)
             continue;
 
         cross_section(this, x, cy, z, radius, 0, blocks.leaves.id);
@@ -226,8 +228,10 @@ void limb(generate_big_tree_t *this, vec3_t start_vec, vec3_t end_vec, uint8_t b
     uint8_t sec_2 = coord_pairs[prim_i + 3];
     int sign;
 
-    if(delta[prim_i] > 0) sign = 1;
-    else sign = -1;
+    if(delta[prim_i] > 0)
+        sign = 1;
+    else
+        sign = -1;
 
     double sec_fac_1 = (double)delta[sec_1] / (double)delta[prim_i];
     double sec_fac_2 = (double)delta[sec_2] / (double)delta[prim_i];
@@ -267,11 +271,14 @@ void make_trunk(generate_big_tree_t *this) {
     limb(this, start_coord, end_coord, blocks.log.id);
 
     if(this->trunk_width == 2) {
-        start_coord.x += 1; end_coord.x += 1;
+        start_coord.x += 1;
+        end_coord.x += 1;
         limb(this, start_coord, end_coord, blocks.log.id);
-        start_coord.z += 1; end_coord.z += 1;
+        start_coord.z += 1;
+        end_coord.z += 1;
         limb(this, start_coord, end_coord, blocks.log.id);
-        start_coord.x -= 1; end_coord.x -= 1;
+        start_coord.x -= 1;
+        end_coord.x -= 1;
         limb(this, start_coord, end_coord, blocks.log.id);
     }
 }

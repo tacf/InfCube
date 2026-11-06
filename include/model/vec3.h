@@ -3,7 +3,10 @@
 #include <math.h>
 #include <stdint.h>
 
-#define vec3_null (vec3_t){ INFINITY, INFINITY, INFINITY }
+#define vec3_null                    \
+    (vec3_t) {                       \
+        INFINITY, INFINITY, INFINITY \
+    }
 
 typedef struct {
     double x;

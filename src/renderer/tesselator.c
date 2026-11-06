@@ -49,7 +49,7 @@ void tesselator_end() {
         if(g_tesselator.has_texture) {
             if(g_tesselator.use_vbo) {
                 glTexCoordPointer(2, GL_FLOAT, 32, (void *)(3 * sizeof(float)));
-            }else {
+            } else {
                 glTexCoordPointer(2, GL_FLOAT, 32, &g_tesselator.byte_buffer[3 * sizeof(float)]);
             }
             glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -66,7 +66,7 @@ void tesselator_end() {
 
         if(g_tesselator.use_vbo) {
             glVertexPointer(3, GL_FLOAT, 32, (void *)0);
-        }else {
+        } else {
             glVertexPointer(3, GL_FLOAT, 32, g_tesselator.byte_buffer);
         }
 

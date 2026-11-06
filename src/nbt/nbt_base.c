@@ -89,7 +89,7 @@ int8_t gz_read_byte(gzFile file) {
 }
 
 int16_t gz_read_short(gzFile file) {
-    uint8_t buf[2] = {0};
+    uint8_t buf[2] = { 0 };
     if(gzread(file, buf, 2) != 2) {
         fprintf(stderr, "Failed to read short\n");
         return 0;
@@ -98,7 +98,7 @@ int16_t gz_read_short(gzFile file) {
 }
 
 int32_t gz_read_int(gzFile file) {
-    uint8_t buf[4] = {0};
+    uint8_t buf[4] = { 0 };
     if(gzread(file, buf, 4) != 4) {
         fprintf(stderr, "Failed to read int\n");
         return 0;
@@ -107,13 +107,13 @@ int32_t gz_read_int(gzFile file) {
 }
 
 int64_t gz_read_long(gzFile file) {
-    uint8_t buf[8] = {0};
+    uint8_t buf[8] = { 0 };
     if(gzread(file, buf, 8) != 8) {
         fprintf(stderr, "Failed to read long\n");
         return 0;
     }
     uint64_t v = ((uint64_t)buf[0] << 56) | ((uint64_t)buf[1] << 48) | ((uint64_t)buf[2] << 40) | ((uint64_t)buf[3] << 32)
-        | ((uint64_t)buf[4] << 24) | ((uint64_t)buf[5] << 16) | ((uint64_t)buf[6] << 8) | (uint64_t)buf[7];
+                 | ((uint64_t)buf[4] << 24) | ((uint64_t)buf[5] << 16) | ((uint64_t)buf[6] << 8) | (uint64_t)buf[7];
     return (int64_t)v;
 }
 
@@ -125,13 +125,13 @@ float gz_read_float(gzFile file) {
 }
 
 double gz_read_double(gzFile file) {
-    uint8_t buf[8] = {0};
+    uint8_t buf[8] = { 0 };
     if(gzread(file, buf, 8) != 8) {
         fprintf(stderr, "Failed to read double\n");
         return 0.0;
     }
     uint64_t bits = ((uint64_t)buf[0] << 56) | ((uint64_t)buf[1] << 48) | ((uint64_t)buf[2] << 40) | ((uint64_t)buf[3] << 32)
-        | ((uint64_t)buf[4] << 24) | ((uint64_t)buf[5] << 16) | ((uint64_t)buf[6] << 8) | (uint64_t)buf[7];
+                    | ((uint64_t)buf[4] << 24) | ((uint64_t)buf[5] << 16) | ((uint64_t)buf[6] << 8) | (uint64_t)buf[7];
     double value = 0.0;
     memcpy(&value, &bits, sizeof(bits));
     return value;

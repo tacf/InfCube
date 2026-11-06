@@ -6,7 +6,7 @@
 ai_t ai_sheep_create(struct mob_s *mob) {
     ai_t ai = ai_basic_create(mob->entity->world, mob);
     ai.update = ai_sheep_update;
-    
+
     return ai;
 }
 
@@ -21,7 +21,7 @@ void ai_sheep_update(ai_t *ai) {
     if(ai->mob->is_grazing) {
         if(world_get_block(ai->world, x, y, z) != blocks.grass.id) {
             ai->mob->is_grazing = 0;
-        }else {
+        } else {
             if(++ai->mob->grazing_time == 60) {
                 world_set_block_with_update(ai->world, x, y, z, blocks.dirt.id);
                 if(random_next_int_range(&ai->world->random, 6) == 0) {
@@ -33,7 +33,7 @@ void ai_sheep_update(ai_t *ai) {
             ai->za = 0;
             ai->mob->entity->x_rot = 40.0 + ((ai->mob->grazing_time / 2) % 2) * 10.0;
         }
-    }else {
+    } else {
         if(world_get_block(ai->world, x, y, z) == blocks.grass.id) {
             ai->mob->is_grazing = 1;
             ai->mob->grazing_time = 0;

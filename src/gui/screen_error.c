@@ -5,7 +5,7 @@ screen_t screen_error_create(char *title, char *text) {
     screen.type = SCREEN_TYPE_ERROR;
     screen.title = title;
     screen.text = text;
-    
+
     screen.on_open = screen_error_on_open;
     screen.render = screen_error_render;
     screen.on_key_pressed = screen_error_on_key_pressed;

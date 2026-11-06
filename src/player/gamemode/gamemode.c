@@ -47,7 +47,7 @@ uint8_t gamemode_destroy_block(struct gamemode_s *gamemode, int x, int y, int z)
 void gamemode_set_partial_time(struct gamemode_s *gamemode, float partial_tick) {
     if(gamemode->destroy_progress <= 0) {
         gamemode->infcube->renderer_world.destroy_progress = 0;
-    }else {
+    } else {
         partial_tick = gamemode->destroy_progress_old + (gamemode->destroy_progress - gamemode->destroy_progress_old) * partial_tick;
         gamemode->infcube->renderer_world.destroy_progress = partial_tick;
     }

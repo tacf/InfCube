@@ -3,7 +3,7 @@
 #include <stdint.h>
 
 typedef struct {
-    int width; // = 200
+    int width;  // = 200
     int height; // = 20
     int x;
     int y;

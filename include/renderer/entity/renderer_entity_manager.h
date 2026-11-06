@@ -25,7 +25,7 @@ typedef struct renderer_entity_list_s {
 typedef struct renderer_entity_manager_s {
     renderer_entity_list_t list;
     world_t *world;
-    
+
     double render_x;
     double render_y;
     double render_z;

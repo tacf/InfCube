@@ -5,7 +5,7 @@
 typedef struct {
     uint32_t element_size;
     uint32_t capacity; // Amount of memory (in increments of element_size) allocated to the list, not necessarily how much is used
-    uint32_t length; // Number of elements in array
+    uint32_t length;   // Number of elements in array
 } array_list_t;
 
 void *array_list_create(uint32_t element_size);

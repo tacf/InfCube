@@ -54,7 +54,7 @@ void screen_container_render(screen_t *screen, int mx, int my, float partial_tic
                 gui_blit(slot_x, slot_y, texture % 16 << 4, texture / 16 << 4, 16, 16, 0);
                 glEnable(GL_LIGHTING);
             }
-        }else {
+        } else {
             renderer_entity_item_render_gui(screen->infcube, &item, slot_x, slot_y);
             renderer_entity_item_render_overlay_gui(&screen->infcube->font, &item, slot_x, slot_y);
         }
@@ -110,7 +110,7 @@ void screen_container_on_mouse_clicked(screen_t *screen, int mx, int my, int but
                 int pickup_count = 0;
                 if(button == SDL_BUTTON_LEFT) {
                     pickup_count = item.stack_size;
-                }else {
+                } else {
                     pickup_count = (item.stack_size + 1) / 2;
                 }
 
@@ -121,12 +121,12 @@ void screen_container_on_mouse_clicked(screen_t *screen, int mx, int my, int but
                 }
 
                 slot->on_pickup(slot);
-            }else if(item.item_id == 0 && screen->held_item.item_id != 0 && slot->can_put_item(slot, screen->held_item)) {
+            } else if(item.item_id == 0 && screen->held_item.item_id != 0 && slot->can_put_item(slot, screen->held_item)) {
                 // placing
                 int place_count = 0;
                 if(button == SDL_BUTTON_LEFT) {
                     place_count = screen->held_item.stack_size;
-                }else {
+                } else {
                     place_count = 1;
                 }
 
@@ -138,7 +138,7 @@ void screen_container_on_mouse_clicked(screen_t *screen, int mx, int my, int but
                 if(screen->held_item.stack_size == 0) {
                     screen->held_item = item_stack_create(0, 0, 0);
                 }
-            }else {
+            } else {
                 // cursor and slot both have items
                 if(item.item_id == 0 || screen->held_item.item_id == 0) return;
 
@@ -171,7 +171,7 @@ void screen_container_on_mouse_clicked(screen_t *screen, int mx, int my, int but
                     }
                     slot_put_stack(slot, screen->held_item);
                     screen->held_item = item;
-                }else {
+                } else {
                     // combine two stacks
                     if(button == SDL_BUTTON_LEFT) {
                         int count = screen->held_item.stack_size;
@@ -189,7 +189,7 @@ void screen_container_on_mouse_clicked(screen_t *screen, int mx, int my, int but
                         }
                         item.stack_size += count;
                         slot->inventory->set_slot(slot->inventory, slot->index, item);
-                    }else if(button == SDL_BUTTON_RIGHT) {
+                    } else if(button == SDL_BUTTON_RIGHT) {
                         int count = 1;
                         if(count > slot->inventory->stack_limit - item.stack_size) {
                             count = slot->inventory->stack_limit - item.stack_size;
@@ -208,7 +208,7 @@ void screen_container_on_mouse_clicked(screen_t *screen, int mx, int my, int but
                     }
                 }
             }
-        }else if(screen->held_item.item_id != 0 && screen->held_item.stack_size != 0) {
+        } else if(screen->held_item.item_id != 0 && screen->held_item.stack_size != 0) {
             // cursor outside of inventory
             int width = (screen->width - screen->container_x) / 2;
             int height = (screen->height - screen->container_y) / 2;

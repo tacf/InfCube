@@ -27,7 +27,7 @@ uint8_t ai_creeper_attack(ai_t *ai) {
 void ai_creeper_before_removal(ai_t *ai) {
     float radius = 4.0;
     world_explode(ai->mob->entity->world, ai->mob->entity, ai->mob->entity->x, ai->mob->entity->y, ai->mob->entity->z, radius);
-    
+
     for(int i = 0; i < 500; i++) {
         float x = random_next_double(ai->random) * radius / 4.0;
         float y = random_next_double(ai->random) * radius / 4.0;

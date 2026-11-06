@@ -20,7 +20,7 @@ block_t block_gears_create() {
 }
 
 AABB_t block_gears_get_collision_aabb(block_t *block, int x, int y, int z) {
-    return (AABB_t){ .null = 1 }; 
+    return (AABB_t){ .null = 1 };
 }
 
 uint8_t block_gears_get_drop_count(block_t *block, random_t *random) {

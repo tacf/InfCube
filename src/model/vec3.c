@@ -2,16 +2,16 @@
 #include <math.h>
 
 vec3_t vec3_vector_to(vec3_t a, vec3_t b) {
-    return (vec3_t){a.x - b.x, a.y - b.y, a.z - b.z};
+    return (vec3_t){ a.x - b.x, a.y - b.y, a.z - b.z };
 }
 
 vec3_t vec3_normalize(vec3_t a) {
     float magnitude = sqrt(a.x * a.x + a.y * a.y + a.z * a.z);
-    return (vec3_t){a.x / magnitude, a.y / magnitude, a.z / magnitude};
+    return (vec3_t){ a.x / magnitude, a.y / magnitude, a.z / magnitude };
 }
 
 vec3_t vec3_add(vec3_t a, vec3_t b) {
-    return (vec3_t){a.x + b.x, a.y + b.y, a.z + b.z};
+    return (vec3_t){ a.x + b.x, a.y + b.y, a.z + b.z };
 }
 
 vec3_t vec3_subtract(vec3_t a, vec3_t b) {

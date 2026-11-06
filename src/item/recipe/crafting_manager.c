@@ -102,7 +102,7 @@ uint8_t crafting_manager_matches(recipe_t *recipe, int16_t *items, int x, int y,
             if(xx >= 0 && yy >= 0 && xx < recipe->width && yy < recipe->height) {
                 if(mirror) {
                     expected = recipe->ingredients[(recipe->width - xx - 1) + yy * recipe->width];
-                }else {
+                } else {
                     expected = recipe->ingredients[yy * recipe->width + xx];
                 }
             }

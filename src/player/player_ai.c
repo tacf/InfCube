@@ -36,7 +36,7 @@ void player_ai_tick(struct ai_s *proto_ai) {
 
     if(!entity_on_ground(player->entity)) {
         bob = 0;
-    }else {
+    } else {
         tilt = 0;
     }
     player->bob += (bob - player->bob) * 0.4;

@@ -420,7 +420,7 @@ void renderer_block_render_fire(renderer_block_t *renderer, block_t *block, doub
                 tesselator_vertex_uv(x0, y, z + 1, u1, v1);
                 tesselator_vertex_uv(x0, y, z, u0, v1);
                 tesselator_vertex_uv(x1, y - 0.2, z, u0, v0);
-            }else {
+            } else {
                 tesselator_vertex_uv(x, y - 0.2, z1, u1, v0);
                 tesselator_vertex_uv(x, y, z0, u1, v1);
                 tesselator_vertex_uv(x + 1, y, z0, u0, v1);
@@ -435,7 +435,7 @@ void renderer_block_render_fire(renderer_block_t *renderer, block_t *block, doub
                 tesselator_vertex_uv(x, y - 0.2, z0, u0, v0);
             }
         }
-    }else {
+    } else {
         double x0 = x + 0.5 + 0.2;
         double x1 = x + 0.5 - 0.2;
         double z0 = z + 0.5 + 0.2;
@@ -528,31 +528,31 @@ void renderer_block_render_gears(renderer_block_t *renderer, block_t *block, dou
     double u1_alt = (double)(texture_x_alt + 15.99) / 256.0;
 
     if(world_is_solid(renderer->world, x - 1, y, z)) {
-        tesselator_vertex_uv(x + 0.05, y + 1.0 + 2.0/16.0, z + 1.0 + 2.0/16.0, u0, v0);
-        tesselator_vertex_uv(x + 0.05, y - 2.0/16.0, z + 1.0 + 2.0/16.0, u0, v1);
-        tesselator_vertex_uv(x + 0.05, y - 2.0/16.0, z - 2.0/16.0, u1, v1);
-        tesselator_vertex_uv(x + 0.05, y + 1.0 + 2.0/16.0, z - 2.0/16.0, u1, v0);
+        tesselator_vertex_uv(x + 0.05, y + 1.0 + 2.0 / 16.0, z + 1.0 + 2.0 / 16.0, u0, v0);
+        tesselator_vertex_uv(x + 0.05, y - 2.0 / 16.0, z + 1.0 + 2.0 / 16.0, u0, v1);
+        tesselator_vertex_uv(x + 0.05, y - 2.0 / 16.0, z - 2.0 / 16.0, u1, v1);
+        tesselator_vertex_uv(x + 0.05, y + 1.0 + 2.0 / 16.0, z - 2.0 / 16.0, u1, v0);
     }
 
     if(world_is_solid(renderer->world, x + 1, y, z)) {
-        tesselator_vertex_uv(x + 1.0 - 0.05, y - 2.0/16.0, z + 1.0 + 2.0/16.0, u1, v1);
-        tesselator_vertex_uv(x + 1.0 - 0.05, y + 1.0 + 2.0/16.0, z + 1.0 + 2.0/16.0, u1, v0);
-        tesselator_vertex_uv(x + 1.0 - 0.05, y + 1.0 + 2.0/16.0, z - 2.0/16.0, u0, v0);
-        tesselator_vertex_uv(x + 1.0 - 0.05, y - 2.0/16.0, z - 2.0/16.0, u0, v1);
+        tesselator_vertex_uv(x + 1.0 - 0.05, y - 2.0 / 16.0, z + 1.0 + 2.0 / 16.0, u1, v1);
+        tesselator_vertex_uv(x + 1.0 - 0.05, y + 1.0 + 2.0 / 16.0, z + 1.0 + 2.0 / 16.0, u1, v0);
+        tesselator_vertex_uv(x + 1.0 - 0.05, y + 1.0 + 2.0 / 16.0, z - 2.0 / 16.0, u0, v0);
+        tesselator_vertex_uv(x + 1.0 - 0.05, y - 2.0 / 16.0, z - 2.0 / 16.0, u0, v1);
     }
 
     if(world_is_solid(renderer->world, x, y, z - 1)) {
-        tesselator_vertex_uv(x + 1.0 + 2.0/16.0, y - 2.0/16.0, z + 0.05, u1_alt, v1);
-        tesselator_vertex_uv(x + 1.0 + 2.0/16.0, y + 1.0 + 2.0/16.0, z + 0.05, u1_alt, v0);
-        tesselator_vertex_uv(x - 2.0/16.0, y + 1.0 + 2.0/16.0, z + 0.05, u0_alt, v0);
-        tesselator_vertex_uv(x - 2.0/16.0, y - 2.0/16.0, z + 0.05, u0_alt, v1);
+        tesselator_vertex_uv(x + 1.0 + 2.0 / 16.0, y - 2.0 / 16.0, z + 0.05, u1_alt, v1);
+        tesselator_vertex_uv(x + 1.0 + 2.0 / 16.0, y + 1.0 + 2.0 / 16.0, z + 0.05, u1_alt, v0);
+        tesselator_vertex_uv(x - 2.0 / 16.0, y + 1.0 + 2.0 / 16.0, z + 0.05, u0_alt, v0);
+        tesselator_vertex_uv(x - 2.0 / 16.0, y - 2.0 / 16.0, z + 0.05, u0_alt, v1);
     }
 
     if(world_is_solid(renderer->world, x, y, z + 1)) {
-        tesselator_vertex_uv(x + 1.0 + 2.0/16.0, y + 1.0 + 2.0/16.0, z + 1.0 - 0.05, u0_alt, v0);
-        tesselator_vertex_uv(x + 1.0 + 2.0/16.0, y - 2.0/16.0, z + 1.0 - 0.05, u0_alt, v1);
-        tesselator_vertex_uv(x - 2.0/16.0, y - 2.0/16.0, z + 1.0 - 0.05, u1_alt, v1);
-        tesselator_vertex_uv(x - 2.0/16.0, y + 1.0 + 2.0/16.0, z + 1.0 - 0.05, u1_alt, v0);
+        tesselator_vertex_uv(x + 1.0 + 2.0 / 16.0, y + 1.0 + 2.0 / 16.0, z + 1.0 - 0.05, u0_alt, v0);
+        tesselator_vertex_uv(x + 1.0 + 2.0 / 16.0, y - 2.0 / 16.0, z + 1.0 - 0.05, u0_alt, v1);
+        tesselator_vertex_uv(x - 2.0 / 16.0, y - 2.0 / 16.0, z + 1.0 - 0.05, u1_alt, v1);
+        tesselator_vertex_uv(x - 2.0 / 16.0, y + 1.0 + 2.0 / 16.0, z + 1.0 - 0.05, u1_alt, v0);
     }
 }
 
@@ -585,13 +585,13 @@ uint8_t renderer_block_render(renderer_block_t *renderer, block_t *block, int x,
         tesselator_color_float(brightness, brightness, brightness, 1.0);
         if(metadata == 1) {
             renderer_block_render_torch(renderer, block, x - 0.099999994, y + 0.2, z, -0.4, 0);
-        }else if(metadata == 2) {
+        } else if(metadata == 2) {
             renderer_block_render_torch(renderer, block, x + 0.099999994, y + 0.2, z, 0.4, 0);
-        }else if(metadata == 3) {
+        } else if(metadata == 3) {
             renderer_block_render_torch(renderer, block, x, y + 0.2, z - 0.099999994, 0, -0.4);
-        }else if(metadata == 4) {
+        } else if(metadata == 4) {
             renderer_block_render_torch(renderer, block, x, y + 0.2, z + 0.099999994, 0, 0.4);
-        }else {
+        } else {
             renderer_block_render_torch(renderer, block, x, y, z, 0, 0);
         }
 

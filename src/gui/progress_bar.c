@@ -79,10 +79,10 @@ void progress_bar_set_progress(progress_bar_t *bar, int progress) {
             tesselator_end();
             glEnable(GL_TEXTURE_2D);
         }
-        
+
         font_render(&bar->infcube->font, bar->title, (a1 - font_get_width(&bar->infcube->font, bar->title)) / 2, a2 / 2 - 4 - 16, 0xFFFFFFFF);
         font_render(&bar->infcube->font, bar->text, (a1 - font_get_width(&bar->infcube->font, bar->text)) / 2, a2 / 2 - 4 + 8, 0xFFFFFFFF);
-        
+
         while(SDL_PollEvent(&(SDL_Event){ 0 }));
         SDL_GL_SwapWindow(bar->infcube->window);
     }

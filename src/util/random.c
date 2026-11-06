@@ -5,8 +5,8 @@
 #include <stdlib.h>
 
 #define JAVA_RAND_MULTIPLIER 0x5DEECE66DULL
-#define JAVA_RAND_ADDEND     0xBULL
-#define JAVA_RAND_MASK       ((1ULL << 48) - 1)
+#define JAVA_RAND_ADDEND 0xBULL
+#define JAVA_RAND_MASK ((1ULL << 48) - 1)
 
 random_t random_create(uint64_t seed) {
     random_t random = { 0 };
@@ -14,7 +14,7 @@ random_t random_create(uint64_t seed) {
     random_set_seed(&random, seed);
     random.state = random.seed;
     random.last_normal = 0x7ff0000000000000; //infinity
-    
+
     return random;
 }
 
@@ -36,18 +36,18 @@ uint64_t random_next_int_range(random_t *random, uint64_t max) {
     uint64_t adjusted_max = max - 1;
     int n = (int)(adjusted_max - 0 + 1);
     if(n <= 0) return 0;
-    
+
     if((n & -n) == n) {
         int64_t val = (int64_t)random_next_bits(random, 31);
         return 0 + (int)((n * val) >> 31);
     }
-    
+
     int bits, val;
     do {
         bits = random_next_bits(random, 31);
         val = bits % n;
-    }while(bits - val + (n - 1) < 0);
-    
+    } while(bits - val + (n - 1) < 0);
+
     return 0 + val;
 }
 
@@ -85,7 +85,7 @@ double random_next_normal(random_t *random, double stddev) {
 
 int64_t random_next_long(random_t *random) {
     int64_t high = (int64_t)random_next_bits(random, 32);
-    int64_t low  = (int64_t)random_next_bits(random, 32);
+    int64_t low = (int64_t)random_next_bits(random, 32);
     return (high << 32) + (low & 0xFFFFFFFFL);
 }
 

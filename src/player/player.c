@@ -58,7 +58,7 @@ void player_set_key(player_t *player, uint8_t key, uint8_t state) {
 uint8_t player_can_harvest_block(entity_t *player, block_t *block) {
     if(block->material != &materials.rock && block->material != &materials.metal) {
         return 1;
-    }else {
+    } else {
         item_stack_t item = inventory_player_get_selected(&player->mob->player->inventory);
         return item.item_id != 0 ? item_list[item.item_id].can_harvest_block(&item_list[item.item_id], block->id) : 0;
     }

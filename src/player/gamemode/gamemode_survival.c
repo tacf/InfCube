@@ -41,7 +41,7 @@ uint8_t gamemode_survival_destroy_block(struct gamemode_s *gamemode, int x, int 
         inventory_player_set_slot(&gamemode->infcube->player.mob->player->inventory, gamemode->infcube->player.mob->player->inventory.selected, current_item);
     }
     if(broken && player_can_harvest_block(&gamemode->infcube->player, &block_list[block_id])) {
-        block_spawn_items(&block_list[block_id], gamemode->infcube->world, x, y, z, world_get_block_metadata(gamemode->infcube->world, x, y, z));   
+        block_spawn_items(&block_list[block_id], gamemode->infcube->world, x, y, z, world_get_block_metadata(gamemode->infcube->world, x, y, z));
     }
     return broken;
 }
@@ -61,7 +61,7 @@ void gamemode_survival_start_destroy_block(struct gamemode_s *gamemode, int x, i
 void gamemode_survival_continue_destroy_block(struct gamemode_s *gamemode, int x, int y, int z, uint8_t face) {
     if(gamemode->destroy_delay > 0) {
         gamemode->destroy_delay--;
-    }else {
+    } else {
         if(x == gamemode->x_destroy_block && y == gamemode->y_destroy_block && z == gamemode->z_destroy_block) {
             int block_id = world_get_block(gamemode->infcube->world, x, y, z);
             if(block_id != blocks.air.id) {
@@ -85,7 +85,7 @@ void gamemode_survival_continue_destroy_block(struct gamemode_s *gamemode, int x
                     gamemode->destroy_delay = 5;
                 }
             }
-        }else {
+        } else {
             gamemode->destroy_progress = 0;
             gamemode->destroy_progress_old = 0;
             gamemode->destroy_sound_counter = 0;

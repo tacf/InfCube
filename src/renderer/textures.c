@@ -58,7 +58,7 @@ int textures_load(textures_t *textures, const char *resource) {
         if(strcmp(textures->texture_names[i], resource) == 0) {
             loaded = 1;
             index = i;
-        }   
+        }
     }
     if(loaded) return textures->textures[index];
 
@@ -66,34 +66,146 @@ int textures_load(textures_t *textures, const char *resource) {
     int height = 0;
     uint8_t *p = NULL;
 
-    if(strcmp(resource, "clouds.png") == 0) { p = (uint8_t *)asset_clouds_rgba; width = asset_clouds_width; height = asset_clouds_height; }
-    if(strcmp(resource, "default.png") == 0) { p = (uint8_t *)asset_default_rgba; width = asset_default_width; height = asset_default_height; }
-    if(strcmp(resource, "dirt.png") == 0) { p = (uint8_t *)asset_dirt_rgba; width = asset_dirt_width; height = asset_dirt_height; }
-    if(strcmp(resource, "particles.png") == 0) { p = (uint8_t *)asset_particles_rgba; width = asset_particles_width; height = asset_particles_height; }
-    if(strcmp(resource, "rain.png") == 0) { p = (uint8_t *)asset_rain_rgba; width = asset_rain_width; height = asset_rain_height; }
-    if(strcmp(resource, "rock.png") == 0) { p = (uint8_t *)asset_rock_rgba; width = asset_rock_width; height = asset_rock_height; }
-    if(strcmp(resource, "terrain.png") == 0) { p = (uint8_t *)asset_terrain_rgba; width = asset_terrain_width; height = asset_terrain_height; }
-    if(strcmp(resource, "char.png") == 0) { p = (uint8_t *)asset_char_rgba; width = asset_char_width; height = asset_char_height; }
-    if(strcmp(resource, "water.png") == 0) { p = (uint8_t *)asset_water_rgba; width = asset_water_width; height = asset_water_height; }
-    if(strcmp(resource, "gui/gui.png") == 0) { p = (uint8_t *)asset_gui_rgba; width = asset_gui_width; height = asset_gui_height; }
-    if(strcmp(resource, "gui/icons.png") == 0) { p = (uint8_t *)asset_icons_rgba; width = asset_icons_width; height = asset_icons_height; }
-    if(strcmp(resource, "mob/creeper.png") == 0) { p = (uint8_t *)asset_creeper_rgba; width = asset_creeper_width; height = asset_creeper_height; }
-    if(strcmp(resource, "mob/pig.png") == 0) { p = (uint8_t *)asset_pig_rgba; width = asset_pig_width; height = asset_pig_height; }
-    if(strcmp(resource, "mob/sheep_fur.png") == 0) { p = (uint8_t *)asset_sheep_fur_rgba; width = asset_sheep_fur_width; height = asset_sheep_fur_height; }
-    if(strcmp(resource, "mob/sheep.png") == 0) { p = (uint8_t *)asset_sheep_rgba; width = asset_sheep_width; height = asset_sheep_height; }
-    if(strcmp(resource, "mob/skeleton.png") == 0) { p = (uint8_t *)asset_skeleton_rgba; width = asset_skeleton_width; height = asset_skeleton_height; }
-    if(strcmp(resource, "mob/spider.png") == 0) { p = (uint8_t *)asset_spider_rgba; width = asset_spider_width; height = asset_spider_height; }
-    if(strcmp(resource, "mob/zombie.png") == 0) { p = (uint8_t *)asset_zombie_rgba; width = asset_zombie_width; height = asset_zombie_height; }
-    if(strcmp(resource, "item/arrows.png") == 0) { p = (uint8_t *)asset_arrows_rgba; width = asset_arrows_width; height = asset_arrows_height; }
-    if(strcmp(resource, "gui/logo.png") == 0) { p = (uint8_t *)asset_logo_rgba; width = asset_logo_width; height = asset_logo_height; }
-    if(strcmp(resource, "terrain/sun.png") == 0) { p = (uint8_t *)asset_sun_rgba; width = asset_sun_width; height = asset_sun_height; }
-    if(strcmp(resource, "terrain/moon.png") == 0) { p = (uint8_t *)asset_moon_rgba; width = asset_moon_width; height = asset_moon_height; }
-    if(strcmp(resource, "gui/items.png") == 0) { p = (uint8_t *)asset_items_rgba; width = asset_items_width; height = asset_items_height; }
-    if(strcmp(resource, "gui/inventory.png") == 0) { p = (uint8_t *)asset_inventory_rgba; width = asset_inventory_width; height = asset_inventory_height; }
-    if(strcmp(resource, "gui/crafting.png") == 0) { p = (uint8_t *)asset_crafting_rgba; width = asset_crafting_width; height = asset_crafting_height; }
-    if(strcmp(resource, "gui/furnace.png") == 0) { p = (uint8_t *)asset_furnace_rgba; width = asset_furnace_width; height = asset_furnace_height; }
-    if(strcmp(resource, "gui/container.png") == 0) { p = (uint8_t *)asset_container_rgba; width = asset_container_width; height = asset_container_height; }
-    if(strcmp(resource, "shadow.png") == 0) { p = (uint8_t *)asset_shadow_rgba; width = asset_shadow_width; height = asset_shadow_height; }
+    if(strcmp(resource, "clouds.png") == 0) {
+        p = (uint8_t *)asset_clouds_rgba;
+        width = asset_clouds_width;
+        height = asset_clouds_height;
+    }
+    if(strcmp(resource, "default.png") == 0) {
+        p = (uint8_t *)asset_default_rgba;
+        width = asset_default_width;
+        height = asset_default_height;
+    }
+    if(strcmp(resource, "dirt.png") == 0) {
+        p = (uint8_t *)asset_dirt_rgba;
+        width = asset_dirt_width;
+        height = asset_dirt_height;
+    }
+    if(strcmp(resource, "particles.png") == 0) {
+        p = (uint8_t *)asset_particles_rgba;
+        width = asset_particles_width;
+        height = asset_particles_height;
+    }
+    if(strcmp(resource, "rain.png") == 0) {
+        p = (uint8_t *)asset_rain_rgba;
+        width = asset_rain_width;
+        height = asset_rain_height;
+    }
+    if(strcmp(resource, "rock.png") == 0) {
+        p = (uint8_t *)asset_rock_rgba;
+        width = asset_rock_width;
+        height = asset_rock_height;
+    }
+    if(strcmp(resource, "terrain.png") == 0) {
+        p = (uint8_t *)asset_terrain_rgba;
+        width = asset_terrain_width;
+        height = asset_terrain_height;
+    }
+    if(strcmp(resource, "char.png") == 0) {
+        p = (uint8_t *)asset_char_rgba;
+        width = asset_char_width;
+        height = asset_char_height;
+    }
+    if(strcmp(resource, "water.png") == 0) {
+        p = (uint8_t *)asset_water_rgba;
+        width = asset_water_width;
+        height = asset_water_height;
+    }
+    if(strcmp(resource, "gui/gui.png") == 0) {
+        p = (uint8_t *)asset_gui_rgba;
+        width = asset_gui_width;
+        height = asset_gui_height;
+    }
+    if(strcmp(resource, "gui/icons.png") == 0) {
+        p = (uint8_t *)asset_icons_rgba;
+        width = asset_icons_width;
+        height = asset_icons_height;
+    }
+    if(strcmp(resource, "mob/creeper.png") == 0) {
+        p = (uint8_t *)asset_creeper_rgba;
+        width = asset_creeper_width;
+        height = asset_creeper_height;
+    }
+    if(strcmp(resource, "mob/pig.png") == 0) {
+        p = (uint8_t *)asset_pig_rgba;
+        width = asset_pig_width;
+        height = asset_pig_height;
+    }
+    if(strcmp(resource, "mob/sheep_fur.png") == 0) {
+        p = (uint8_t *)asset_sheep_fur_rgba;
+        width = asset_sheep_fur_width;
+        height = asset_sheep_fur_height;
+    }
+    if(strcmp(resource, "mob/sheep.png") == 0) {
+        p = (uint8_t *)asset_sheep_rgba;
+        width = asset_sheep_width;
+        height = asset_sheep_height;
+    }
+    if(strcmp(resource, "mob/skeleton.png") == 0) {
+        p = (uint8_t *)asset_skeleton_rgba;
+        width = asset_skeleton_width;
+        height = asset_skeleton_height;
+    }
+    if(strcmp(resource, "mob/spider.png") == 0) {
+        p = (uint8_t *)asset_spider_rgba;
+        width = asset_spider_width;
+        height = asset_spider_height;
+    }
+    if(strcmp(resource, "mob/zombie.png") == 0) {
+        p = (uint8_t *)asset_zombie_rgba;
+        width = asset_zombie_width;
+        height = asset_zombie_height;
+    }
+    if(strcmp(resource, "item/arrows.png") == 0) {
+        p = (uint8_t *)asset_arrows_rgba;
+        width = asset_arrows_width;
+        height = asset_arrows_height;
+    }
+    if(strcmp(resource, "gui/logo.png") == 0) {
+        p = (uint8_t *)asset_logo_rgba;
+        width = asset_logo_width;
+        height = asset_logo_height;
+    }
+    if(strcmp(resource, "terrain/sun.png") == 0) {
+        p = (uint8_t *)asset_sun_rgba;
+        width = asset_sun_width;
+        height = asset_sun_height;
+    }
+    if(strcmp(resource, "terrain/moon.png") == 0) {
+        p = (uint8_t *)asset_moon_rgba;
+        width = asset_moon_width;
+        height = asset_moon_height;
+    }
+    if(strcmp(resource, "gui/items.png") == 0) {
+        p = (uint8_t *)asset_items_rgba;
+        width = asset_items_width;
+        height = asset_items_height;
+    }
+    if(strcmp(resource, "gui/inventory.png") == 0) {
+        p = (uint8_t *)asset_inventory_rgba;
+        width = asset_inventory_width;
+        height = asset_inventory_height;
+    }
+    if(strcmp(resource, "gui/crafting.png") == 0) {
+        p = (uint8_t *)asset_crafting_rgba;
+        width = asset_crafting_width;
+        height = asset_crafting_height;
+    }
+    if(strcmp(resource, "gui/furnace.png") == 0) {
+        p = (uint8_t *)asset_furnace_rgba;
+        width = asset_furnace_width;
+        height = asset_furnace_height;
+    }
+    if(strcmp(resource, "gui/container.png") == 0) {
+        p = (uint8_t *)asset_container_rgba;
+        width = asset_container_width;
+        height = asset_container_height;
+    }
+    if(strcmp(resource, "shadow.png") == 0) {
+        p = (uint8_t *)asset_shadow_rgba;
+        width = asset_shadow_width;
+        height = asset_shadow_height;
+    }
     //if(strcmp(resource, "armor/chain.png") == 0) { p = (uint8_t *)asset_chain_rgba; width = asset_chain_width; height = asset_chain_height; }
     //if(strcmp(resource, "armor/plate.png") == 0) { p = (uint8_t *)asset_plate_rgba; width = asset_plate_width; height = asset_plate_height; }
 
@@ -105,7 +217,7 @@ int textures_load(textures_t *textures, const char *resource) {
             uint8_t color[] = { (p[i + 0] * 30 + p[i + 1] * 59 + p[i + 2] * 11) / 100, (p[i + 0] * 30 + p[i + 1] * 70) / 100, (p[i + 0] * 30 + p[i + 2] * 70) / 100, p[i + 3] };
             memcpy(pixels + i, color, sizeof(color));
         }
-    }else {
+    } else {
         memcpy(pixels, p, 4 * width * height);
     }
 

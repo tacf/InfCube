@@ -16,7 +16,7 @@ typedef struct item_s {
     int16_t weapon_damage;
     int16_t icon_index;
     uint8_t is_armor;
-    
+
     union {
         struct {
             uint8_t tool_type;

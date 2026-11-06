@@ -41,10 +41,10 @@ typedef struct chunk_metadata_s {
 
 typedef struct world_s {
     chunk_metadata_t **lighting_update_list; //chunk_metadata_t
-    entity_t **loaded_entity_list; // entity_t *
-    next_tick_data_t *next_tick_data_list; // next_tick_data_t
+    entity_t **loaded_entity_list;           // entity_t *
+    next_tick_data_t *next_tick_data_list;   // next_tick_data_t
     tile_entity_t **loaded_tile_entity_list; // tile_entity_t *
-    renderer_world_t **renderer_world_list; // renderer_world_t *
+    renderer_world_t **renderer_world_list;  // renderer_world_t *
     int32_t spawn_x;
     int32_t spawn_y;
     int32_t spawn_z;

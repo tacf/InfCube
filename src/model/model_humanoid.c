@@ -9,7 +9,7 @@ model_t model_humanoid_create(float g) {
     model.type = MODEL_HUMANOID;
     model.render = model_humanoid_render;
     model.setup_anim = model_humanoid_setup_anim;
-    
+
     model.head = cube_create(0, 0);
     cube_add_box(&model.head, -4.0F, -8.0F, -4.0F, 8, 8, 8, g);
     model.hair = cube_create(32, 0);

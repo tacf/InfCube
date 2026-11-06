@@ -104,7 +104,7 @@ void screen_hud_render(screen_hud_t *hud, float mx, float my, float partial_tick
             for(int j = 0; j < air1 + air2; j++) {
                 if(j < air1) {
                     gui_blit(hud->width / 2 - 91 + (j * 8), hud->height - 32 - 9, 16, 18, 9, 9, -90.0);
-                }else {
+                } else {
                     gui_blit(hud->width / 2 - 91 + (j * 8), hud->height - 32 - 9, 25, 18, 9, 9, -90.0);
                 }
             }
@@ -143,7 +143,7 @@ void screen_hud_render(screen_hud_t *hud, float mx, float my, float partial_tick
 
     renderer_lighting_disable();
     glDisable(GL_NORMALIZE);
-    
+
     if(hud->infcube->settings.show_framerate) {
         char *string = string_create(hud->infcube->debug);
         string_concat_front("InfCube (", &string);
@@ -162,24 +162,21 @@ void screen_hud_render(screen_hud_t *hud, float mx, float my, float partial_tick
         uint64_t avail_mem = max_mem - free_mem;
         char stats_string[128];
         snprintf(stats_string, sizeof(stats_string),
-            "Free memory: %lld%% of %lldMB",
-            avail_mem * 100LL / max_mem,
-            max_mem / 1024LL / 1024LL
-        );
+                 "Free memory: %lld%% of %lldMB",
+                 avail_mem * 100LL / max_mem,
+                 max_mem / 1024LL / 1024LL);
         font_render(&hud->infcube->font, stats_string, hud->width - font_get_width(&hud->infcube->font, stats_string) - 2, 2, 0xffffffff);
         memset(stats_string, 0, sizeof(stats_string));
         snprintf(stats_string, sizeof(stats_string),
-            "Allocated memory: %lld%% (%lld MB)",
-            total_mem * 100LL / max_mem,
-            total_mem / 1024LL / 1024LL
-        );
+                 "Allocated memory: %lld%% (%lld MB)",
+                 total_mem * 100LL / max_mem,
+                 total_mem / 1024LL / 1024LL);
         font_render(&hud->infcube->font, stats_string, hud->width - font_get_width(&hud->infcube->font, stats_string) - 2, 12, 0xffffffff);
-    }else {
+    } else {
         font_render(&hud->infcube->font, "InfCube", 2, 2, 0xffffffff);
     }
-        
-    //chat screen
 
+    //chat screen
 }
 
 void screen_hud_destroy(screen_hud_t *hud) {

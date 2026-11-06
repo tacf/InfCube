@@ -30,13 +30,13 @@ void block_grass_update(block_t *block, struct world_s *world, int x, int y, int
         if(random_next_int_range(random, 4) == 0) {
             world_set_block_with_update(real_world, x, y, z, blocks.dirt.id);
         }
-    }else {
+    } else {
         if(world_get_block_light_value(real_world, x, y + 1, z) >= 9) {
             int xx = x + random_next_int_range(random, 3) - 1;
             int yy = y + random_next_int_range(random, 5) - 3;
             int zz = z + random_next_int_range(random, 3) - 1;
-            if(world_get_block(real_world, xx, yy, zz) == blocks.dirt.id 
-               && world_get_block_light_value(real_world, xx, yy + 1, zz) >= 4 
+            if(world_get_block(real_world, xx, yy, zz) == blocks.dirt.id
+               && world_get_block_light_value(real_world, xx, yy + 1, zz) >= 4
                && !world_get_block_material(real_world, xx, yy + 1, zz)->can_block_grass) {
                 world_set_block_with_update(real_world, xx, yy, zz, blocks.grass.id);
             }

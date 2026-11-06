@@ -13,7 +13,7 @@
 
 block_t block_chest_create() {
     block_t block = block_container_create(BLOCK_CHEST, TEXTURE_CHEST, &block_sounds.wood, 2.5, 0, &materials.wood);
-    
+
     block.get_texture = block_chest_get_texture;
     block.get_texture_side = block_chest_get_texture_side;
     block.can_place_at = block_chest_can_place_at;
@@ -56,7 +56,7 @@ int block_chest_get_texture(block_t *block, world_t *world, int x, int y, int z,
             }
 
             return side == preferred_side ? block->texture_id + 1 : block->texture_id;
-        }else if(side != 4 && side != 5) {
+        } else if(side != 4 && side != 5) {
             int texture_offset = 0;
 
             if(block_west == block->id) {
@@ -71,21 +71,21 @@ int block_chest_get_texture(block_t *block, world_t *world, int x, int y, int z,
             }
 
             uint8_t preferred_side = 3;
-            if((block_list[block_north].is_opaque || block_list[diagonal_north].is_opaque) 
+            if((block_list[block_north].is_opaque || block_list[diagonal_north].is_opaque)
                && !block_list[block_south].is_opaque && !block_list[diagonal_south].is_opaque) {
                 preferred_side = 3;
             }
 
-            if((block_list[block_south].is_opaque || block_list[diagonal_south].is_opaque) 
+            if((block_list[block_south].is_opaque || block_list[diagonal_south].is_opaque)
                && !block_list[block_north].is_opaque && !block_list[diagonal_north].is_opaque) {
                 preferred_side = 2;
             }
 
             return (side == preferred_side ? block->texture_id + 16 : block->texture_id + 32) + texture_offset;
-        }else {
+        } else {
             return block->texture_id;
         }
-    }else if(side != 2 && side != 3) {
+    } else if(side != 2 && side != 3) {
         int texture_offset = 0;
 
         if(block_north == block->id) {
@@ -100,36 +100,30 @@ int block_chest_get_texture(block_t *block, world_t *world, int x, int y, int z,
         }
 
         uint8_t preferred_side = 5;
-        if((block_list[block_north].is_opaque || block_list[diagonal_west].is_opaque) 
-            && !block_list[block_south].is_opaque && !block_list[diagonal_east].is_opaque) {
+        if((block_list[block_north].is_opaque || block_list[diagonal_west].is_opaque)
+           && !block_list[block_south].is_opaque && !block_list[diagonal_east].is_opaque) {
             preferred_side = 5;
         }
 
-        if((block_list[block_south].is_opaque || block_list[diagonal_east].is_opaque) 
-            && !block_list[block_north].is_opaque && !block_list[diagonal_west].is_opaque) {
+        if((block_list[block_south].is_opaque || block_list[diagonal_east].is_opaque)
+           && !block_list[block_north].is_opaque && !block_list[diagonal_west].is_opaque) {
             preferred_side = 4;
         }
 
         return (side == preferred_side ? block->texture_id + 16 : block->texture_id + 32) + texture_offset;
-    }else {
+    } else {
         return block->texture_id;
     }
 }
 
 int block_chest_get_texture_side(block_t *block, uint8_t side) {
-    return side == 1 ? block->texture_id - 1 : 
-        (side == 0 ? block->texture_id - 1 : 
-        (side == 3 ? block->texture_id + 1 : 
-        block->texture_id));
+    return side == 1 ? block->texture_id - 1 : (side == 0 ? block->texture_id - 1 : (side == 3 ? block->texture_id + 1 : block->texture_id));
 }
 
 uint8_t private_has_neighboring_chest(block_t *block, world_t *world, int x, int y, int z) {
     if(world_get_block(world, x, y, z) != block->id) return 0;
 
-    return world_get_block(world, x - 1, y, z) == block->id ||
-           world_get_block(world, x + 1, y, z) == block->id ||
-           world_get_block(world, x, y, z - 1) == block->id ||
-           world_get_block(world, x, y, z + 1) == block->id;
+    return world_get_block(world, x - 1, y, z) == block->id || world_get_block(world, x + 1, y, z) == block->id || world_get_block(world, x, y, z - 1) == block->id || world_get_block(world, x, y, z + 1) == block->id;
 }
 
 uint8_t block_chest_can_place_at(block_t *block, world_t *world, int x, int y, int z) {
@@ -148,11 +142,7 @@ uint8_t block_chest_can_place_at(block_t *block, world_t *world, int x, int y, i
         chest_count++;
     }
 
-    return chest_count > 1 ? 0 :
-        (private_has_neighboring_chest(block, world, x - 1, y, z) ? 0 :
-        (private_has_neighboring_chest(block, world, x + 1, y, z) ? 0 :
-        (private_has_neighboring_chest(block, world, x, y, z - 1) ? 0 :
-        !private_has_neighboring_chest(block, world, x, y, z + 1))));
+    return chest_count > 1 ? 0 : (private_has_neighboring_chest(block, world, x - 1, y, z) ? 0 : (private_has_neighboring_chest(block, world, x + 1, y, z) ? 0 : (private_has_neighboring_chest(block, world, x, y, z - 1) ? 0 : !private_has_neighboring_chest(block, world, x, y, z + 1))));
 }
 
 void block_chest_on_removed(block_t *block, world_t *world, int x, int y, int z) {
@@ -188,11 +178,16 @@ void block_chest_on_removed(block_t *block, world_t *world, int x, int y, int z)
 
 uint8_t block_chest_on_interacted(block_t *block, world_t *world, int x, int y, int z, entity_t *player) {
     tile_entity_t *tile_entity = world_get_tile_entity(world, x, y, z);
-    if(world_is_solid(world, x, y + 1, z)) return 1;
-    else if(world_get_block(world, x - 1, y, z) == block->id && world_is_solid(world, x - 1, y + 1, z)) return 1;
-    else if(world_get_block(world, x + 1, y, z) == block->id && world_is_solid(world, x + 1, y + 1, z)) return 1;
-    else if(world_get_block(world, x, y, z - 1) == block->id && world_is_solid(world, x, y + 1, z - 1)) return 1;
-    else if(world_get_block(world, x, y, z + 1) == block->id && world_is_solid(world, x, y + 1, z + 1)) return 1;
+    if(world_is_solid(world, x, y + 1, z))
+        return 1;
+    else if(world_get_block(world, x - 1, y, z) == block->id && world_is_solid(world, x - 1, y + 1, z))
+        return 1;
+    else if(world_get_block(world, x + 1, y, z) == block->id && world_is_solid(world, x + 1, y + 1, z))
+        return 1;
+    else if(world_get_block(world, x, y, z - 1) == block->id && world_is_solid(world, x, y + 1, z - 1))
+        return 1;
+    else if(world_get_block(world, x, y, z + 1) == block->id && world_is_solid(world, x, y + 1, z + 1))
+        return 1;
 
     tile_entity->chest_inventory = tile_entity->inventory;
     tile_entity->chest_inventory.host_tile_entity = tile_entity;

@@ -18,7 +18,7 @@ void entity_arrow_create(entity_t *entity, struct world_s *world, entity_t *sour
     entity->owner = source_entity;
     if(source_entity->type == ENTITY_MOB_PLAYER) {
         entity->damage = 7;
-    }else {
+    } else {
         entity->arrow_type = 1;
     }
 
@@ -64,7 +64,7 @@ void entity_arrow_tick(struct entity_s *entity) {
             if(entity->age >= 300 && random_uniform() < 0.01) {
                 entity_remove(entity);
             }
-        }else if(entity->age >= 20) {
+        } else if(entity->age >= 20) {
             entity_remove(entity);
         }
         return;
@@ -78,7 +78,7 @@ void entity_arrow_tick(struct entity_s *entity) {
     float nxd = entity->xd / magnitude;
     float nyd = entity->yd / magnitude;
     float nzd = entity->zd / magnitude;
-    
+
     for(int i = 0; i < magnitude; i++) {
         AABB_t bb = AABB_expand(entity->bb, nxd, nyd, nzd);
         AABB_t *cubes = world_get_cubes((world_t *)entity->world, bb);
@@ -134,7 +134,6 @@ void entity_arrow_tick(struct entity_s *entity) {
 }
 
 void entity_arrow_render(struct entity_s *entity, textures_t *textures, float delta) {
-    
 }
 
 void entity_arrow_award_kill_score(struct entity_s *entity, struct entity_s *causer, int score) {

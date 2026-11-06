@@ -8,6 +8,6 @@ item_t item_shovel_create(uint8_t id, uint8_t texture_id, uint8_t shovel_type) {
     item_t item = item_tool_create(id, texture_id, PIECE_TOOL_SHOVEL, shovel_type);
 
     item_list[id + 256] = item;
-    
+
     return item;
 }

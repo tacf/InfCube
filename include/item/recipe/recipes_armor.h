@@ -1,4 +1,4 @@
-#pragma once 
+#pragma once
 
 #include <item/recipe/crafting_manager.h>
 

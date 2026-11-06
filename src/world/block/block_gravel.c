@@ -10,7 +10,7 @@ block_t block_gravel_create() {
     block.get_item_dropped = block_gravel_get_item_dropped;
 
     block_list[block.id] = block;
-    
+
     return block;
 }
 

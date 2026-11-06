@@ -36,7 +36,7 @@ void entity_item_create(entity_t *entity, struct world_s *world, float x, float 
     entity->age = 0;
     entity->tick_count = 0;
     entity->type = ENTITY_ITEM;
-    entity->hover_start = random_uniform() *  M_PI * 2.0;
+    entity->hover_start = random_uniform() * M_PI * 2.0;
 
     entity->tick = entity_item_tick;
     entity->player_touch = entity_item_player_touch;

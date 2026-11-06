@@ -10,7 +10,7 @@ model_t model_skeleton_create(float g) {
     model.type = MODEL_SKELETON;
     model.render = model_skeleton_render;
     model.setup_anim = model_skeleton_setup_anim;
-    
+
     model.arm0 = cube_create(40, 16);
     cube_add_box(&model.arm0, -1.0F, -2.0F, -1.0F, 2, 12, 2, 0.0F);
     cube_set_pos(&model.arm0, -5.0F, 2.0F, 0.0F);
@@ -25,7 +25,7 @@ model_t model_skeleton_create(float g) {
     model.leg1.mirror = 1;
     cube_add_box(&model.leg1, -1.0F, 0.0F, -1.0F, 2, 12, 2, 0.0F);
     cube_set_pos(&model.leg1, 2.0F, 12.0F, 0.0F);
-    
+
     return model;
 }
 

@@ -13,7 +13,7 @@ item_t item_sword_create(uint8_t id, uint8_t texture_id, uint8_t sword_type) {
     item.get_damage_against_entity = item_sword_get_damage_against_entity;
 
     item_list[id + 256] = item;
-    
+
     return item;
 }
 

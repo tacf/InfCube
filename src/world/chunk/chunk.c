@@ -116,7 +116,7 @@ void chunk_check_skylight_neighbor_height(chunk_t *chunk, int x, int z, int heig
     int neighbor_height = world_get_height_value(chunk->world, x, z);
     if(neighbor_height > height) {
         world_schedule_light_update(chunk->world, LIGHT_TYPE_SKY, x, height, z, x, neighbor_height, z);
-    }else if(neighbor_height < height) {
+    } else if(neighbor_height < height) {
         world_schedule_light_update(chunk->world, LIGHT_TYPE_SKY, x, neighbor_height, z, x, height, z);
     }
 
@@ -137,7 +137,7 @@ void chunk_relight_block(chunk_t *chunk, int x, int y, int z) {
         chunk->height_map[z * CHUNK_SIZE_WIDTH | x] = height_index;
         if(height_index < chunk->lowest_block_height) {
             chunk->lowest_block_height = height_index;
-        }else {
+        } else {
             y = CHUNK_SIZE_HEIGHT - 1;
 
             for(int xx = 0; xx < CHUNK_SIZE_WIDTH; xx++) {
@@ -157,7 +157,7 @@ void chunk_relight_block(chunk_t *chunk, int x, int y, int z) {
             for(int i = height_index; i < height; i++) {
                 nibble_array_set(chunk->sky_light_map, x, i, z, 15);
             }
-        }else {
+        } else {
             world_schedule_light_update(chunk->world, LIGHT_TYPE_SKY, xx, height, zz, xx, height_index, zz);
 
             for(int i = height; i < height_index; i++) {
@@ -189,11 +189,11 @@ void chunk_relight_block(chunk_t *chunk, int x, int y, int z) {
 
 uint8_t chunk_get_block_id(chunk_t *chunk, int x, int y, int z) {
     if(x < 0 || x >= CHUNK_SIZE_WIDTH
-        || y < 0 || y >= CHUNK_SIZE_HEIGHT
-        || z < 0 || z >= CHUNK_SIZE_WIDTH) {
+       || y < 0 || y >= CHUNK_SIZE_HEIGHT
+       || z < 0 || z >= CHUNK_SIZE_WIDTH) {
         return 0;
     }
-    
+
     return chunk->blocks[x << 11 | z << 7 | y];
 }
 
@@ -214,7 +214,7 @@ uint8_t chunk_set_block(chunk_t *chunk, int x, int y, int z, int block_id) {
         if(y >= height) {
             chunk_relight_block(chunk, x, y + 1, z);
         }
-    }else if(y == height - 1) {
+    } else if(y == height - 1) {
         chunk_relight_block(chunk, x, y, z);
     }
 
@@ -239,7 +239,7 @@ void chunk_set_block_metadata(chunk_t *chunk, int x, int y, int z, int data) {
     nibble_array_set(chunk->data, x, y, z, data);
 }
 
-int8_t chunk_get_saved_light_value(chunk_t *chunk, uint8_t light_type, int x, int y, int z) { 
+int8_t chunk_get_saved_light_value(chunk_t *chunk, uint8_t light_type, int x, int y, int z) {
     int8_t value = light_type == LIGHT_TYPE_SKY ? nibble_array_get(chunk->sky_light_map, x, y, z) : (light_type == LIGHT_TYPE_BLOCK ? nibble_array_get(chunk->block_light_map, x, y, z) : 0);
     return value;
 }
@@ -248,7 +248,7 @@ void chunk_set_light_value(chunk_t *chunk, uint8_t light_type, int x, int y, int
     chunk->is_modified = 1;
     if(light_type == LIGHT_TYPE_SKY) {
         nibble_array_set(chunk->sky_light_map, x, y, z, (int8_t)level);
-    }else if(light_type == LIGHT_TYPE_BLOCK) {
+    } else if(light_type == LIGHT_TYPE_BLOCK) {
         nibble_array_set(chunk->block_light_map, x, y, z, (int8_t)level);
     }
 }
@@ -337,7 +337,7 @@ chunk_t chunk_read_nbt_data(world_t *world, nbt_base_t *nbt) {
 
     if(height_map_array == NULL || sky_light_array == NULL) {
         chunk_generate_height_map(&chunk);
-    }else {
+    } else {
         memcpy(chunk.height_map, height_map_array, CHUNK_SIZE_WIDTH * CHUNK_SIZE_WIDTH);
         memcpy(chunk.sky_light_map, sky_light_array, CHUNK_SIZE_WIDTH * CHUNK_SIZE_HEIGHT * CHUNK_SIZE_WIDTH / 2);
     }
@@ -477,7 +477,7 @@ void chunk_set_tile_entity(chunk_t *chunk, int x, int y, int z, tile_entity_t *t
     if(chunk_get_block_id(chunk, x, y, z) != 0 && block_list[chunk_get_block_id(chunk, x, y, z)].is_container) {
         private_set_tile_entity_at(chunk, x, y, z, tile_entity);
         chunk->world->loaded_tile_entity_list = array_list_push(chunk->world->loaded_tile_entity_list, &tile_entity);
-    }else {
+    } else {
         printf("Attempted to place a tile entity where there was no entity "
                "tile!\n");
     }
@@ -516,7 +516,7 @@ void chunk_unload_entities(chunk_t *chunk) {
 void chunk_get_entities(chunk_t *chunk, entity_t *entity, AABB_t box, entity_t ***entity_list) {
     int y0 = floor_double((box.y0 - 2) / CHUNK_SIZE_WIDTH);
     int y1 = floor_double((box.y1 + 2) / CHUNK_SIZE_WIDTH);
-    
+
     if(y0 < 0) y0 = 0;
     if(y1 >= CHUNK_SIZE_HEIGHT >> 4) {
         y1 = (CHUNK_SIZE_HEIGHT >> 4) - 1;

@@ -35,14 +35,11 @@ uint8_t block_flowing_can_render_side(block_t *block, world_t *world, int x, int
     uint8_t block_id = world_get_block(world, x, y, z);
     if(block_id != block->liquid_moving_id && block_id != block->liquid_still_id) {
         if(side == 1) {
-            uint8_t air_neighbor = world_get_block(world, x - 1, y, z) == 0 ||
-                world_get_block(world, x + 1, y, z) == 0 ||
-                world_get_block(world, x, y, z - 1) == 0 ||
-                world_get_block(world, x, y, z + 1) == 0;
+            uint8_t air_neighbor = world_get_block(world, x - 1, y, z) == 0 || world_get_block(world, x + 1, y, z) == 0 || world_get_block(world, x, y, z - 1) == 0 || world_get_block(world, x, y, z + 1) == 0;
             if(air_neighbor) return 1;
         }
         return block_can_render_side(block, world, x, y, z, side);
-    }else {
+    } else {
         return 0;
     }
 }

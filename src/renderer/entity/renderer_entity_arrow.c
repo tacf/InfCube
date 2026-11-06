@@ -45,7 +45,7 @@ void renderer_entity_arrow_render(renderer_entity_t *renderer, entity_t *entity,
     tesselator_vertex_uv(-7, -2, 2, u, stem_v2);
     tesselator_vertex_uv(-7, -2, -2, 0, stem_v2);
     tesselator_end();
-    
+
     for(int i = 0; i < 4; i++) {
         glRotatef(90, 1, 0, 0);
         glNormal3f(0, -b, 0);

@@ -9,7 +9,7 @@ model_t model_spider_create() {
     model.type = MODEL_SPIDER;
     model.render = model_spider_render;
     model.setup_anim = model_spider_setup_anim;
-    
+
     model.head = cube_create(32, 4);
     cube_add_box(&model.head, -4.0F, -4.0F, -8.0F, 8, 8, 8, 0.0F);
     cube_set_pos(&model.head, 0.0F, 0.0F, -3.0F);

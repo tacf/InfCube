@@ -25,7 +25,7 @@ inventory_t inventory_double_chest_create(char *name, inventory_t *upper_chest, 
 item_stack_t inventory_double_chest_get_slot(inventory_t *inventory, int index) {
     if(index >= inventory->upper_chest->size) {
         return inventory->lower_chest->get_slot(inventory->lower_chest, index - inventory->upper_chest->size);
-    }else {
+    } else {
         return inventory->upper_chest->get_slot(inventory->upper_chest, index);
     }
 }
@@ -37,7 +37,7 @@ char *inventory_double_chest_get_name() {
 item_stack_t inventory_double_chest_remove_item(inventory_t *inventory, int index, int amount) {
     if(index >= inventory->upper_chest->size) {
         return inventory->lower_chest->remove_item(inventory->lower_chest, index - inventory->upper_chest->size, amount);
-    }else {
+    } else {
         return inventory->upper_chest->remove_item(inventory->upper_chest, index, amount);
     }
 }
@@ -45,7 +45,7 @@ item_stack_t inventory_double_chest_remove_item(inventory_t *inventory, int inde
 void inventory_double_chest_set_slot(inventory_t *inventory, int index, item_stack_t item) {
     if(index >= inventory->upper_chest->size) {
         inventory->lower_chest->set_slot(inventory->lower_chest, index - inventory->upper_chest->size, item);
-    }else {
+    } else {
         inventory->upper_chest->set_slot(inventory->upper_chest, index, item);
     }
 }

@@ -34,11 +34,7 @@ AABB_t block_torch_get_collision_aabb(block_t *block, int x, int y, int z) {
 }
 
 uint8_t block_torch_can_place_at(block_t *block, world_t *world, int x, int y, int z) {
-    return world_is_solid((world_t *)world, x, y - 1, z) ||
-           world_is_solid((world_t *)world, x + 1, y, z) ||
-           world_is_solid((world_t *)world, x - 1, y, z) ||
-           world_is_solid((world_t *)world, x, y, z + 1) ||
-           world_is_solid((world_t *)world, x, y, z - 1);
+    return world_is_solid((world_t *)world, x, y - 1, z) || world_is_solid((world_t *)world, x + 1, y, z) || world_is_solid((world_t *)world, x - 1, y, z) || world_is_solid((world_t *)world, x, y, z + 1) || world_is_solid((world_t *)world, x, y, z - 1);
 }
 
 void block_torch_on_placed(block_t *block, world_t *world, int x, int y, int z, uint8_t side) {
@@ -85,13 +81,13 @@ uint8_t private_drop_torch(block_t *block, world_t *world, int x, int y, int z) 
 void block_torch_on_added(block_t *block, world_t *world, int x, int y, int z) {
     if(world_is_solid(world, x - 1, y, z)) {
         world_set_block_metadata(world, x, y, z, 1);
-    }else if(world_is_solid(world, x + 1, y, z)) {
+    } else if(world_is_solid(world, x + 1, y, z)) {
         world_set_block_metadata(world, x, y, z, 2);
-    }else if(world_is_solid(world, x, y, z - 1)) {
+    } else if(world_is_solid(world, x, y, z - 1)) {
         world_set_block_metadata(world, x, y, z, 3);
-    }else if(world_is_solid(world, x, y, z + 1)) {
+    } else if(world_is_solid(world, x, y, z + 1)) {
         world_set_block_metadata(world, x, y, z, 4);
-    }else if(world_is_solid(world, x, y - 1, z)) {
+    } else if(world_is_solid(world, x, y - 1, z)) {
         world_set_block_metadata(world, x, y, z, 5);
     }
 
@@ -104,13 +100,13 @@ void block_torch_on_neighbor_changed(block_t *block, world_t *world, int x, int 
         uint8_t cant_stay = 0;
         if(!world_is_solid(world, x - 1, y, z) && metadata == 1) {
             cant_stay = 1;
-        }else if(!world_is_solid(world, x + 1, y, z) && metadata == 2) {
+        } else if(!world_is_solid(world, x + 1, y, z) && metadata == 2) {
             cant_stay = 1;
-        }else if(!world_is_solid(world, x, y, z - 1) && metadata == 3) {
+        } else if(!world_is_solid(world, x, y, z - 1) && metadata == 3) {
             cant_stay = 1;
-        }else if(!world_is_solid(world, x, y, z + 1) && metadata == 4) {
+        } else if(!world_is_solid(world, x, y, z + 1) && metadata == 4) {
             cant_stay = 1;
-        }else if(!world_is_solid(world, x, y - 1, z) && metadata == 5) {
+        } else if(!world_is_solid(world, x, y - 1, z) && metadata == 5) {
             cant_stay = 1;
         }
 
@@ -125,13 +121,13 @@ hit_result_t block_torch_clip(block_t *block, world_t *world, int x, int y, int 
     uint8_t metadata = world_get_block_metadata(world, x, y, z);
     if(metadata == 1) {
         block_set_bounds(block, 0.0, 0.2, 0.35, 0.3, 0.8, 0.65);
-    }else if(metadata == 2) {
+    } else if(metadata == 2) {
         block_set_bounds(block, 0.7, 0.2, 0.35, 1.0, 0.8, 0.65);
-    }else if(metadata == 3) {
+    } else if(metadata == 3) {
         block_set_bounds(block, 0.35, 0.2, 0.0, 0.65, 0.8, 0.3);
-    }else if(metadata == 4) {
+    } else if(metadata == 4) {
         block_set_bounds(block, 0.35, 0.2, 0.7, 0.65, 0.8, 1.0);
-    }else {
+    } else {
         block_set_bounds(block, 0.4, 0.0, 0.4, 0.6, 0.6, 0.6);
     }
 
@@ -146,13 +142,13 @@ void block_torch_visual_update(block_t *block, world_t *world, int x, int y, int
     if(metadata == 1) {
         px -= 0.27;
         py += 0.22;
-    }else if(metadata == 2) {
+    } else if(metadata == 2) {
         px += 0.27;
         py += 0.22;
-    }else if(metadata == 3) {
+    } else if(metadata == 3) {
         py += 0.22;
         pz -= 0.27;
-    }else if(metadata == 4) {
+    } else if(metadata == 4) {
         py += 0.22;
         pz += 0.27;
     }

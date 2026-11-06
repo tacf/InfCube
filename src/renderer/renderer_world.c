@@ -41,7 +41,7 @@ void renderer_world_create(renderer_world_t *renderer, struct infcube_s *infcube
             memset(renderer->occlusion_query_base, 0, sizeof(uint32_t) * 262144);
             glGenQueriesARB(262144, renderer->occlusion_query_base);
         }
-    }else {
+    } else {
         renderer->occlusion_query_base = NULL;
     }
 
@@ -97,9 +97,9 @@ void renderer_world_change_world(renderer_world_t *renderer, world_t *world) {
     renderer->infcube->entity_manager.world = world;
     renderer->world = world;
     renderer->renderer_block = renderer_block_create(world);
-    
+
     renderer_world_load_renderers(renderer);
-    
+
     if(world != NULL) {
         world_add_renderer(world, renderer);
     }
@@ -133,7 +133,7 @@ void renderer_world_load_renderers(renderer_world_t *renderer) {
     if(old_render_list_base > 0 && old_render_list_capacity > 0) {
         glDeleteLists(old_render_list_base, old_render_list_capacity);
     }
-    
+
     if(renderer->world == NULL) {
         renderer->renderer_chunk_count = 0;
         renderer->x_chunks = 0;
@@ -235,7 +235,7 @@ void renderer_world_update_entities(renderer_world_t *renderer, vec3_t pos, frus
         double size_z = bb.z1 - bb.z0;
         double avg_size = (size_x + size_y + size_z) / 3.0;
         avg_size *= 64.0;
-        
+
         if(distance_sq < avg_size * avg_size && frustum_contains_box_bb(*frustum, bb) && (entity != player || renderer->infcube->settings.third_person)) {
             renderer->entities_rendered++;
             renderer_entity_manager_render(&renderer->infcube->entity_manager, entity, partial_tick);
@@ -364,7 +364,7 @@ int renderer_world_sort_and_render(renderer_world_t *renderer, entity_t *player,
 
                 if(renderer_chunk_skip_all_render_passes(chunk_renderer)) {
                     chunk_renderer->is_in_frustum = 0;
-                }else {
+                } else {
                     if(!chunk_renderer->is_in_frustum) {
                         chunk_renderer->is_visible = 1;
                     }
@@ -406,8 +406,8 @@ int renderer_world_sort_and_render(renderer_world_t *renderer, entity_t *player,
             glEnable(GL_FOG);
 
             total_rendered += renderer_world_render_sorted_renderers(renderer, previous_batch_size, batch_size, render_pass, partial_tick);
-        }while(batch_size < renderer->renderer_chunk_count);
-    }else {
+        } while(batch_size < renderer->renderer_chunk_count);
+    } else {
         total_rendered += renderer_world_render_sorted_renderers(renderer, 0, renderer->renderer_chunk_count, render_pass, partial_tick);
     }
 
@@ -498,7 +498,7 @@ void renderer_world_draw_sky(renderer_world_t *renderer, float partial_tick) {
     double dx = renderer->infcube->player.last_tick_x + (renderer->infcube->player.x - renderer->infcube->player.last_tick_x) * partial_tick + (renderer->cloud_offset_x + partial_tick) * 0.03;
     double dy = renderer->infcube->player.last_tick_y + (renderer->infcube->player.y - renderer->infcube->player.last_tick_y) * partial_tick;
     double dz = renderer->infcube->player.last_tick_z + (renderer->infcube->player.z - renderer->infcube->player.last_tick_z) * partial_tick;
-    
+
     vec3_t sky_color = world_get_sky_color(renderer->world, partial_tick);
     float sky_r = sky_color.x;
     float sky_g = sky_color.y;
@@ -579,21 +579,21 @@ void renderer_world_draw_sky(renderer_world_t *renderer, float partial_tick) {
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    
+
     tesselator_begin_quads();
     tesselator_color_float(cloud_r, cloud_g, cloud_b, 1.0);
 
     for(int grid_x = -256; grid_x < 256; grid_x += 32) {
         for(int grid_z = -256; grid_z < 256; grid_z += 32) {
-            tesselator_vertex_uv(grid_x,      height, grid_z + 32,  grid_x       * (0.5 / 1024.0) + texture_u, (grid_z + 32) * (0.5 / 1024.0) + texture_v);
+            tesselator_vertex_uv(grid_x, height, grid_z + 32, grid_x * (0.5 / 1024.0) + texture_u, (grid_z + 32) * (0.5 / 1024.0) + texture_v);
             tesselator_vertex_uv(grid_x + 32, height, grid_z + 32, (grid_x + 32) * (0.5 / 1024.0) + texture_u, (grid_z + 32) * (0.5 / 1024.0) + texture_v);
-            tesselator_vertex_uv(grid_x + 32, height, grid_z,      (grid_x + 32) * (0.5 / 1024.0) + texture_u,  grid_z       * (0.5 / 1024.0) + texture_v);
-            tesselator_vertex_uv(grid_x,      height, grid_z,       grid_x       * (0.5 / 1024.0) + texture_u,  grid_z       * (0.5 / 1024.0) + texture_v);
+            tesselator_vertex_uv(grid_x + 32, height, grid_z, (grid_x + 32) * (0.5 / 1024.0) + texture_u, grid_z * (0.5 / 1024.0) + texture_v);
+            tesselator_vertex_uv(grid_x, height, grid_z, grid_x * (0.5 / 1024.0) + texture_u, grid_z * (0.5 / 1024.0) + texture_v);
 
-            tesselator_vertex_uv(grid_x,      height, grid_z,       grid_x       * (0.5 / 1024.0) + texture_u,  grid_z       * (0.5 / 1024.0) + texture_v);
-            tesselator_vertex_uv(grid_x + 32, height, grid_z,      (grid_x + 32) * (0.5 / 1024.0) + texture_u,  grid_z       * (0.5 / 1024.0) + texture_v);
+            tesselator_vertex_uv(grid_x, height, grid_z, grid_x * (0.5 / 1024.0) + texture_u, grid_z * (0.5 / 1024.0) + texture_v);
+            tesselator_vertex_uv(grid_x + 32, height, grid_z, (grid_x + 32) * (0.5 / 1024.0) + texture_u, grid_z * (0.5 / 1024.0) + texture_v);
             tesselator_vertex_uv(grid_x + 32, height, grid_z + 32, (grid_x + 32) * (0.5 / 1024.0) + texture_u, (grid_z + 32) * (0.5 / 1024.0) + texture_v);
-            tesselator_vertex_uv(grid_x,      height, grid_z + 32,  grid_x       * (0.5 / 1024.0) + texture_u, (grid_z + 32) * (0.5 / 1024.0) + texture_v);
+            tesselator_vertex_uv(grid_x, height, grid_z + 32, grid_x * (0.5 / 1024.0) + texture_u, (grid_z + 32) * (0.5 / 1024.0) + texture_v);
         }
     }
 
@@ -612,11 +612,11 @@ void renderer_world_update_renderers(renderer_world_t *renderer, entity_t *playe
     while(len > 0) {
         int idx = (int)len - 1;
         renderer_chunk_t *chunk_renderer = *(renderer_chunk_t **)array_list_get(renderer->renderer_chunks_to_update, idx);
-        
+
         if(renderer_chunk_distance_to_entity_squared(chunk_renderer, player) > 2500.0 && processed > 2) {
             return;
         }
-        
+
         renderer->renderer_chunks_to_update = array_list_remove(renderer->renderer_chunks_to_update, idx);
         renderer_chunk_update(chunk_renderer);
         chunk_renderer->needs_update = 0;
@@ -626,7 +626,6 @@ void renderer_world_update_renderers(renderer_world_t *renderer, entity_t *playe
         if((SDL_GetPerformanceCounter() - start) * 1000.0 / frequency > 6.0) return;
     }
 }
- 
 
 void renderer_world_draw_block_breaking(renderer_world_t *renderer, entity_t *player, hit_result_t *hit_result, int mode, item_stack_t *item_stack, float partial_tick) {
     glEnable(GL_BLEND);
@@ -677,9 +676,9 @@ void renderer_world_draw_selection_box(renderer_world_t *renderer, entity_t *pla
     block_id = world_get_block(renderer->world, hit_result->x, hit_result->y, hit_result->z);
     block_t *block = &block_list[block_id];
     if(block_id > 0) {
-    double x = player->last_tick_x + (player->x - player->last_tick_x) * partial_tick;
-    double y = player->last_tick_y + (player->y - player->last_tick_y) * partial_tick;
-    double z = player->last_tick_z + (player->z - player->last_tick_z) * partial_tick;
+        double x = player->last_tick_x + (player->x - player->last_tick_x) * partial_tick;
+        double y = player->last_tick_y + (player->y - player->last_tick_y) * partial_tick;
+        double z = player->last_tick_z + (player->z - player->last_tick_z) * partial_tick;
         AABB_t bb = AABB_grow(block->get_selection_aabb(block, hit_result->x, hit_result->y, hit_result->z), 0.002, 0.002, 0.002);
         bb = AABB_move(bb, -x, -y, -z);
         tesselator_begin(GL_LINE_STRIP);
@@ -719,7 +718,7 @@ void renderer_world_queue_chunks(renderer_world_t *renderer, int x0, int y0, int
     x1 = floor_double((double)x1 / CHUNK_SIZE_WIDTH);
     y1 = floor_double((double)y1 / CHUNK_SIZE_WIDTH);
     z1 = floor_double((double)z1 / CHUNK_SIZE_WIDTH);
-    
+
     for(int x = x0; x <= x1; x++) {
         int wrapped_x = x % renderer->x_chunks;
         if(wrapped_x < 0) wrapped_x += renderer->x_chunks;
@@ -762,15 +761,12 @@ void renderer_world_play_sound(renderer_world_t *renderer, uint8_t sound, double
 }
 
 void renderer_world_spawn_particle(renderer_world_t *renderer, uint8_t particle_type, double x, double y, double z, double x_vel, double y_vel, double z_vel) {
-    
 }
 
 void renderer_world_obtain_entity_skin(renderer_world_t *renderer, entity_t *entity) {
-
 }
 
 void renderer_world_release_entity_skin(renderer_world_t *renderer, entity_t *entity) {
-
 }
 
 void renderer_world_update_all(renderer_world_t *renderer) {

@@ -79,9 +79,12 @@ chunk_t *chunk_provider_generate_provide_chunk(chunk_provider_t *chunk_provider,
                 double noise_blend = (chunk_provider->noise_array_3[noise_index] / 10.0 + 1.0) / 2.0;
                 double final_noise_value = 0;
 
-                if(noise_blend < 0.0) final_noise_value = noise_value_1;
-                else if(noise_blend > 1.0) final_noise_value = noise_value_2;
-                else final_noise_value = noise_value_1 + (noise_value_2 - noise_value_1) * noise_blend;
+                if(noise_blend < 0.0)
+                    final_noise_value = noise_value_1;
+                else if(noise_blend > 1.0)
+                    final_noise_value = noise_value_2;
+                else
+                    final_noise_value = noise_value_1 + (noise_value_2 - noise_value_1) * noise_blend;
 
                 final_noise_value -= height_adjustment;
                 chunk_provider->noise_array[noise_index] = final_noise_value;
@@ -155,12 +158,12 @@ chunk_t *chunk_provider_generate_provide_chunk(chunk_provider_t *chunk_provider,
             for(int y = CHUNK_SIZE_HEIGHT - 1; y >= 0; y--) {
                 if(chunk_data[block_index] == 0) {
                     depth_2 = -1;
-                }else if(chunk_data[block_index] == blocks.stone.id) {
+                } else if(chunk_data[block_index] == blocks.stone.id) {
                     if(depth_2 == -1) {
                         if(surface_depth <= 0) {
                             top_block = 0;
                             filler_block = blocks.stone.id;
-                        }else if(y >= 60 && y <= 65) {
+                        } else if(y >= 60 && y <= 65) {
                             top_block = blocks.grass.id;
                             filler_block = blocks.dirt.id;
                             if(gravel) {
@@ -180,10 +183,10 @@ chunk_t *chunk_provider_generate_provide_chunk(chunk_provider_t *chunk_provider,
                         depth_2 = surface_depth;
                         if(y >= 63) {
                             chunk_data[block_index] = top_block;
-                        }else {
+                        } else {
                             chunk_data[block_index] = filler_block;
                         }
-                    }else if(depth_2 > 0) {
+                    } else if(depth_2 > 0) {
                         depth_2--;
                         chunk_data[block_index] = filler_block;
                     }
@@ -193,11 +196,11 @@ chunk_t *chunk_provider_generate_provide_chunk(chunk_provider_t *chunk_provider,
             }
         }
     }
-    
+
     chunk_create_from(chunk, chunk_provider->world, chunk_data, chunk_x, chunk_z);
 
     chunk_generate_height_map(chunk);
-    
+
     return chunk;
 }
 

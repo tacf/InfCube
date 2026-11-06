@@ -115,7 +115,7 @@ hit_result_t AABB_clip(AABB_t c, vec3_t v1, vec3_t v0) {
     if(!vec3_is_null(f3) && (vec3_is_null(f6) || vec3_distance_to_sqr(v1, f3) < vec3_distance_to_sqr(v1, f6))) f6 = f3;
     if(!vec3_is_null(f4) && (vec3_is_null(f6) || vec3_distance_to_sqr(v1, f4) < vec3_distance_to_sqr(v1, f6))) f6 = f4;
     if(!vec3_is_null(f5) && (vec3_is_null(f6) || vec3_distance_to_sqr(v1, f5) < vec3_distance_to_sqr(v1, f6))) f6 = f5;
-    if(vec3_is_null(f6)) return (hit_result_t) { .null = 1 };
+    if(vec3_is_null(f6)) return (hit_result_t){ .null = 1 };
     int face = -1;
     if(f6.x == f0.x && f6.y == f0.y && f6.z == f0.z) face = 4;
     if(f6.x == f1.x && f6.y == f1.y && f6.z == f1.z) face = 5;

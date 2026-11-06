@@ -17,7 +17,7 @@ frustum_t frustum_get() {
 
     glGetFloatv(GL_PROJECTION_MATRIX, frustum.projection);
     glGetFloatv(GL_MODELVIEW_MATRIX, frustum.model_view);
-    
+
     frustum.clip[0x0] = frustum.model_view[0x0] * frustum.projection[0x0] + frustum.model_view[0x1] * frustum.projection[0x4] + frustum.model_view[0x2] * frustum.projection[0x8] + frustum.model_view[0x3] * frustum.projection[0xC];
     frustum.clip[0x1] = frustum.model_view[0x0] * frustum.projection[0x1] + frustum.model_view[0x1] * frustum.projection[0x5] + frustum.model_view[0x2] * frustum.projection[0x9] + frustum.model_view[0x3] * frustum.projection[0xD];
     frustum.clip[0x2] = frustum.model_view[0x0] * frustum.projection[0x2] + frustum.model_view[0x1] * frustum.projection[0x6] + frustum.model_view[0x2] * frustum.projection[0xA] + frustum.model_view[0x3] * frustum.projection[0xE];

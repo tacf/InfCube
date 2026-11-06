@@ -67,10 +67,10 @@ void renderer_screen_overlay_render(renderer_screen_overlay_t *renderer, float p
         if(renderer->item_stack.item_id < 256 && block_list[renderer->item_stack.item_id].render_type == BLOCK_RENDER_TYPE_NORMAL) {
             glBindTexture(GL_TEXTURE_2D, textures_load(&renderer->world->infcube->textures, "terrain.png"));
             renderer_block_render_in_inventory(&renderer->renderer_block, &block_list[renderer->item_stack.item_id]);
-        }else {
+        } else {
             if(renderer->item_stack.item_id < 256) {
                 glBindTexture(GL_TEXTURE_2D, textures_load(&renderer->world->infcube->textures, "terrain.png"));
-            }else {
+            } else {
                 glBindTexture(GL_TEXTURE_2D, textures_load(&renderer->world->infcube->textures, "gui/items.png"));
             }
 
@@ -95,7 +95,7 @@ void renderer_screen_overlay_render(renderer_screen_overlay_t *renderer, float p
             tesselator_vertex_uv(1, 1, 0, u0, v0);
             tesselator_vertex_uv(0, 1, 0, u1, v0);
             tesselator_end();
-            
+
             // back face
             tesselator_normal(0, 0, -1);
             tesselator_begin_quads();
@@ -166,7 +166,7 @@ void renderer_screen_overlay_render(renderer_screen_overlay_t *renderer, float p
 
         glDisable(GL_BLEND);
         glPopMatrix();
-    }else {
+    } else {
         // render just the hand
         glPushMatrix();
         if(renderer->is_swinging) {
@@ -200,7 +200,7 @@ void renderer_screen_overlay_render(renderer_screen_overlay_t *renderer, float p
         cube_render(&models_get(&renderer->world->infcube->models, MODEL_HUMANOID)->arm0, 1.0);
         glPopMatrix();
     }
-    
+
     glDisable(GL_NORMALIZE);
     renderer_lighting_disable();
 }

@@ -12,7 +12,7 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 
-char *splashes[] = {"Pre-beta!", "As seen on TV!", "Awesome!", "100% pure!", "May contain nuts!", "Better than Prey!", "More polygons!", "Sexy!", "Limited edition!", "Flashing letters!", "Made by Notch!", "Coming soon!", "Best in class!", "When it\'s finished!", "Absolutely dragon free!", "Excitement!", "More than 5000 sold!", "One of a kind!", "700+ hits on YouTube!", "Indev!", "Spiders everywhere!", "Check it out!", "Holy cow, man!", "It\'s a game!", "Made in Sweden!", "Uses LWJGL!", "Reticulating splines!", "InfCube!", "Yaaay!", "Alpha version!", "Singleplayer!", "Keyboard compatible!", "Undocumented!", "Ingots!", "Exploding creepers!", "That\'s not a moon!", "l33t!", "Create!", "Survive!", "Dungeon!", "Exclusive!", "The bee\'s knees!", "Down with O.P.P.!", "Closed source!", "Classy!", "Wow!", "Not on steam!", "9.95 euro!", "Half price!", "Oh man!", "Check it out!", "Awesome community!", "Pixels!", "Teetsuuuuoooo!", "Kaaneeeedaaaa!", "Now with difficulty!", "Enhanced!", "90% bug free!", "Pretty!", "12 herbs and spices!", "Fat free!", "Absolutely no memes!", "Free dental!", "Ask your doctor!", "Minors welcome!", "Cloud computing!", "Legal in Finland!", "Hard to label!", "Technically good!", "Bringing home the bacon!", "Indie!", "GOTY!", "Ceci n\'est pas une title screen!", "Euclidian!", "Now in 3D!", "Inspirational!", "Herregud!", "Complex cellular automata!", "Yes, sir!", "Played by cowboys!", "OpenGL 1.1!", "Thousands of colors!", "Try it!", "Age of Wonders is better!", "Try the mushroom stew!", "Sensational!", "Hot tamale, hot hot tamale!", "Play him off, keyboard cat!", "Guaranteed!", "Macroscopic!", "Bring it on!", "Random splash!", "Call your mother!", "Monster infighting!", "Loved by millions!", "Ultimate edition!", "Freaky!", "You\'ve got a brand new key!", "Water proof!", "Uninflammable!", "Whoa, dude!", "All inclusive!", "Tell your friends!", "NP is not in P!", "Notch <3 Ez!", "Music by C418!"};
+char *splashes[] = { "Pre-beta!", "As seen on TV!", "Awesome!", "100% pure!", "May contain nuts!", "Better than Prey!", "More polygons!", "Sexy!", "Limited edition!", "Flashing letters!", "Made by Notch!", "Coming soon!", "Best in class!", "When it\'s finished!", "Absolutely dragon free!", "Excitement!", "More than 5000 sold!", "One of a kind!", "700+ hits on YouTube!", "Indev!", "Spiders everywhere!", "Check it out!", "Holy cow, man!", "It\'s a game!", "Made in Sweden!", "Uses LWJGL!", "Reticulating splines!", "InfCube!", "Yaaay!", "Alpha version!", "Singleplayer!", "Keyboard compatible!", "Undocumented!", "Ingots!", "Exploding creepers!", "That\'s not a moon!", "l33t!", "Create!", "Survive!", "Dungeon!", "Exclusive!", "The bee\'s knees!", "Down with O.P.P.!", "Closed source!", "Classy!", "Wow!", "Not on steam!", "9.95 euro!", "Half price!", "Oh man!", "Check it out!", "Awesome community!", "Pixels!", "Teetsuuuuoooo!", "Kaaneeeedaaaa!", "Now with difficulty!", "Enhanced!", "90% bug free!", "Pretty!", "12 herbs and spices!", "Fat free!", "Absolutely no memes!", "Free dental!", "Ask your doctor!", "Minors welcome!", "Cloud computing!", "Legal in Finland!", "Hard to label!", "Technically good!", "Bringing home the bacon!", "Indie!", "GOTY!", "Ceci n\'est pas une title screen!", "Euclidian!", "Now in 3D!", "Inspirational!", "Herregud!", "Complex cellular automata!", "Yes, sir!", "Played by cowboys!", "OpenGL 1.1!", "Thousands of colors!", "Try it!", "Age of Wonders is better!", "Try the mushroom stew!", "Sensational!", "Hot tamale, hot hot tamale!", "Play him off, keyboard cat!", "Guaranteed!", "Macroscopic!", "Bring it on!", "Random splash!", "Call your mother!", "Monster infighting!", "Loved by millions!", "Ultimate edition!", "Freaky!", "You\'ve got a brand new key!", "Water proof!", "Uninflammable!", "Whoa, dude!", "All inclusive!", "Tell your friends!", "NP is not in P!", "Notch <3 Ez!", "Music by C418!" };
 
 #define LOGO_COLS 34
 #define LOGO_ROWS 5
@@ -120,10 +120,10 @@ static void logo_render(screen_t *screen, float partial_tick) {
             glScalef(0.98, 1.0, 1.0);
             glEnable(GL_BLEND);
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        }else if(pass == 1) {
+        } else if(pass == 1) {
             glDisable(GL_BLEND);
             glClear(GL_DEPTH_BUFFER_BIT);
-        }else {
+        } else {
             glEnable(GL_BLEND);
             glBlendFunc(GL_SRC_COLOR, GL_ONE);
         }
@@ -135,7 +135,7 @@ static void logo_render(screen_t *screen, float partial_tick) {
 
         if(pass == 0) {
             glDisable(GL_TEXTURE_2D);
-        }else {
+        } else {
             glEnable(GL_TEXTURE_2D);
             glBindTexture(GL_TEXTURE_2D, textures_load(&infcube->textures, "terrain.png"));
         }
@@ -226,17 +226,15 @@ void screen_title_render(screen_t *screen, int mouse_x, int mouse_y, float parti
     uint64_t avail_mem = max_mem - free_mem;
     char string[128];
     snprintf(string, sizeof(string),
-        "Free memory: %lld%% of %lldMB",
-        avail_mem * 100LL / max_mem,
-        max_mem / 1024LL / 1024LL
-    );
+             "Free memory: %lld%% of %lldMB",
+             avail_mem * 100LL / max_mem,
+             max_mem / 1024LL / 1024LL);
     gui_draw_string(screen->font, string, screen->width - font_get_width(screen->font, string) - 2, 2, 0x808080);
     memset(string, 0, sizeof(string));
     snprintf(string, sizeof(string),
-        "Allocated memory: %lld%% (%lld MB)",
-        total_mem * 100LL / max_mem,
-        total_mem / 1024LL / 1024LL
-    );
+             "Allocated memory: %lld%% (%lld MB)",
+             total_mem * 100LL / max_mem,
+             total_mem / 1024LL / 1024LL);
     gui_draw_string(screen->font, string, screen->width - font_get_width(screen->font, string) - 2, 12, 0x808080);
 
     screen_render(screen, mouse_x, mouse_y, partial_tick);

@@ -28,9 +28,7 @@ void fall(block_t *block, struct world_s *world, int x, int y, int z) {
 
         uint8_t block_id = world_get_block(real_world, vx, vy - 1, vz);
         uint8_t liquid_type =
-            (block_id == blocks.air.id || block_id == blocks.fire.id ||
-             block_list[block_id].material == &materials.water ||
-             block_list[block_id].material == &materials.lava);
+            (block_id == blocks.air.id || block_id == blocks.fire.id || block_list[block_id].material == &materials.water || block_list[block_id].material == &materials.lava);
 
         if(!liquid_type || vy < 0) {
             if(vy < 0) {
@@ -39,10 +37,9 @@ void fall(block_t *block, struct world_s *world, int x, int y, int z) {
 
             if(y != vy) {
                 block_id = world_get_block(real_world, vx, vy, vz);
-                if(block_id != blocks.air.id &&
-                    block_list[block_id].material != &materials.air) {
-                        world_set_block_no_update(real_world, vx, vy, vz, blocks.air.id);
-                    }
+                if(block_id != blocks.air.id && block_list[block_id].material != &materials.air) {
+                    world_set_block_no_update(real_world, vx, vy, vz, blocks.air.id);
+                }
                 world_swap(real_world, x, y, z, vx, vy, vz);
             }
             return;

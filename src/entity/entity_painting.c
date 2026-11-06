@@ -58,8 +58,10 @@ void entity_painting_set_direction(entity_t *entity, int8_t side) {
     float size_y = entity->painting->size_y;
     float size_z = entity->painting->size_x;
 
-    if(side != 0 && side != 2) size_x = 0.5;
-    else size_z = 0.5;
+    if(side != 0 && side != 2)
+        size_x = 0.5;
+    else
+        size_z = 0.5;
 
     size_x /= 32.0;
     size_y /= 32.0;
@@ -100,7 +102,7 @@ uint8_t entity_painting_on_valid_surface(entity_t *entity) {
         return 0;
     }
     array_list_free(bb_list);
-    
+
     int size_x = entity->painting->size_x / 16;
     int size_y = entity->painting->size_y / 16;
     int pos_x = entity->painting_pos_x;
@@ -116,7 +118,7 @@ uint8_t entity_painting_on_valid_surface(entity_t *entity) {
             material_t *material;
             if(entity->painting_direction != 0 && entity->painting_direction != 2) {
                 material = world_get_block_material(entity->world, entity->painting_pos_x, pos_y + y, pos_z + x);
-            }else {
+            } else {
                 material = world_get_block_material(entity->world, pos_x + x, pos_y + y, entity->painting_pos_z);
             }
 
@@ -177,155 +179,117 @@ void entity_painting_read_nbt(entity_t *entity, nbt_base_t *nbt) {
 int painting_count = 19;
 
 painting_t painting_list[] = {
-    {
-        .title = "Kebab",
-        .size_x = 16,
-        .size_y = 16,
-        .offset_x = 0,
-        .offset_y = 0
-    },
+    { .title = "Kebab",
+      .size_x = 16,
+      .size_y = 16,
+      .offset_x = 0,
+      .offset_y = 0 },
 
-    {
-        .title = "Aztec",
-        .size_x = 16,
-        .size_y = 16,
-        .offset_x = 16,
-        .offset_y = 0
-    },
+    { .title = "Aztec",
+      .size_x = 16,
+      .size_y = 16,
+      .offset_x = 16,
+      .offset_y = 0 },
 
-    {
-        .title = "Alban",
-        .size_x = 16,
-        .size_y = 16,
-        .offset_x = 32,
-        .offset_y = 0
-    },
+    { .title = "Alban",
+      .size_x = 16,
+      .size_y = 16,
+      .offset_x = 32,
+      .offset_y = 0 },
 
-    {
-        .title = "Aztec2",
-        .size_x = 16,
-        .size_y = 16,
-        .offset_x = 48,
-        .offset_y = 0
-    },
+    { .title = "Aztec2",
+      .size_x = 16,
+      .size_y = 16,
+      .offset_x = 48,
+      .offset_y = 0 },
 
-    {
-        .title = "Bomb",
-        .size_x = 16,
-        .size_y = 16,
-        .offset_x = 64,
-        .offset_y = 0
-    },
+    { .title = "Bomb",
+      .size_x = 16,
+      .size_y = 16,
+      .offset_x = 64,
+      .offset_y = 0 },
 
-    {
-        .title = "Plant",
-        .size_x = 16,
-        .size_y = 16,
-        .offset_x = 80,
-        .offset_y = 0
-    },
+    { .title = "Plant",
+      .size_x = 16,
+      .size_y = 16,
+      .offset_x = 80,
+      .offset_y = 0 },
 
-    {
-        .title = "Wasteland",
-        .size_x = 16,
-        .size_y = 16,
-        .offset_x = 96,
-        .offset_y = 0
-    },
+    { .title = "Wasteland",
+      .size_x = 16,
+      .size_y = 16,
+      .offset_x = 96,
+      .offset_y = 0 },
 
-    {
-        .title = "Pool",
-        .size_x = 32,
-        .size_y = 16,
-        .offset_x = 0,
-        .offset_y = 32
-    },
+    { .title = "Pool",
+      .size_x = 32,
+      .size_y = 16,
+      .offset_x = 0,
+      .offset_y = 32 },
 
-    {
-        .title = "Courbet",
-        .size_x = 32,
-        .size_y = 16,
-        .offset_x = 32,
-        .offset_y = 32
-    },
+    { .title = "Courbet",
+      .size_x = 32,
+      .size_y = 16,
+      .offset_x = 32,
+      .offset_y = 32 },
 
-    {
-        .title = "Sea",
-        .size_x = 32,
-        .size_y = 16,
-        .offset_x = 64,
-        .offset_y = 32
-    },
+    { .title = "Sea",
+      .size_x = 32,
+      .size_y = 16,
+      .offset_x = 64,
+      .offset_y = 32 },
 
-    {
-        .title = "Sunset",
-        .size_x = 32,
-        .size_y = 16,
-        .offset_x = 96,
-        .offset_y = 32
-    },
+    { .title = "Sunset",
+      .size_x = 32,
+      .size_y = 16,
+      .offset_x = 96,
+      .offset_y = 32 },
 
-    {
-        .title = "Wanderer",
-        .size_x = 16,
-        .size_y = 32,
-        .offset_x = 0,
-        .offset_y = 64
-    },
+    { .title = "Wanderer",
+      .size_x = 16,
+      .size_y = 32,
+      .offset_x = 0,
+      .offset_y = 64 },
 
-    {
-        .title = "Match",
-        .size_x = 32,
-        .size_y = 32,
-        .offset_x = 0,
-        .offset_y = 128
-    },
+    { .title = "Match",
+      .size_x = 32,
+      .size_y = 32,
+      .offset_x = 0,
+      .offset_y = 128 },
 
-    {
-        .title = "Bust",
-        .size_x = 32,
-        .size_y = 32,
-        .offset_x = 32,
-        .offset_y = 128
-    },
+    { .title = "Bust",
+      .size_x = 32,
+      .size_y = 32,
+      .offset_x = 32,
+      .offset_y = 128 },
 
-    {
-        .title = "Stage",
-        .size_x = 32,
-        .size_y = 32,
-        .offset_x = 64,
-        .offset_y = 128
-    },
+    { .title = "Stage",
+      .size_x = 32,
+      .size_y = 32,
+      .offset_x = 64,
+      .offset_y = 128 },
 
-    {
-        .title = "Void",
-        .size_x = 32,
-        .size_y = 32,
-        .offset_x = 96,
-        .offset_y = 128
-    },
+    { .title = "Void",
+      .size_x = 32,
+      .size_y = 32,
+      .offset_x = 96,
+      .offset_y = 128 },
 
-    {
-        .title = "SkullAndRoses",
-        .size_x = 32,
-        .size_y = 32,
-        .offset_x = 128,
-        .offset_y = 128
-    },
+    { .title = "SkullAndRoses",
+      .size_x = 32,
+      .size_y = 32,
+      .offset_x = 128,
+      .offset_y = 128 },
 
-    {
-        .title = "Fighters",
-        .size_x = 64,
-        .size_y = 32,
-        .offset_x = 0,
-        .offset_y = 96
-    },
+    { .title = "Fighters",
+      .size_x = 64,
+      .size_y = 32,
+      .offset_x = 0,
+      .offset_y = 96 },
 
-    {
-        .title = "Pointer",
-        .size_x = 64,
-        .size_y = 64,
-        .offset_x = 0,
-        .offset_y = 192
-    }
+    { .title = "Pointer",
+      .size_x = 64,
+      .size_y = 64,
+      .offset_x = 0,
+      .offset_y = 192 }
 };

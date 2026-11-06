@@ -51,8 +51,8 @@ void block_crops_update(block_t *block, world_t *world, int x, int y, int z, ran
 
             uint8_t has_adjacent_crops_x = block_west == block->id || block_east == block->id;
             uint8_t has_adjacent_crops_z = block_north == block->id || block_south == block->id;
-            uint8_t has_diagonal_crops = block_north_west == block->id || block_north_east == block->id 
-                                      || block_south_east == block->id || block_south_west == block->id;
+            uint8_t has_diagonal_crops = block_north_west == block->id || block_north_east == block->id
+                                         || block_south_east == block->id || block_south_west == block->id;
 
             for(int check_x = x - 1; check_x <= x + 1; check_x++) {
                 for(int check_z = z - 1; check_z <= z + 1; check_z++) {

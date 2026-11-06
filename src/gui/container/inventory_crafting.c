@@ -34,7 +34,7 @@ item_stack_t inventory_crafting_remove_item(inventory_t *inventory, int index, i
             inventory->inv[index] = item_stack_create(0, 0, 0);
             inventory->host_screen->update_crafting(inventory->host_screen);
             return item;
-        }else {
+        } else {
             item_stack_t item = item_stack_split(&inventory->inv[index], amount);
             if(inventory->inv[index].stack_size == 0) {
                 inventory->inv[index] = item_stack_create(0, 0, 0);
@@ -42,7 +42,7 @@ item_stack_t inventory_crafting_remove_item(inventory_t *inventory, int index, i
             inventory->host_screen->update_crafting(inventory->host_screen);
             return item;
         }
-    }else {
+    } else {
         return item_stack_create(0, 0, 0);
     }
 }

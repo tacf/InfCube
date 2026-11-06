@@ -8,7 +8,7 @@ screen_t screen_generate_world_create(screen_t *parent) {
     screen.type = SCREEN_TYPE_GENERATE_WORLD;
     screen.parent = (struct screen_s *)parent;
     //screen.grabs_mouse = 1;
-    
+
     screen.on_open = screen_generate_world_on_open;
     screen.on_button_clicked = screen_generate_world_on_button_clicked;
     screen.render = screen_generate_world_render;

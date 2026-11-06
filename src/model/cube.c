@@ -49,11 +49,11 @@ void cube_add_box(cube_t *cube, float x, float y, float z, int w, int h, int d, 
     cube->vertices[5] = v6;
     cube->vertices[6] = v7;
     cube->vertices[7] = v8;
-    cube->polygons[0] = polygon_create((vertex_t[]){ v6, v2, v3, v7 }, cube->x_texture_offset + d + w,     cube->y_texture_offset + d, cube->x_texture_offset + d + w + d,     cube->y_texture_offset + d + h);
-    cube->polygons[1] = polygon_create((vertex_t[]){ v1, v5, v8, v4 }, cube->x_texture_offset,             cube->y_texture_offset + d, cube->x_texture_offset + d,             cube->y_texture_offset + d + h);
-    cube->polygons[2] = polygon_create((vertex_t[]){ v6, v5, v1, v2 }, cube->x_texture_offset + d,         cube->y_texture_offset,     cube->x_texture_offset + d + w,         cube->y_texture_offset + d);
-    cube->polygons[3] = polygon_create((vertex_t[]){ v3, v4, v8, v7 }, cube->x_texture_offset + d + w,     cube->y_texture_offset,     cube->x_texture_offset + d + w + w,     cube->y_texture_offset + d);
-    cube->polygons[4] = polygon_create((vertex_t[]){ v2, v1, v4, v3 }, cube->x_texture_offset + d,         cube->y_texture_offset + d, cube->x_texture_offset + d + w,         cube->y_texture_offset + d + h);
+    cube->polygons[0] = polygon_create((vertex_t[]){ v6, v2, v3, v7 }, cube->x_texture_offset + d + w, cube->y_texture_offset + d, cube->x_texture_offset + d + w + d, cube->y_texture_offset + d + h);
+    cube->polygons[1] = polygon_create((vertex_t[]){ v1, v5, v8, v4 }, cube->x_texture_offset, cube->y_texture_offset + d, cube->x_texture_offset + d, cube->y_texture_offset + d + h);
+    cube->polygons[2] = polygon_create((vertex_t[]){ v6, v5, v1, v2 }, cube->x_texture_offset + d, cube->y_texture_offset, cube->x_texture_offset + d + w, cube->y_texture_offset + d);
+    cube->polygons[3] = polygon_create((vertex_t[]){ v3, v4, v8, v7 }, cube->x_texture_offset + d + w, cube->y_texture_offset, cube->x_texture_offset + d + w + w, cube->y_texture_offset + d);
+    cube->polygons[4] = polygon_create((vertex_t[]){ v2, v1, v4, v3 }, cube->x_texture_offset + d, cube->y_texture_offset + d, cube->x_texture_offset + d + w, cube->y_texture_offset + d + h);
     cube->polygons[5] = polygon_create((vertex_t[]){ v5, v6, v7, v8 }, cube->x_texture_offset + d + w + d, cube->y_texture_offset + d, cube->x_texture_offset + d + w + d + w, cube->y_texture_offset + d + h);
 
     if(cube->mirror) {
@@ -81,9 +81,9 @@ void cube_render(cube_t *cube, float scale) {
         if(cube->x_rot != 0) glRotatef(cube->x_rot * (180.0 / PI), 1, 0, 0);
         glCallList(cube->list);
         glPopMatrix();
-    }else if(cube->x == 0 && cube->y == 0 && cube->z == 0) {
+    } else if(cube->x == 0 && cube->y == 0 && cube->z == 0) {
         glCallList(cube->list);
-    }else {
+    } else {
         glTranslatef(cube->x * scale, cube->y * scale, cube->z * scale);
         glCallList(cube->list);
         glTranslatef(-cube->x * scale, -cube->y * scale, -cube->z * scale);
@@ -101,7 +101,7 @@ void cube_compile(cube_t *cube, float scale) {
 
         vec3_t n1 = vec3_normalize(vec3_subtract(p1.vertices[1].pos, p2.vertices[0].pos));
         vec3_t n2 = vec3_normalize(vec3_subtract(p2.vertices[1].pos, p2.vertices[2].pos));
-        vec3_t normal = vec3_normalize((vec3_t){n1.y * n2.z - n1.z * n2.y, n1.z * n2.x - n1.x * n2.z, n1.x * n2.y - n1.y * n2.x});
+        vec3_t normal = vec3_normalize((vec3_t){ n1.y * n2.z - n1.z * n2.y, n1.z * n2.x - n1.x * n2.z, n1.x * n2.y - n1.y * n2.x });
 
         glNormal3f(normal.x, normal.y, normal.z);
 

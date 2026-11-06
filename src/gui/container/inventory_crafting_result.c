@@ -31,7 +31,7 @@ item_stack_t inventory_crafting_result_remove_item(inventory_t *inventory, int i
         item_stack_t item = inventory->inv[index];
         inventory->inv[index] = item_stack_create(0, 0, 0);
         return item;
-    }else {
+    } else {
         return item_stack_create(0, 0, 0);
     }
 }

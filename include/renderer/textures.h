@@ -6,7 +6,7 @@
 #include <stdint.h>
 
 typedef struct {
-    uint32_t *textures; //arraylist
+    uint32_t *textures;   //arraylist
     char **texture_names; //arraylist
     uint8_t *texture_buffer;
     uint32_t id_buffer;

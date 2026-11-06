@@ -41,16 +41,18 @@ void screen_render(struct screen_s *proto_screen, int mouse_x, int mouse_y, floa
             uint8_t hovered = mouse_x >= button->x && mouse_y >= button->y && mouse_x < button->x + button->width && mouse_y < button->y + button->height;
             int state = 1;
 
-            if(!button->active) state = 0;
-            else if(hovered) state = 2;
+            if(!button->active)
+                state = 0;
+            else if(hovered)
+                state = 2;
 
             gui_blit(button->x, button->y, 0, 46 + state * 20, button->width / 2, button->height, 0.0);
             gui_blit(button->x + button->width / 2, button->y, 200 - button->width / 2, 46 + state * 20, button->width / 2, button->height, 0.0);
             if(!button->active) {
                 gui_draw_centered_string(screen->font, button->string, button->x + button->width / 2, button->y + (button->height - 8) / 2, 0xffa0a0a0);
-            }else if(hovered) {
+            } else if(hovered) {
                 gui_draw_centered_string(screen->font, button->string, button->x + button->width / 2, button->y + (button->height - 8) / 2, 0xffffffa0);
-            }else {
+            } else {
                 gui_draw_centered_string(screen->font, button->string, button->x + button->width / 2, button->y + (button->height - 8) / 2, 0xffe0e0e0);
             }
         }

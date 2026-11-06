@@ -26,7 +26,7 @@ size_t memory_read(void *ptr, size_t size, size_t nmemb, void *datasource) {
 int memory_seek(void *datasource, ogg_int64_t offset, int whence) {
     memory_buffer_t *buffer = (memory_buffer_t *)datasource;
     size_t new_offset;
-    switch (whence) {
+    switch(whence) {
         case SEEK_SET:
             new_offset = offset;
             break;
@@ -54,7 +54,7 @@ long memory_tell(void *datasource) {
 // Decode OGG data from memory
 int decode_ogg_memory(const unsigned char *data, size_t size, short **output, ALsizei *sample_rate, ALenum *format, ALsizei *buffer_size) {
     OggVorbis_File vf;
-    memory_buffer_t buffer = {data, size, 0};
+    memory_buffer_t buffer = { data, size, 0 };
 
     ov_callbacks callbacks = {
         .read_func = memory_read,
@@ -109,7 +109,7 @@ int decode_ogg_memory(const unsigned char *data, size_t size, short **output, AL
 }
 
 sound_t sound_load(const unsigned char *data, size_t size) {
-    sound_t sound = {0};
+    sound_t sound = { 0 };
     short *pcm_data = NULL;
     ALsizei sample_rate, buffer_size;
     ALenum format;

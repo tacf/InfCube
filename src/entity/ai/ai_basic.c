@@ -32,7 +32,7 @@ void ai_basic_tick(struct ai_s *ai) {
 
         if(x_diff * x_diff + y_diff * y_diff + z_diff * z_diff < 1024.0) {
             ai->no_action_time = 0;
-        }else {
+        } else {
             entity_remove(mob->entity);
         }
     }
@@ -46,7 +46,7 @@ void ai_basic_tick(struct ai_s *ai) {
         ai->xa = 0;
         ai->za = 0;
         ai->y_rota = 0;
-    }else {
+    } else {
         ai->update(ai);
     }
 
@@ -55,9 +55,9 @@ void ai_basic_tick(struct ai_s *ai) {
     if(ai->jumping) {
         if(water) {
             mob->entity->yd += 0.04;
-        }else if(lava) {
+        } else if(lava) {
             mob->entity->yd += 0.04;
-        }else if(entity_on_ground(mob->entity)) {
+        } else if(entity_on_ground(mob->entity)) {
             ai_basic_jump(ai);
         }
     }

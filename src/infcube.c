@@ -45,7 +45,7 @@ void infcube_create(infcube_t *infcube, uint16_t width, uint16_t height, uint8_t
     infcube->ticks = 0;
     infcube->has_mouse = 0;
     infcube->pending_mouse_button_up = 0;
-    infcube->hit_result = (hit_result_t){.null = 1};
+    infcube->hit_result = (hit_result_t){ .null = 1 };
     infcube->last_click = 0;
     infcube->raining = 0;
 
@@ -68,7 +68,7 @@ void infcube_create(infcube_t *infcube, uint16_t width, uint16_t height, uint8_t
         }
         if(window_width >= max_w) window_width = max_w - SDL_max(64, max_w / 10);
         if(window_height >= max_h) window_height = max_h - SDL_max(64, max_h / 10);
-    }else {
+    } else {
         SDL_DisplayMode desktop_mode;
         if(SDL_GetDesktopDisplayMode(0, &desktop_mode) == 0) {
             int max_w = desktop_mode.w;
@@ -131,11 +131,11 @@ void infcube_create(infcube_t *infcube, uint16_t width, uint16_t height, uint8_t
     infcube->progress_bar = progress_bar_create(infcube);
     infcube->models = models_create();
     infcube->game_dir = string_create("./.infcube");
-    #ifdef SURVIVAL_MODE
+#ifdef SURVIVAL_MODE
     infcube->gamemode = gamemode_survival_create(infcube);
-    #else
+#else
     infcube->gamemode = gamemode_creative_create(infcube);
-    #endif
+#endif
     renderer_entity_manager_create(&infcube->entity_manager, infcube);
 
     game_settings_create(&infcube->settings, (struct infcube_s *)infcube);
@@ -169,15 +169,14 @@ void infcube_create(infcube_t *infcube, uint16_t width, uint16_t height, uint8_t
     glViewport(0, 0, infcube->frame_width, infcube->frame_height);
 
     infcube->renderer = renderer_camera_create(infcube);
-    
-    
+
     //infcube->gamemode.init_player(&infcube->gamemode, &infcube->player);
     //infcube->gamemode.adjust_player(&infcube->gamemode, &infcube->player);
 
     renderer_world_create(&infcube->renderer_world, infcube, infcube->world, &infcube->textures);
     //infcube->world->renderer = (struct renderer_world_s *)&infcube->renderer_world;
     //renderer_world_refresh((renderer_world_t *)&infcube->renderer_world);
-    
+
     int x = infcube->width;
     int y = infcube->height;
     int w = x;
@@ -215,16 +214,16 @@ void infcube_prepare_world(infcube_t *infcube, char *progress_text) {
 void infcube_set_world(infcube_t *infcube, world_t *world, char *progress_text) {
     if(infcube->world != NULL) {
         world_save(infcube->world, 1);
-        
+
         if(infcube->renderer_world.infcube != NULL) {
             renderer_world_change_world(&infcube->renderer_world, NULL);
         }
-        
+
         if(infcube->particles.textures != NULL) {
             particles_destroy(&infcube->particles);
             infcube->particles = (particles_t){ 0 };
         }
-        
+
         world_destroy(infcube->world);
         free(infcube->world);
     }
@@ -262,7 +261,7 @@ void infcube_start_world(infcube_t *infcube, char *world_name) {
     world_create(world, infcube, "./.infcube/saves", world_name, time(NULL));
     if(world->is_new_world) {
         infcube_set_world(infcube, world, "Generating level");
-    }else {
+    } else {
         infcube_set_world(infcube, world, "Loading level");
     }
 
@@ -294,7 +293,7 @@ void infcube_set_current_screen(infcube_t *infcube, screen_t *screen) {
     if(screen == NULL && infcube->world == NULL) {
         screen = malloc(sizeof(screen_t));
         *screen = screen_title_create();
-    }else if(screen == NULL && infcube->player.mob->health <= 0) {
+    } else if(screen == NULL && infcube->player.mob->health <= 0) {
         screen = malloc(sizeof(screen_t));
         *screen = screen_death_create();
     }
@@ -317,7 +316,7 @@ void infcube_set_current_screen(infcube_t *infcube, screen_t *screen) {
         h /= x;
 
         screen_open(screen, infcube, w, h);
-    }else {
+    } else {
         infcube->current_screen = NULL;
         infcube->pending_mouse_button_up = 0;
         infcube_grab_mouse(infcube);
@@ -376,7 +375,7 @@ void on_mouse_clicked(infcube_t *infcube, int button) {
             if(button == SDL_BUTTON_LEFT && infcube->gamemode.gamemode_type != GAMEMODE_CREATIVE) {
                 infcube->miss_time = 10;
             }
-        }else {
+        } else {
             if(infcube->hit_result.type == 1) {
                 if(button == SDL_BUTTON_LEFT) {
                     //entity_t *hit_entity = infcube->hit_result.entity;
@@ -385,7 +384,7 @@ void on_mouse_clicked(infcube_t *infcube, int button) {
 
                     return;
                 }
-            }else if(infcube->hit_result.type == 0) {
+            } else if(infcube->hit_result.type == 0) {
                 int hit_x = infcube->hit_result.x;
                 int hit_y = infcube->hit_result.y;
                 int hit_z = infcube->hit_result.z;
@@ -396,7 +395,7 @@ void on_mouse_clicked(infcube_t *infcube, int button) {
                         infcube->gamemode.start_destroy_block(&infcube->gamemode, hit_x, hit_y, hit_z);
                         return;
                     }
-                }else {
+                } else {
                     player_t *player = infcube->player.mob->player;
                     item_stack_t current_item = inventory_player_get_selected(&player->inventory);
                     uint8_t block_id = world_get_block(infcube->world, hit_x, hit_y, hit_z);
@@ -470,7 +469,7 @@ void infcube_tick(infcube_t *infcube, SDL_Event *events) {
             if(infcube->current_screen == NULL) {
                 if(!infcube->has_mouse && events[i].type == SDL_MOUSEBUTTONDOWN) {
                     infcube_grab_mouse(infcube);
-                }else if(events[i].type == SDL_MOUSEBUTTONDOWN) {
+                } else if(events[i].type == SDL_MOUSEBUTTONDOWN) {
                     if(events[i].button.button == SDL_BUTTON_LEFT) {
                         on_mouse_clicked(infcube, SDL_BUTTON_LEFT);
                         infcube->last_click = infcube->ticks;
@@ -492,7 +491,7 @@ void infcube_tick(infcube_t *infcube, SDL_Event *events) {
                         inventory_player_get_hotbar_slot(&infcube->player.mob->player->inventory, block_id);
                     }
                 }
-            }else {
+            } else {
                 screen_mouse_event(infcube->current_screen, events[i]);
             }
         }
@@ -503,7 +502,7 @@ void infcube_tick(infcube_t *infcube, SDL_Event *events) {
             if(events[i].type == SDL_KEYDOWN) {
                 if(infcube->current_screen != NULL) {
                     screen_keyboard_event(infcube->current_screen, events[i]);
-                }else {
+                } else {
                     if(events[i].key.keysym.scancode == SDL_SCANCODE_ESCAPE) {
                         infcube_pause(infcube);
                         events[i] = (SDL_Event){ 0 };
@@ -563,7 +562,7 @@ void infcube_tick(infcube_t *infcube, SDL_Event *events) {
     if(!infcube->gamemode.instant_break && infcube->miss_time <= 0) {
         if(infcube->current_screen == NULL && SDL_GetMouseState(NULL, NULL) & SDL_BUTTON_LMASK && !infcube->hit_result.null && infcube->hit_result.type == 0) { // and mouse was down
             infcube->gamemode.continue_destroy_block(&infcube->gamemode, infcube->hit_result.x, infcube->hit_result.y, infcube->hit_result.z, infcube->hit_result.face);
-        }else {
+        } else {
             infcube->gamemode.stop_destroy_block(&infcube->gamemode);
         }
     }
@@ -574,14 +573,14 @@ void infcube_tick(infcube_t *infcube, SDL_Event *events) {
             free(infcube->current_screen);
             infcube->current_screen = NULL;
             infcube->pending_mouse_button_up = 0;
-        }else {
+        } else {
             screen_do_input(infcube->current_screen, events);
             if(infcube->current_screen != NULL) {
                 infcube->current_screen->tick((struct screen_s *)infcube->current_screen);
             }
         }
     }
-    
+
     /*item_stack_t selected = inventory_player_get_selected(&infcube->player.mob->player->inventory);
     block_t *block = &block_list[blocks.air.id];
     if(selected.item_id > 0) block = &block_list[selected];
@@ -665,7 +664,7 @@ void infcube_run(infcube_t *infcube) {
             memcpy(&copy, &event, sizeof(SDL_Event));
             events = array_list_push(events, &copy);
         }
-        
+
         game_timer_t *timer = &infcube->timer;
         int64_t time = time_millis();
         int64_t d = time - timer->last_system_clock;
@@ -765,7 +764,7 @@ void infcube_run(infcube_t *infcube) {
         if(infcube->current_screen != NULL) {
            // infcube->current_screen->render((struct screen_s *)infcube->current_screen, mx, my, delta);
         }*/
-        
+
         //frame++;
         //SDL_GL_SwapWindow(infcube->window);
 
@@ -794,7 +793,7 @@ int main(int argc, char *argv[]) {
     memset(&infcube, 0, sizeof(infcube_t));
     infcube_create(&infcube, 1920, 1080, 0);
     infcube_run(&infcube);
-    
+
     if(infcube.current_screen != NULL) {
         screen_destroy((struct screen_s *)infcube.current_screen);
         free(infcube.current_screen);
@@ -807,7 +806,7 @@ int main(int argc, char *argv[]) {
     array_list_free(infcube.settings.bindings);
     array_list_free(session_allowed_blocks);
     sounds_destroy(&infcube.sounds);
-    
+
     SDL_DestroyWindow(infcube.window);
     SDL_Quit();
 

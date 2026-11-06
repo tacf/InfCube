@@ -33,7 +33,7 @@ void screen_death_on_button_clicked(struct screen_s *screen, button_t *button) {
         screen_t *gen_screen = malloc(sizeof(screen_t));
         *gen_screen = screen_generate_world_create(screen);
         infcube_set_current_screen(screen->infcube, gen_screen);
-    }else if(button->id == 1) {
+    } else if(button->id == 1) {
         //screen_t *load_screen = malloc(sizeof(screen_t));
         //*load_screen = screen_load_world_create(screen);
         //infcube_set_current_screen(screen->infcube, load_screen);

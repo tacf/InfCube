@@ -40,7 +40,7 @@ font_t font_create(game_settings_t *settings, char *name, textures_t *textures) 
                 if(pixel > 128) empty_column = 0;
             }
         }
-        
+
         if(i == 32) x = 4;
         font.width_map[i] = x;
     }
@@ -56,7 +56,7 @@ font_t font_create(game_settings_t *settings, char *name, textures_t *textures) 
         tesselator_vertex_uv(0.0, s, 0.0, u / 128.0, (v + s) / 128.0);
         tesselator_vertex_uv(s, s, 0.0, (u + s) / 128.0, (v + s) / 128.0);
         tesselator_vertex_uv(s, 0.0, 0.0, (u + s) / 128.0, v / 128.0);
-        tesselator_vertex_uv(0.0, 0.0, 0.0, u / 128.0 , v / 128.0);
+        tesselator_vertex_uv(0.0, 0.0, 0.0, u / 128.0, v / 128.0);
         tesselator_end();
         glTranslatef(font.width_map[i], 0.0, 0.0);
         glEndList();
@@ -111,7 +111,7 @@ static void private_text_render(font_t *font, char *str, int x, int y, uint32_t 
 
                 i += 2;
             }
-            
+
             uint32_t char_list = font->render_list + (uint8_t)str[i];
             glCallList(char_list);
         }
@@ -122,11 +122,11 @@ static void private_text_render(font_t *font, char *str, int x, int y, uint32_t 
 
 void font_render(font_t *font, char *string, int x, int y, uint32_t color) {
     private_text_render(font, string, x + 1, y + 1, color, 1);
-    private_text_render(font, string, x , y , color, 0);
+    private_text_render(font, string, x, y, color, 0);
 }
 
 void font_render_no_shadow(font_t *font, char *string, int x, int y, uint32_t color) {
-    private_text_render(font, string, x , y , color, 0);
+    private_text_render(font, string, x, y, color, 0);
 }
 
 int font_get_width(font_t *font, char *string) {
@@ -137,8 +137,10 @@ int font_get_width(font_t *font, char *string) {
     int width = 0;
 
     for(int i = 0; i < strlen(string); i++) {
-        if(string[i] == '&') i++;
-        else width += font->width_map[(int)string[i]];
+        if(string[i] == '&')
+            i++;
+        else
+            width += font->width_map[(int)string[i]];
     }
 
     return width;
@@ -147,8 +149,10 @@ int font_get_width(font_t *font, char *string) {
 char *font_strip_color(char *string) {
     char *new_string = string_create(string);
     for(int i = 0; i < strlen(string); i++) {
-        if(string[i] == '&') i++;
-        else string_concat(&new_string, (char[]){ string[i], '\0' });
+        if(string[i] == '&')
+            i++;
+        else
+            string_concat(&new_string, (char[]){ string[i], '\0' });
     }
 
     return new_string;

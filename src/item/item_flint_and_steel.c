@@ -31,5 +31,5 @@ uint8_t item_flint_and_steel_on_use(item_t *item, item_stack_t *item_stack, worl
     }
     item_stack_damage(item_stack, 1);
 
-    return 1;   
+    return 1;
 }

@@ -39,28 +39,28 @@ typedef struct entity_s {
     float y_rot, x_rot;
     float y_roto, x_roto;
     AABB_t bb;
-    uint8_t on_ground; // = false
+    uint8_t on_ground;            // = false
     uint8_t horizontal_collision; // = false
-    uint8_t collision; // = false
-    uint8_t slide; // = true
-    uint8_t removed; // = false
-    uint8_t is_shootable; // = false
-    float height_offset; // = 0.0F
-    float bb_width; // = 0.6F
-    float bb_height; // = 1.8F
-    float walk_disto; // = 0.0F
-    float walk_dist; // = 0.0F
-    uint8_t make_step_sound; // = true
-    float fall_distance; // = 0.0F
-    int32_t next_step; // = 1
+    uint8_t collision;            // = false
+    uint8_t slide;                // = true
+    uint8_t removed;              // = false
+    uint8_t is_shootable;         // = false
+    float height_offset;          // = 0.0F
+    float bb_width;               // = 0.6F
+    float bb_height;              // = 1.8F
+    float walk_disto;             // = 0.0F
+    float walk_dist;              // = 0.0F
+    uint8_t make_step_sound;      // = true
+    float fall_distance;          // = 0.0F
+    int32_t next_step;            // = 1
     uint8_t allowed_in_creative_mode;
-    int32_t texture_id; // = 0
+    int32_t texture_id;   // = 0
     float y_slide_offset; // = 0.0F
-    float foot_size; // = 0.0F
-    uint8_t no_physics; // = false
-    float push_through; // = 0.0F
-    uint8_t hovered; // = false
-    int air_supply; // = 300;
+    float foot_size;      // = 0.0F
+    uint8_t no_physics;   // = false
+    float push_through;   // = 0.0F
+    uint8_t hovered;      // = false
+    int air_supply;       // = 300;
     int age;
     int tick_count; // = 0;
     entity_type_t type;
@@ -68,7 +68,7 @@ typedef struct entity_s {
     uint8_t is_dead;
     uint8_t prevents_spawning;
     int fire;
-    int fire_resistance; // = 1
+    int fire_resistance;     // = 1
     uint8_t is_first_update; // = 1
     uint8_t in_water;
 
@@ -95,7 +95,7 @@ typedef struct entity_s {
             int painting_ticks;
         };
     };
-    
+
     model_t *model;
 
     void (*tick)(struct entity_s *entity);

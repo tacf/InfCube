@@ -9,7 +9,7 @@
 texture_animated_t texture_fire_create(int type) {
     texture_animated_t texture = texture_animated_create(blocks.fire.texture_id + (type << 4));
 
-    texture.tick = texture_fire_tick;  
+    texture.tick = texture_fire_tick;
 
     return texture;
 }

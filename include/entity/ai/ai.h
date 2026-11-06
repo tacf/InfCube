@@ -15,9 +15,9 @@ typedef struct ai_s {
     int default_look_angle;
     struct world_s *world;
     struct mob_s *mob;
-    uint8_t jumping; // = 0
-    int attack_delay; // = 0
-    float run_speed; // = 0.7
+    uint8_t jumping;      // = 0
+    int attack_delay;     // = 0
+    float run_speed;      // = 0.7
     float no_action_time; // = 0
     int damage;
     struct entity_s *attack_target;

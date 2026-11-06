@@ -44,7 +44,7 @@ void nbt_tag_list_read_contents(nbt_base_t *nbt, gzFile file) {
 void nbt_tag_list_write_contents(nbt_base_t *nbt, gzFile file) {
     if(array_list_length(nbt->tag_array) > 0) {
         nbt->array_list_type = ((nbt_base_t *)array_list_get(nbt->tag_array, 0))->type;
-    }else {
+    } else {
         nbt->array_list_type = NBT_TYPE_END;
     }
 
