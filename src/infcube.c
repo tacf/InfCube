@@ -278,7 +278,8 @@ void infcube_grab_mouse(infcube_t *infcube) {
     if(!infcube->has_mouse) {
         infcube->has_mouse = 1;
         SDL_ShowCursor(0);
-        SDL_WarpMouseInWindow(infcube->window, infcube->width / 2, infcube->height / 2);
+        SDL_SetRelativeMouseMode(SDL_TRUE);
+        SDL_GetRelativeMouseState(NULL, NULL); // discard stale delta
         infcube->last_click = infcube->ticks + 10000;
     }
 }
@@ -305,6 +306,7 @@ void infcube_set_current_screen(infcube_t *infcube, screen_t *screen) {
                 inputs_reset_keys(&infcube->player.mob->player->inputs);
             }
             infcube->has_mouse = 0;
+            SDL_SetRelativeMouseMode(SDL_FALSE);
             SDL_ShowCursor(1);
         }
         int x = infcube->width;
@@ -728,15 +730,8 @@ void infcube_run(infcube_t *infcube) {
         if(infcube->has_mouse) {
             int dx = 0;
             int dy = 0;
-            int x = 0;
-            int y = 0;
-            SDL_GetWindowPosition(infcube->window, &x, &y);
-            x += infcube->width / 2;
-            y += infcube->height / 2;
-            SDL_GetGlobalMouseState(&dx, &dy);
-            dx -= x;
-            dy = -(dy - y);
-            SDL_WarpMouseGlobal(x, y);
+            SDL_GetRelativeMouseState(&dx, &dy);
+            dy = -dy;
 
             entity_turn(&infcube->player, dy * (infcube->settings.invert_mouse ? -1 : 1), dx);
         }
