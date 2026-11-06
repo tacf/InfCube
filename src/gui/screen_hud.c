@@ -166,22 +166,17 @@ void screen_hud_render(screen_hud_t *hud, float mx, float my, float partial_tick
             avail_mem * 100LL / max_mem,
             max_mem / 1024LL / 1024LL
         );
-        font_render(&hud->infcube->font, stats_string, hud->width - font_get_width(&hud->infcube->font, stats_string) - 2, 12, 0xffffffff);
+        font_render(&hud->infcube->font, stats_string, hud->width - font_get_width(&hud->infcube->font, stats_string) - 2, 2, 0xffffffff);
         memset(stats_string, 0, sizeof(stats_string));
         snprintf(stats_string, sizeof(stats_string),
             "Allocated memory: %lld%% (%lld MB)",
             total_mem * 100LL / max_mem,
             total_mem / 1024LL / 1024LL
         );
-        font_render(&hud->infcube->font, stats_string, hud->width - font_get_width(&hud->infcube->font, stats_string) - 2, 22, 0xffffffff);
+        font_render(&hud->infcube->font, stats_string, hud->width - font_get_width(&hud->infcube->font, stats_string) - 2, 12, 0xffffffff);
     }else {
         font_render(&hud->infcube->font, "InfCube", 2, 2, 0xffffffff);
     }
-
-    // FPS averaged over the last second
-    char fps_string[32];
-    snprintf(fps_string, sizeof(fps_string), "%d FPS", hud->infcube->fps);
-    font_render(&hud->infcube->font, fps_string, hud->width - font_get_width(&hud->infcube->font, fps_string) - 2, 2, 0xffffffff);
         
     //chat screen
 

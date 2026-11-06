@@ -228,7 +228,7 @@ void infcube_set_world(infcube_t *infcube, world_t *world, char *progress_text) 
         world_destroy(infcube->world);
         free(infcube->world);
     }
-    
+
     infcube->world = world;
     if(world != NULL) {
         infcube->renderer.renderer_overlay.world = world;
@@ -464,7 +464,8 @@ void infcube_tick(infcube_t *infcube, SDL_Event *events) {
                 int slot = events[i].wheel.y;
                 slot = slot > 0 ? 1 : (slot < 0 ? -1 : slot);
                 for(infcube->player.mob->player->inventory.selected -= slot; infcube->player.mob->player->inventory.selected < 0; infcube->player.mob->player->inventory.selected += 9);
-                while(infcube->player.mob->player->inventory.selected >= 9) infcube->player.mob->player->inventory.selected -= 9;
+                while(infcube->player.mob->player->inventory.selected >= 9)
+                    infcube->player.mob->player->inventory.selected -= 9;
             }
             if(infcube->current_screen == NULL) {
                 if(!infcube->has_mouse && events[i].type == SDL_MOUSEBUTTONDOWN) {
@@ -771,7 +772,6 @@ void infcube_run(infcube_t *infcube) {
         while(time_millis() >= start + 1000) {
             char *chunks = string_create_from_int(chunk_updates);
             string_concat(&chunks, " chunk updates");
-            infcube->fps = frame;
             string_set_from_int(&infcube->debug, frame);
             string_concat(&infcube->debug, " fps, ");
             string_concat(&infcube->debug, chunks);

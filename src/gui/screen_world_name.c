@@ -60,7 +60,8 @@ void screen_world_name_on_key_pressed(struct screen_s *proto_screen, char event_
     if(event_key == SDL_SCANCODE_BACKSPACE && string_length(screen->name) > 0) {
         screen->name = string_sub(screen->name, 0, string_length(screen->name) - 2);
     }
-    char *allowed_chars = string_create("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ,.:-_\'*!\\\"#%%/()=+?[]{}<>@|$;");
+    char *allowed_chars = string_create("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ012345"
+                                        "6789 ,.:-_\'*!\\\"#%%/()=+?[]{}<>@|$;");
     if(string_index_of(allowed_chars, event_char) >= 0 && string_length(screen->text) < 64 - 2) {
         string_concat(&screen->text, (char[]){ event_char, '\0' });
     }

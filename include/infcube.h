@@ -46,7 +46,6 @@ typedef struct infcube_s {
     uint8_t has_mouse;
     uint8_t pending_mouse_button_up;
     char *debug;
-    int fps;
     int last_click;
     int32_t width;
     int32_t frame_width;

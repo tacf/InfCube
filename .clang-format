@@ -1,0 +1,20 @@
+BasedOnStyle: LLVM
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+ColumnLimit: 0
+IndentCaseLabels: true
+SortIncludes: Never
+ReflowComments: false
+SpacesInLineCommentPrefix:
+  Minimum: 0
+  Maximum: -1
+SpaceBeforeParens: Custom
+SpaceBeforeParensOptions:
+  AfterControlStatements: false
+BreakBeforeBinaryOperators: NonAssignment
+AllowShortIfStatementsOnASingleLine: WithoutElse
+AllowShortLoopsOnASingleLine: true
+AllowShortBlocksOnASingleLine: Empty
+AllowShortFunctionsOnASingleLine: None
+Cpp11BracedListStyle: false

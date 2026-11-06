@@ -119,6 +119,15 @@ $(HEADERSDIR)/%.h: $(ASSETSDIR)/%.ogg
 assets: $(ASSETS)
 	@echo !==== ALL ASSETS CONVERTED ====!
 
+# Format sources with clang-format, skips third party headers
+FORMAT_FILES = $(shell find $(SRCDIR) include -type f \( -name "*.c" -o -name "*.h" \) \
+	-not -path "include/AL/*" -not -path "include/GL/*" -not -path "include/SDL2/*" \
+	-not -path "include/ogg/*" -not -path "include/vorbis/*" -not -path "include/zlib/*")
+
+format:
+	@echo !==== FORMATTING ====!
+	clang-format -i --style=file $(FORMAT_FILES)
+
 clean:
 	@echo !==== CLEANING ====!
 	rm -rf $(OBJDIR) infcube infcube.exe

@@ -2,10 +2,10 @@
 #include <stdint.h>
 #include <time.h>
 #ifdef _WIN32
-    #include <windows.h>
-    #include <winsock.h>
+#include <windows.h>
+#include <winsock.h>
 #else
-    #include <sys/time.h>
+#include <sys/time.h>
 #endif
 
 #ifdef _WIN32

@@ -478,7 +478,8 @@ void chunk_set_tile_entity(chunk_t *chunk, int x, int y, int z, tile_entity_t *t
         private_set_tile_entity_at(chunk, x, y, z, tile_entity);
         chunk->world->loaded_tile_entity_list = array_list_push(chunk->world->loaded_tile_entity_list, &tile_entity);
     }else {
-        printf("Attempted to place a tile entity where there was no entity tile!\n");
+        printf("Attempted to place a tile entity where there was no entity "
+               "tile!\n");
     }
 }
 

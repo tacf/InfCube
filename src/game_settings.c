@@ -89,7 +89,7 @@ void game_settings_toggle_setting(game_settings_t *settings, int setting) {
             break;
         case 6:
             settings->anaglyph = !settings->anaglyph;
-            infcube_t *infcube = settings->infcube;
+        infcube_t *infcube = settings->infcube;
             textures_reload(&infcube->textures);
             settings->infcube->font.texture = textures_load(&settings->infcube->textures, settings->infcube->font.texture_name);
             break;
