@@ -9,23 +9,20 @@ CFLAGS = -I./include -I./res -Wall -std=c11 -fms-extensions -g -O2 -flarge-sourc
 LDFLAGS = -lpthread -lSDL2 -lSDL2main -lGL -lGLU -lm -lopenal -lvorbisfile -lz -lfreetype
 
 # Linux-specific flags
-#LINUX_CFLAGS = $(CFLAGS)
-#LINUX_LDFLAGS = -static-libgcc -static-libstdc++ \
-	-Wl,-Bstatic \
-	-lSDL2 -lGLEW -lGLU -lvorbisfile -lvorbis -logg -lz \
-	-Wl,-Bdynamic \
-	-lGL -lopenal \
-	-lX11 -lXext -lXrandr -lXi -lXcursor -lXinerama -lXxf86vm -lXfixes -lXss \
-	-lwayland-client -lwayland-cursor -lwayland-egl -lxkbcommon -ldecor-0 \
-	-lpulse -lpulse-simple \
-	-ldrm -lgbm \
-	-lpthread -lm -ldl -lrt -lasound
 # Use 'make ASAN=1' for the slower AddressSanitizer build
 ifeq ($(ASAN),1)
 SANFLAGS = -fsanitize=address
 endif
-LINUX_CFLAGS = $(CFLAGS) $(SANFLAGS)
+LINUX_CFLAGS = $(CFLAGS) $(SANFLAGS) $(shell pkg-config --cflags freetype2)
+# Use 'make STATIC=1' to link the bundled archives in lib/linux
+# SDL2, OpenAL, GL and glibc stay dynamic
+ifeq ($(STATIC),1)
+LINUX_LDFLAGS = -L./lib/linux -static-libgcc \
+	-Wl,-Bstatic -lGLEW -lGLU -lvorbisfile -lvorbis -logg -lfreetype -lz \
+	-Wl,-Bdynamic -lSDL2 -lGL -lopenal -lpthread -lm -ldl $(SANFLAGS)
+else
 LINUX_LDFLAGS = $(LDFLAGS) $(SANFLAGS) -lGLEW
+endif
 
 # Windows-specific flags
 WINDOWS_CFLAGS = -I./include -I./res -I./lib/zlib -Wall -std=c11 -fms-extensions -Dmain=main \

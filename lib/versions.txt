@@ -1,0 +1,13 @@
+SDL3 3.4.20
+  SDL3/                      headers, official release (libsdl-org/SDL release-3.4.20)
+  SDL3.dll                   Windows x64 DLL, official SDL3-devel-3.4.20-mingw
+  libSDL3.dll.a              Windows x64 import lib, official SDL3-devel-3.4.20-mingw
+  libSDL3.a                  Windows x64 static, MSYS2 clang64 mingw-w64-clang-x86_64-sdl3 3.4.20-1
+  libiconv.a                 Windows x64 static, MSYS2 clang64 mingw-w64-clang-x86_64-libiconv 1.19.1-1 (required by libSDL3.a, LGPL-2.1)
+  linux/libSDL3.a            Linux x86_64 static, Debian sid libsdl3-dev 3.4.20+ds-1 (glibc >= 2.43)
+  linux/libSDL3.so.0.4.20    Linux x86_64 shared, Debian sid libsdl3-0 3.4.20+ds-1 (glibc >= 2.43)
+
+FreeType2 2.15.0
+  freetype/, ft2build.h      headers
+  libfreetype.a              Windows x64 static, built from official freetype-2.15.0.tar.xz with llvm-mingw (no external deps)
+  linux/libfreetype.a        Linux x86_64 static, built from official freetype-2.15.0.tar.xz with gcc (no external deps)
