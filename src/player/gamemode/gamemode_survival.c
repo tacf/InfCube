@@ -1,0 +1,138 @@
+#include <player/gamemode/gamemode_survival.h>
+
+#include <item/item.h>
+#include <world/block/blocks.h>
+#include <world/world.h>
+#include <infcube.h>
+
+gamemode_t gamemode_survival_create(struct infcube_s *infcube) {
+    gamemode_t gamemode = gamemode_create(infcube);
+    gamemode.instant_break = 0;
+    gamemode.gamemode_type = GAMEMODE_SURVIVAL;
+
+    gamemode.init_player = gamemode_survival_init_player;
+    gamemode.destroy_block = gamemode_survival_destroy_block;
+    gamemode.remove_item = gamemode_survival_remove_item;
+    gamemode.start_destroy_block = gamemode_survival_start_destroy_block;
+    gamemode.continue_destroy_block = gamemode_survival_continue_destroy_block;
+    gamemode.stop_destroy_block = gamemode_survival_stop_destroy_block;
+    gamemode.render = gamemode_survival_render;
+    gamemode.use_item = gamemode_survival_use_item;
+    gamemode.tick = gamemode_survival_tick;
+    gamemode.init_world = gamemode_survival_init_world;
+
+    return gamemode;
+}
+
+void gamemode_survival_init_player(struct gamemode_s *gamemode, entity_t *player) {
+    //player->mob->player->inventory.slots[0] = blocks.tnt.id;
+    //player->mob->player->inventory.counts[0] = 10;
+}
+
+uint8_t gamemode_survival_destroy_block(struct gamemode_s *gamemode, int x, int y, int z) {
+    int block_id = world_get_block(gamemode->infcube->world, x, y, z);
+    uint8_t broken = gamemode_destroy_block(gamemode, x, y, z);
+    item_stack_t current_item = inventory_player_get_selected(&gamemode->infcube->player.mob->player->inventory);
+    if(current_item.item_id != 0) {
+        item_list[current_item.item_id].on_block_destroy(&item_list[current_item.item_id], &current_item);
+        if(current_item.stack_size == 0) {
+            current_item = item_stack_create(0, 0, 0);
+        }
+        inventory_player_set_slot(&gamemode->infcube->player.mob->player->inventory, gamemode->infcube->player.mob->player->inventory.selected, current_item);
+    }
+    if(broken && player_can_harvest_block(&gamemode->infcube->player, &block_list[block_id])) {
+        block_spawn_items(&block_list[block_id], gamemode->infcube->world, x, y, z, world_get_block_metadata(gamemode->infcube->world, x, y, z));   
+    }
+    return broken;
+}
+
+uint8_t gamemode_survival_remove_item(struct gamemode_s *gamemode, int item) {
+    return inventory_player_consume_item(&gamemode->infcube->player.mob->player->inventory, item);
+}
+
+void gamemode_survival_start_destroy_block(struct gamemode_s *gamemode, int x, int y, int z) {
+    int block_id = world_get_block(gamemode->infcube->world, x, y, z);
+    // in the original code this says if the strength is >= 1, then remove. I do not understand how that makes sense.
+    if(block_id != blocks.air.id && block_get_strength(&block_list[block_id], &gamemode->infcube->player) == 0) {
+        gamemode->destroy_block(gamemode, x, y, z);
+    }
+}
+
+void gamemode_survival_continue_destroy_block(struct gamemode_s *gamemode, int x, int y, int z, uint8_t face) {
+    if(gamemode->destroy_delay > 0) {
+        gamemode->destroy_delay--;
+    }else {
+        if(x == gamemode->x_destroy_block && y == gamemode->y_destroy_block && z == gamemode->z_destroy_block) {
+            int block_id = world_get_block(gamemode->infcube->world, x, y, z);
+            if(block_id != blocks.air.id) {
+                block_t *block = &block_list[block_id];
+                gamemode->destroy_progress += block_get_strength(block, &gamemode->infcube->player);
+                if(gamemode->destroy_sound_counter % 4 == 0 && block != NULL) {
+                    block_sound_t *sound = block->sound;
+                    float sound_x = x + 0.5;
+                    float sound_y = y + 0.5;
+                    float sound_z = z + 0.5;
+                    block_sound_type_t sound_id = sound->base_type;
+                    float volume = (sound->volume + 1) / 8.0;
+                    world_play_sound(gamemode->infcube->world, sound_x, sound_y, sound_z, sound_id, volume, sound->pitch * 0.5);
+                }
+                gamemode->destroy_sound_counter++;
+                if(gamemode->destroy_progress >= 1) {
+                    gamemode->destroy_block(gamemode, x, y, z);
+                    gamemode->destroy_progress = 0;
+                    gamemode->destroy_progress_old = 0;
+                    gamemode->destroy_sound_counter = 0;
+                    gamemode->destroy_delay = 5;
+                }
+            }
+        }else {
+            gamemode->destroy_progress = 0;
+            gamemode->destroy_progress_old = 0;
+            gamemode->destroy_sound_counter = 0;
+            gamemode->x_destroy_block = x;
+            gamemode->y_destroy_block = y;
+            gamemode->z_destroy_block = z;
+        }
+    }
+}
+
+void gamemode_survival_stop_destroy_block(struct gamemode_s *gamemode) {
+    gamemode->destroy_progress = 0;
+    gamemode->destroy_delay = 0;
+}
+
+void gamemode_survival_render(struct gamemode_s *gamemode, float delta) {
+    /*if(gamemode->destroy_progress <= 0) {
+        gamemode->infcube->renderer_world.destroy_progress = 0;
+    }else {
+        gamemode->infcube->renderer_world.destroy_progress = ((float)gamemode->destroy_progress + delta - 1.0) / (float)gamemode->destroy_progress_old;
+    }*/
+    gamemode->destroy_progress_old = gamemode->destroy_progress;
+}
+
+uint8_t gamemode_survival_use_item(struct gamemode_s *gamemode, entity_t *player, int item) {
+    if(item == blocks.red_mushroom.id && inventory_player_consume_item(&player->mob->player->inventory, item)) {
+        player->hurt(player, NULL, 3);
+        return 1;
+    }
+    if(item == blocks.brown_mushroom.id && inventory_player_consume_item(&player->mob->player->inventory, item)) {
+        player->heal(player, 5);
+        return 1;
+    }
+    return 0;
+}
+
+void gamemode_survival_tick(struct gamemode_s *gamemode) {
+    /*int size = gamemode->mob_spawner.world->width * gamemode->mob_spawner.world->height * gamemode->mob_spawner.world->depth / 64 / 64 / 64;
+    if(random_next_int_range(&gamemode->infcube->world.random, 100) < size) { //and number of mobs < size * 20
+        mob_spawner_tick(&gamemode->mob_spawner, size, &gamemode->mob_spawner.world->player->entity, &gamemode->infcube->progress_bar);
+    }*/
+}
+
+void gamemode_survival_init_world(struct gamemode_s *gamemode, struct world_s *world) {
+    /*gamemode_init_world(gamemode, world);
+    gamemode->mob_spawner = mob_spawner_create(world);
+    progress_bar_set_text(&gamemode->infcube->progress_bar, "Spawning...");
+    int size = world->width * world->height * world->depth / 800;
+    mob_spawner_tick(&gamemode->mob_spawner, size, NULL, &gamemode->infcube->progress_bar);*/
+}

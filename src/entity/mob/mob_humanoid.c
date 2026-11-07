@@ -1,0 +1,78 @@
+#include <entity/mob/mob_humanoid.h>
+
+#include <model/model_humanoid.h>
+#include <world/world.h>
+#include <model/models.h>
+#include <renderer/renderer_world.h>
+#include <infcube.h>
+
+#include <SDL2/SDL.h>
+#include <GL/glew.h>
+#include <SDL2/SDL_opengl.h>
+
+void mob_humanoid_create(entity_t *entity, struct world_s *world, float x, float y, float z) {
+    mob_create(entity, world);
+    mob_t *mob = entity->mob;
+    mob->entity->type = ENTITY_MOB_HUMANOID;
+    mob->model_type = MODEL_HUMANOID;
+    mob->has_armor = random_next_double(&world->random) < 0.2;
+    mob->has_helmet = random_next_double(&world->random) < 0.2;
+
+    entity_set_pos(entity, x, y, z);
+
+    mob->render_model = mob_humanoid_render_model;
+    entity->read_nbt = mob_humanoid_read_nbt;
+    entity->write_nbt = mob_humanoid_write_nbt;
+}
+
+void mob_humanoid_read_nbt(entity_t *entity, nbt_base_t *nbt) {
+    mob_read_nbt(entity, nbt);
+}
+
+void mob_humanoid_write_nbt(entity_t *entity, nbt_base_t *nbt) {
+    mob_write_nbt(entity, nbt);
+}
+
+void mob_humanoid_render_model(struct mob_s *mob, float time, float r, float bob, float y_rot, float x_rot, float scale) {
+    mob_render_model(mob, time, r, bob, y_rot, x_rot, scale);
+    model_t model = mob->entity->world->infcube->models.humanoid;
+
+    glEnable(GL_ALPHA_TEST);
+    glEnable(GL_CULL_FACE);
+
+    if(mob->has_hair) {
+        glDisable(GL_CULL_FACE);
+        model.hair.y_rot = model.head.y_rot;
+        model.hair.x_rot = model.head.x_rot;
+        cube_render(&model.hair, scale);
+        glEnable(GL_CULL_FACE);
+    }
+
+    if(mob->has_armor || mob->has_helmet) {
+        glBindTexture(GL_TEXTURE_2D, textures_load(&mob->entity->world->infcube->textures, "armor/plate.png"));
+        glDisable(GL_CULL_FACE);
+        model_t armor_model = mob->entity->world->infcube->models.humanoid_armor;
+        armor_model.head.visible = mob->has_helmet;
+        armor_model.body.visible = mob->has_armor;
+        armor_model.arm0.visible = mob->has_armor;
+        armor_model.arm1.visible = mob->has_armor;
+        armor_model.leg0.visible = 0;
+        armor_model.leg1.visible = 0;
+        armor_model.head.y_rot = model.head.y_rot;
+        armor_model.head.x_rot = model.head.x_rot;
+        armor_model.arm0.y_rot = model.arm0.y_rot;
+        armor_model.arm0.x_rot = model.arm0.x_rot;
+        armor_model.arm1.y_rot = model.arm1.y_rot;
+        armor_model.arm1.x_rot = model.arm1.x_rot;
+        armor_model.leg0.x_rot = model.leg0.x_rot;
+        armor_model.leg1.x_rot = model.leg1.x_rot;
+        cube_render(&armor_model.head, scale);
+        cube_render(&armor_model.body, scale);
+        cube_render(&armor_model.arm0, scale);
+        cube_render(&armor_model.arm1, scale);
+        cube_render(&armor_model.leg0, scale);
+        cube_render(&armor_model.leg1, scale);
+        glEnable(GL_CULL_FACE);
+    }
+    glDisable(GL_ALPHA_TEST);
+}

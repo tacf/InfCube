@@ -1,0 +1,20 @@
+#pragma once
+
+#include <nbt/nbt_base.h>
+
+#include <stdint.h>
+#include <stdio.h>
+
+typedef struct {
+    struct infcube_s *infcube;
+    char *text;
+    char *title;
+    int64_t start;
+} progress_bar_t;
+
+progress_bar_t progress_bar_create(struct infcube_s *infcube);
+void progress_bar_set_title(progress_bar_t *bar, char *title);
+void progress_bar_set_text(progress_bar_t *bar, char *text);
+void progress_bar_set_progress(progress_bar_t *bar, int progress);
+nbt_base_t progress_bar_read(FILE *chunk_file);
+void progress_bar_write(FILE *chunk_file, nbt_base_t *nbt);

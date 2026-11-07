@@ -1,0 +1,46 @@
+#pragma once
+
+#include <entity/entity.h>
+
+#include <stdint.h>
+
+struct world_s;
+
+enum {
+    PARTICLE_NONE,
+    PARTICLE_BUBBLE,
+    PARTICLE_SMOKE,
+    PARTICLE_EXPLODE,
+    PARTICLE_FLAME,
+    PARTICLE_LAVA,
+    PARTICLE_TERRAIN,
+    PARTICLE_WATER_DROP,
+    PARTICLE_LARGE_SMOKE,
+    PARTICLE_SPLASH,
+};
+
+typedef struct particle_s {
+    entity_t entity;
+    int texture;
+    float u;
+    float v;
+    int age;
+    int lifetime;
+    float size;
+    float gravity;
+    float r;
+    float g;
+    float b;
+    uint8_t type;
+
+    void (*tick)(struct particle_s *particle);
+    void (*render)(struct particle_s *particle, float t, float x, float y, float z, float x2, float z2);
+    int (*get_texture)(struct particle_s *particle);
+} particle_t;
+
+particle_t particle_create(struct world_s *world, float x, float y, float z, float xd, float yd, float zd);
+void particle_tick(struct particle_s *particle);
+void particle_render(struct particle_s *particle, float delta, float x, float y, float z, float x2, float z2);
+int particle_get_texture(struct particle_s *particle);
+void particle_set_power(struct particle_s *particle, float power);
+void particle_set_scale(struct particle_s *particle, float scale);

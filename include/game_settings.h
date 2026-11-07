@@ -1,0 +1,43 @@
+#pragma once
+
+#include <stdint.h>
+
+typedef struct {
+    char *name;
+    int key;
+} key_binding_t;
+
+typedef struct {
+    uint8_t music;
+    uint8_t sound;
+    uint8_t invert_mouse;
+    uint8_t show_framerate;
+    int view_distance;
+    uint8_t show_bobbing;
+    uint8_t anaglyph;
+    uint8_t limit_framerate;
+    int difficulty;
+    struct infcube_s *infcube;
+    int settings_count;
+    uint8_t third_person;
+    key_binding_t forward_key;
+    key_binding_t left_key;
+    key_binding_t back_key;
+    key_binding_t right_key;
+    key_binding_t jump_key;
+    key_binding_t drop_key;
+    key_binding_t inventory_key;
+    key_binding_t chat_key;
+    key_binding_t toggle_fog_key;
+    key_binding_t save_location_key;
+    key_binding_t load_location_key;
+    key_binding_t **bindings; //arraylist
+} game_settings_t;
+
+void game_settings_create(game_settings_t *settings, struct infcube_s *infcube);
+void game_settings_toggle_setting(game_settings_t *settings, int setting);
+char *game_settings_get_binding(game_settings_t *settings, int binding);
+void game_settings_set_binding(game_settings_t *settings, int binding, int key);
+char *game_settings_get_setting(game_settings_t *settings, int setting);
+void game_settings_load(game_settings_t *settings);
+void game_settings_save(game_settings_t *settings);

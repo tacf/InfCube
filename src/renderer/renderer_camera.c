@@ -1,0 +1,506 @@
+#include <renderer/renderer_camera.h>
+
+#include <infcube.h>
+#include <model/vec3.h>
+#include <renderer/tesselator.h>
+#include <renderer/renderer_lighting.h>
+#include <world/block/blocks.h>
+
+#include <SDL2/SDL.h>
+#include <GL/glew.h>
+#include <GL/gl.h>
+#include <GL/glu.h>
+#include <SDL2/SDL_opengl.h>
+
+#include <time.h>
+
+//gets rid of annoying warning for windows static linking
+extern void gluPerspective(GLdouble fovy, GLdouble aspect, GLdouble zNear, GLdouble zFar);
+
+renderer_camera_t renderer_camera_create(infcube_t *infcube) {
+    renderer_camera_t renderer_camera = { 0 };
+
+    renderer_camera.infcube = infcube;
+    renderer_camera.renderer_overlay = renderer_screen_overlay_create(infcube->world);
+    renderer_camera.entity = NULL;
+    renderer_camera.random = random_create(time(NULL));
+    renderer_camera.fog_r = 0.0;
+    renderer_camera.fog_g = 0.0;
+    renderer_camera.fog_b = 0.0;
+
+    return renderer_camera;
+}
+
+void renderer_camera_update(renderer_camera_t *renderer) {
+    renderer->fog_fade_prev = renderer->fog_fade;
+    float brightness = world_get_brightness(renderer->infcube->world, floor_double(renderer->infcube->player.x), floor_double(renderer->infcube->player.y), floor_double(renderer->infcube->player.z));
+    float distance_factor = (3.0 - renderer->infcube->settings.view_distance) / 3.0;
+    brightness = brightness * (1.0 - distance_factor) + distance_factor;
+    renderer->fog_fade += (brightness - renderer->fog_fade) * 0.1;
+    renderer->ticks++;
+    renderer_screen_overlay_update_item(&renderer->renderer_overlay);
+    // TODO rain particles (ingamehasfocus = rain)
+}
+
+vec3_t renderer_camera_get_player_vector(renderer_camera_t *renderer, float delta) {
+    entity_t *player = &renderer->infcube->player;
+    return (vec3_t){ player->last_tick_x + (player->x - player->last_tick_x) * delta,
+                     player->last_tick_y + (player->y - player->last_tick_y) * delta,
+                     player->last_tick_z + (player->z - player->last_tick_z) * delta };
+}
+
+void renderer_camera_hurt_effect(renderer_camera_t *renderer, float delta) {
+    mob_t *player = renderer->infcube->player.mob;
+    float dtime = player->hurt_time - delta;
+    if(player->health <= 0) {
+        delta += player->death_time;
+        glRotatef(40.0 - 8000.0 / (delta + 200.0), 0.0, 0.0, 1.0);
+    }
+
+    if(dtime >= 0.0) {
+        dtime /= player->hurt_duration;
+        dtime = tsin(dtime * dtime * dtime * dtime * M_PI);
+        delta = player->hurt_dir;
+        glRotatef(-delta, 0.0, 1.0, 0.0);
+        glRotatef(-dtime * 14.0, 0.0, 0.0, 1.0);
+        glRotatef(delta, 0.0, 1.0, 0.0);
+    }
+}
+
+void renderer_camera_apply_bobbing(renderer_camera_t *renderer, float delta) {
+    if(renderer->infcube->settings.third_person) return;
+    entity_t* player = &renderer->infcube->player;
+    float walk = player->walk_dist - player->walk_disto;
+    walk = player->walk_dist + walk * delta;
+    float bob = player->mob->player->obob + (player->mob->player->bob - player->mob->player->obob) * delta;
+    float tilt = player->mob->o_tilt + (player->mob->tilt - player->mob->o_tilt) * delta;
+    glTranslatef(tsin(walk * M_PI) * bob * 0.5, -fabs(tcos(walk * M_PI) * bob), 0.0);
+    glRotatef(tsin(walk * M_PI) * bob * 3.0, 0.0, 0.0, 1.0);
+    glRotatef(fabs(tcos(walk * M_PI + 0.2) * bob) * 5.0, 1.0, 0.0, 0.0);
+    glRotatef(tilt, 1.0, 0.0, 0.0);
+}
+
+void renderer_camera_update_mouse(renderer_camera_t *renderer, float delta) {
+    if(renderer->display_active && !(SDL_GetWindowFlags(renderer->infcube->window) & SDL_WINDOW_INPUT_FOCUS)) {
+        infcube_pause(renderer->infcube);
+    }
+
+    // TODO
+
+    int mx = 0, my = 0;
+    SDL_GetMouseState(&mx, &my);
+    int x = renderer->infcube->width;
+    int y = renderer->infcube->height;
+    int w = x;
+    int h = y;
+    for(x = 1; w / (x + 1) >= 320 && h / (x + 1) >= 240; x++);
+    w /= x;
+    h /= x;
+    mx = mx * w / renderer->infcube->width;
+    my = my * h / renderer->infcube->height - 1;
+
+    if(renderer->infcube->world != NULL) {
+        renderer_camera_update_camera(renderer, delta);
+        glClear(GL_DEPTH_BUFFER_BIT);
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
+        glColor4ub(255, 0, 255, 255);
+        glOrtho(0.0, w, h, 0.0, 0.0, 1);
+        renderer_camera_setup_gui(renderer);
+        screen_hud_render(&renderer->infcube->hud, mx, my, delta);
+    }else {
+        glViewport(0, 0, renderer->infcube->frame_width, renderer->infcube->frame_height);
+        glClearColor(0, 0, 0, 0);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
+        renderer_camera_setup_gui(renderer);
+    }
+
+    if(renderer->infcube->current_screen != NULL) {
+        renderer_camera_setup_gui(renderer);
+        glColor4ub(255, 0, 255, 255);
+        renderer->infcube->current_screen->render((struct screen_s *)renderer->infcube->current_screen, mx, my, delta);
+    }
+
+    //SDL_Delay(0);
+    SDL_GL_SwapWindow(renderer->infcube->window);
+}
+
+void renderer_camera_update_camera(renderer_camera_t *renderer, float delta) {
+    entity_t *player = &renderer->infcube->player;
+    float rot_x = player->x_roto + (player->x_rot - player->x_roto) * delta;
+    float rot_y = player->y_roto + (player->y_rot - player->y_roto) * delta;
+    vec3_t v = renderer_camera_get_player_vector(renderer, delta);
+    float c1 = tcos(-rot_y * M_PI / 180.0 - M_PI);
+    float s1 = tsin(-rot_y * M_PI / 180.0 - M_PI);
+    float c2 = tcos(-rot_x * M_PI / 180.0);
+    float s2 = tsin(-rot_x * M_PI / 180.0);
+    float sc = s1 * c2;
+    float cc = c1 * c2;
+    float reach = renderer->infcube->gamemode.reach;
+    vec3_t v2 = { v.x + sc * reach, v.y + s2 * reach, v.z + cc * reach };
+    renderer->infcube->hit_result = world_clip(renderer->infcube->world, v, v2);
+    v = renderer_camera_get_player_vector(renderer, delta);
+    if(!renderer->infcube->hit_result.null) {
+        reach = sqrtf(vec3_distance_to_sqr(v, renderer->infcube->hit_result.location));
+    }
+
+    if(renderer->infcube->gamemode.gamemode_type == GAMEMODE_CREATIVE) {
+        reach = 32.0;
+    }else {
+        if(reach > 3.0) reach = 3.0;
+    }
+
+    renderer->entity = NULL;
+    //double a = 0.0;
+
+    AABB_t box = AABB_expand(player->bb, sc * reach, s2 * reach, cc * reach);
+    entity_t **entities = world_get_entities_excluding(renderer->infcube->world, player, box);
+    for(int i = 0; i < array_list_length(entities); i++) {
+        /*entity_t *entity = *(entity_t **)array_list_get(entities, i);
+        if(entity->can_be_hit(entity)) {
+            float r = 0.1;
+            float dist;
+            hit_result_t pos = AABB_clip(AABB_grow(entity->bb, r, r, r), v, v2);
+            if(!pos.null) dist = (vec3_distance_to(v, pos.location));
+            if(!pos.null && (dist < a || a == 0.0)) {
+                renderer->entity = entity;
+                a = dist;
+            }
+        }*/
+    }
+
+    array_list_free(entities);
+
+    if(renderer->entity != NULL && renderer->infcube->gamemode.gamemode_type == GAMEMODE_SURVIVAL) {
+        renderer->infcube->hit_result = (hit_result_t){ .type = 1, .entity = renderer->entity };
+    }
+
+    world_t *world = renderer->infcube->world;
+    double dx = player->last_tick_x + (player->x - player->last_tick_x) * delta;
+    double dy = player->last_tick_y + (player->y - player->last_tick_y) * delta;
+    double dz = player->last_tick_z + (player->z - player->last_tick_z) * delta;
+
+    for(int i = 0; i < 2; i++) {
+        if(renderer->infcube->settings.anaglyph) {
+            if(i == 0) glColorMask(0, 1, 1, 0);
+            else glColorMask(1, 0, 0, 0);
+        }
+
+        glViewport(0, 0, renderer->infcube->frame_width, renderer->infcube->frame_height);
+        float a = 1.0 / (4 - renderer->infcube->settings.view_distance);
+        a = 1.0 - powf(a, 0.25);
+
+        vec3_t sky_color = world_get_sky_color(world, delta);
+        float sky_r = sky_color.x;
+        float sky_g = sky_color.y;
+        float sky_b = sky_color.z;
+
+        vec3_t fog_color = world_get_fog_color(world, delta);
+        renderer->fog_r = fog_color.x;
+        renderer->fog_g = fog_color.y;
+        renderer->fog_b = fog_color.z;
+        renderer->fog_r = (renderer->fog_r + (sky_r - renderer->fog_r) * a);
+        renderer->fog_g = (renderer->fog_g + (sky_g - renderer->fog_g) * a);
+        renderer->fog_b = (renderer->fog_b + (sky_b - renderer->fog_b) * a);
+
+        block_t *block = &block_list[world_get_block(world, floor_double(player->x), floor_double(player->y + 0.12), floor_double(player->z))];
+        if(block->id != blocks.air.id && block->material != &materials.air) {
+            if(block->material == &materials.water) {
+                renderer->fog_r = 0.02;
+                renderer->fog_g = 0.02;
+                renderer->fog_b = 0.2;
+            }
+            if(block->material == &materials.lava) {
+                renderer->fog_r = 0.6;
+                renderer->fog_g = 0.1;
+                renderer->fog_b = 0.0;
+            }
+        }
+
+        float dfog = renderer->fog_fade_prev + (renderer->fog_fade - renderer->fog_fade_prev) * delta;
+        renderer->fog_r *= dfog;
+        renderer->fog_g *= dfog;
+        renderer->fog_b *= dfog;
+
+        if(renderer->infcube->settings.anaglyph) {
+            float ar = (renderer->fog_r * 30.0 + renderer->fog_g * 59.0 + renderer->fog_b * 11.0) / 100.0;
+            float ag = (renderer->fog_r * 30.0 + renderer->fog_g * 70.0) / 100.0;
+            float ab = (renderer->fog_r * 30.0 + renderer->fog_b * 70.0) / 100.0;
+            renderer->fog_r = ar;
+            renderer->fog_g = ag;
+            renderer->fog_b = ab;
+        }
+
+        glClearColor(renderer->fog_r, renderer->fog_g, renderer->fog_b, 0.0);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glEnable(GL_CULL_FACE);
+        renderer->far_plane_distance = (256 >> renderer->infcube->settings.view_distance);
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        if(renderer->infcube->settings.anaglyph) glTranslatef(-((i << 1) - 1) * 0.07, 0.0, 0.0);
+
+        float fov = 70.0;
+        
+        if(entity_is_underwater(player)) {
+            fov = 60.0;
+        }
+        
+        if(player->mob->health <= 0) {
+            float ddeath_time = player->mob->death_time + delta;
+            fov /= (1.0 - 500.0 / (ddeath_time + 500.0)) * 2.0 + 1.0;
+        }
+        
+        gluPerspective(fov, (float)renderer->infcube->width / (float)renderer->infcube->height, 0.05, renderer->far_plane_distance);
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
+        if(renderer->infcube->settings.anaglyph) glTranslatef(((i << 1) - 1) * 0.1, 0.0, 0.0);
+
+        renderer_camera_hurt_effect(renderer, delta);
+        if(renderer->infcube->settings.show_bobbing) renderer_camera_apply_bobbing(renderer, delta);
+
+        if(!renderer->infcube->settings.third_person) {
+            glTranslatef(0.0, 0.0, -0.1);
+        }else {
+            double reach = 4.0;
+            double offset_x = -tsin(player->x_rot / 180.0 * M_PI) * tcos(player->y_rot / 180.0 * M_PI) * reach;
+            double offset_z = tcos(player->x_rot / 180.0 * M_PI) * tcos(player->y_rot / 180.0 * M_PI) * reach;
+            double offset_y = -tsin(player->y_rot / 180.0 * M_PI) * reach;
+
+            for(int j = 0; j < 8; j++) {
+                float step_x = ((j & 1) << 1) - 1;
+                float step_y = ((j >> 1 & 1) << 1) - 1;
+                float step_z = ((j >> 2 & 1) << 1) - 1;
+                step_x *= 0.1;
+                step_y *= 0.1;
+                step_z *= 0.1;
+                hit_result_t result = world_clip(world, (vec3_t){ dx + step_x, dy + step_y, dz + step_z }, 
+                    (vec3_t){dx - offset_x + step_x + step_z, dy - offset_y + step_y, dz - offset_z + step_z});
+                if(!result.null) {
+                    double hit_distance = vec3_distance_to(result.location, (vec3_t){dx, dy, dz});
+                    if(hit_distance < reach) {
+                        reach = hit_distance;
+                    }
+                }
+            }
+
+            glTranslatef(0.0, 0.0, -reach);
+        }
+
+        float rot_x = player->x_roto + (player->x_rot - player->x_roto) * delta;
+        float rot_y = player->y_roto + (player->y_rot - player->y_roto) * delta;
+        glRotatef(rot_x, 1.0, 0.0, 0.0);
+        glRotatef(rot_y, 0.0, 1.0, 0.0);
+        frustum_t frustum = frustum_get();
+
+        renderer_camera_setup_fog(renderer);
+        glEnable(GL_FOG);
+        renderer_world_draw_sky(&renderer->infcube->renderer_world, delta);
+
+        renderer_camera_setup_fog(renderer);
+        frustum_set_position(&frustum, dx, dy, dz);
+        renderer_world_update_frustum(&renderer->infcube->renderer_world, &frustum);
+        renderer_world_update_renderers(&renderer->infcube->renderer_world, player);
+
+        renderer_camera_setup_fog(renderer);
+        glEnable(GL_FOG);
+        glBindTexture(GL_TEXTURE_2D, textures_load(&renderer->infcube->textures, "terrain.png"));
+        renderer_lighting_disable();
+        renderer_world_sort_and_render(&renderer->infcube->renderer_world, player, 0, delta);
+
+        int player_x = floor_double(player->x);
+        int player_y = floor_double(player->y);
+        int player_z = floor_double(player->z);
+
+        if(world_is_solid(world, player_x, player_y, player_z)) {
+            renderer_block_t block_renderer = renderer_block_create(world);
+
+            for(int x = player_x - 1; x <= player_x + 1; x++) {
+                for(int y = player_y - 1; y <= player_y + 1; y++) {
+                    for(int z = player_z - 1; z <= player_z + 1; z++) {
+                        uint8_t block_id = world_get_block(world, x, y, z);
+                        if(block_id > 0) {
+                            renderer_block_render_inside(&block_renderer, &block_list[block_id], x, y, z);
+                        }
+                    }
+                }
+            }
+        }
+        renderer_lighting_enable();
+        glPushMatrix();
+        renderer_world_update_entities(&renderer->infcube->renderer_world, renderer_camera_get_player_vector(renderer, delta), &frustum, delta);
+        // render lit particles
+        glPopMatrix();
+        renderer_lighting_disable();
+
+        renderer_camera_setup_fog(renderer);
+        // render particles
+
+        if(!renderer->infcube->hit_result.null && entity_is_underwater(player)) {
+            glDisable(GL_ALPHA_TEST);
+            renderer_world_draw_block_breaking(&renderer->infcube->renderer_world, player, &renderer->infcube->hit_result, 0, NULL, delta);
+            renderer_world_draw_selection_box(&renderer->infcube->renderer_world, player, &renderer->infcube->hit_result, 0, delta);
+            glEnable(GL_ALPHA_TEST);
+        }
+
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        renderer_camera_setup_fog(renderer);
+        glEnable(GL_BLEND);
+        glDisable(GL_CULL_FACE);
+        glColorMask(0, 0, 0, 0);
+        glBindTexture(GL_TEXTURE_2D, textures_load(&renderer->infcube->textures, "terrain.png"));
+        int rendered_chunks = renderer_world_sort_and_render(&renderer->infcube->renderer_world, player, 1, delta);
+        glColorMask(1, 1, 1, 1);
+
+        if(renderer->infcube->settings.anaglyph) {
+            if(i == 0) {
+                glColorMask(0, 1, 1, 0);
+            }else {
+                glColorMask(1, 0, 0, 0);
+            }
+        }
+
+        if(rendered_chunks > 0) {
+            glBindTexture(GL_TEXTURE_2D, textures_load(&renderer->infcube->textures, "terrain.png"));
+            renderer_world_render_all_lists(&renderer->infcube->renderer_world, 1, delta);
+        }
+
+        glDepthMask(1);
+        glEnable(GL_CULL_FACE);
+        glDisable(GL_BLEND);
+
+        if(!renderer->infcube->hit_result.null && !entity_is_underwater(player)) {
+            glDisable(GL_ALPHA_TEST);
+            renderer_world_draw_block_breaking(&renderer->infcube->renderer_world, player, &renderer->infcube->hit_result, 0, NULL, delta);
+            renderer_world_draw_selection_box(&renderer->infcube->renderer_world, player, &renderer->infcube->hit_result, 0, delta);
+            glEnable(GL_ALPHA_TEST);
+        }
+
+        glDisable(GL_FOG);
+        if(renderer->infcube->raining) {
+            float t = delta;
+            int px = floor_double(player->x);
+            int py = floor_double(player->y);
+            int pz = floor_double(player->z);
+            glDisable(GL_CULL_FACE);
+            glNormal3f(0, 1, 0);
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            glBindTexture(GL_TEXTURE_2D, textures_load(&renderer->infcube->textures, "rain.png"));
+            for(int x = px - 5; x <= px + 5; x++) {
+                for(int z = pz - 5; z <= pz + 5; z++) {
+                    int y_min = py - 5;
+                    int y_max = py + 5;
+                    // This is why rain particles only render at sea level
+                    if(y_min < 64) y_min = 64;
+                    if(y_max < 64) y_max = 64;
+
+                    if(y_min != y_max) {
+                        float tt = (((renderer->ticks + x * 3121 + z * 418711) % 32) + t) / 32.0;
+                        float d = sqrtf((x + 0.5 - player->x) * (x + 0.5 - player->x) + (z + 0.5 - player->z) * (z + 0.5 - player->z)) / 5.0;
+                        glColor4f(1.0, 1.0, 1.0, (1.0 - d * d) * 0.7);
+                        tesselator_begin_quads();
+                        tesselator_vertex_uv(x, y_min, z, 0.0, y_min / 4.0 + tt * 2.0);
+                        tesselator_vertex_uv(x + 1, y_min, z + 1, 2.0, y_min / 4.0 + tt * 2.0);
+                        tesselator_vertex_uv(x + 1, y_max, z + 1, 2.0, y_max / 4.0 + tt * 2.0);
+                        tesselator_vertex_uv(x, y_max, z, 0.0, y_max / 4.0 + tt * 2.0);
+                        tesselator_vertex_uv(x, y_min, z + 1, 0.0, y_min / 4.0 + tt * 2.0);
+                        tesselator_vertex_uv(x + 1, y_min, z, 2.0, y_min / 4.0 + tt * 2.0);
+                        tesselator_vertex_uv(x + 1, y_max, z, 2.0, y_max / 4.0 + tt * 2.0);
+                        tesselator_vertex_uv(x, y_max, z + 1, 0.0, y_max / 4.0 + tt * 2.0);
+                        tesselator_end();
+                    }
+                }
+            }
+            glEnable(GL_CULL_FACE);
+            glDisable(GL_BLEND);
+        }
+        
+        glClear(GL_DEPTH_BUFFER_BIT);
+        glLoadIdentity();
+
+        if(renderer->infcube->settings.anaglyph) {
+            glTranslatef(((i << 1) - 1) * 0.1, 0.0, 0.0);
+        }
+
+        glPushMatrix();
+        renderer_camera_hurt_effect(renderer, delta);
+        if(renderer->infcube->settings.show_bobbing) {
+            renderer_camera_apply_bobbing(renderer, delta);
+        }
+
+        if(!renderer->infcube->settings.third_person) {
+            renderer_screen_overlay_render(&renderer->renderer_overlay, delta);
+        }
+
+        glPopMatrix();
+        if(!renderer->infcube->settings.third_person) {
+            renderer_screen_overlay_render_overlays(&renderer->renderer_overlay, delta);
+            renderer_camera_hurt_effect(renderer, delta);
+        }
+
+        if(renderer->infcube->settings.show_bobbing) {
+            renderer_camera_apply_bobbing(renderer, delta);
+        }
+
+        if(!renderer->infcube->settings.anaglyph) {
+            return;
+        }
+    }
+
+    glColorMask(1, 1, 1, 0);
+}
+
+void renderer_camera_setup_gui(renderer_camera_t *renderer_camera) {
+    int win_w = renderer_camera->infcube->width;
+    int win_h = renderer_camera->infcube->height;
+    int w = win_w;
+    int h = win_h;
+    int scale = 1;
+    for(scale = 1; w / (scale + 1) >= 320 && h / (scale + 1) >= 240; scale++);
+    w /= scale;
+    h /= scale;
+
+    glClear(GL_DEPTH_BUFFER_BIT);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(0.0, (double)w, (double)h, 0.0, 1000.0, 3000.0);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    glTranslatef(0.0, 0.0, -2000.0);
+}
+
+void renderer_camera_setup_fog(renderer_camera_t *renderer_camera) {
+    world_t *world = renderer_camera->infcube->world;
+    entity_t *player = &renderer_camera->infcube->player;
+    glFogfv(GL_FOG_COLOR, (float []){ renderer_camera->fog_r, renderer_camera->fog_g, renderer_camera->fog_b, 1.0 });
+    glNormal3f(0.0, -1.0, 0.0);
+    glColor4f(1.0, 1.0, 1.0, 1.0);
+    block_t *block = &block_list[world_get_block(world, floor_double(player->x), floor_double(player->y + 0.12), floor_double(player->z))];
+    material_t *material = block->material;
+
+    if(material == &materials.water) {
+        glFogi(GL_FOG_MODE, GL_EXP);
+        glFogf(GL_FOG_DENSITY, 0.1f);
+    }else if(material == &materials.lava) {
+        glFogi(GL_FOG_MODE, GL_EXP);
+        glFogf(GL_FOG_DENSITY, 2.0f);
+    }else if(block->is_solid) {
+        glFogi(GL_FOG_MODE, GL_EXP);
+        glFogf(GL_FOG_DENSITY, 0.2f);
+    }else {
+        glFogi(GL_FOG_MODE, GL_LINEAR);
+        glFogf(GL_FOG_START, renderer_camera->far_plane_distance * 0.25);
+        glFogf(GL_FOG_END, renderer_camera->far_plane_distance);
+        if(glGetString(GL_EXTENSIONS) && strstr((const char *)glGetString(GL_EXTENSIONS), "GL_NV_fog_distance")) {
+            glFogi(GL_FOG_DISTANCE_MODE_NV, GL_EYE_RADIAL_NV);
+        }
+    }
+    glEnable(GL_COLOR_MATERIAL);
+    glColorMaterial(GL_FRONT, GL_AMBIENT);
+}

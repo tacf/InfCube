@@ -1,0 +1,10 @@
+*.o
+res/assets/*.h
+res/assets/**/*.h
+infcube.exe
+infcube
+bin/
+.vscode/
+TODO.txt
+.infcube/
+original_java_src/

@@ -1,0 +1,37 @@
+#pragma once
+
+#include <model/vec3.h>
+#include <entity/entity.h>
+#include <renderer/held_block.h>
+#include <renderer/renderer_screen_overlay.h>
+
+#include <util/random.h>
+
+#include <stdint.h>
+
+typedef struct infcube_s infcube_t;
+
+typedef struct {
+    infcube_t *infcube;
+    entity_t *entity;
+    renderer_screen_overlay_t renderer_overlay;
+    uint8_t display_active;
+    random_t random;
+    int ticks;
+    float fog_r;
+    float fog_g;
+    float fog_b;
+    float far_plane_distance;
+    float fog_fade;
+    float fog_fade_prev;
+} renderer_camera_t;
+
+renderer_camera_t renderer_camera_create(infcube_t *infcube);
+void renderer_camera_update(renderer_camera_t *renderer);
+vec3_t renderer_camera_get_player_vector(renderer_camera_t *renderer, float delta);
+void renderer_camera_hurt_effect(renderer_camera_t *renderer, float delta);
+void renderer_camera_apply_bobbing(renderer_camera_t *renderer, float delta);
+void renderer_camera_update_mouse(renderer_camera_t *renderer, float delta);
+void renderer_camera_update_camera(renderer_camera_t *renderer, float delta);
+void renderer_camera_setup_gui(renderer_camera_t *renderer_camera);
+void renderer_camera_setup_fog(renderer_camera_t *renderer_camera);
