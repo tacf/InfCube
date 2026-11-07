@@ -7,4 +7,5 @@ bin/
 .vscode/
 TODO.txt
 .infcube/
-original_java_src/
+
+res/assets/**
